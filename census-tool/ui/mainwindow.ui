@@ -1,0 +1,957 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1248</width>
+    <height>805</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>800</width>
+    <height>600</height>
+   </size>
+  </property>
+  <property name="baseSize">
+   <size>
+    <width>800</width>
+    <height>600</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="layoutDirection">
+   <enum>Qt::LeftToRight</enum>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="spacing">
+     <number>1</number>
+    </property>
+    <property name="leftMargin">
+     <number>1</number>
+    </property>
+    <property name="topMargin">
+     <number>1</number>
+    </property>
+    <property name="rightMargin">
+     <number>1</number>
+    </property>
+    <property name="bottomMargin">
+     <number>1</number>
+    </property>
+    <item>
+     <widget class="QWidget" name="wdtMain" native="true">
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <property name="spacing">
+        <number>1</number>
+       </property>
+       <property name="leftMargin">
+        <number>1</number>
+       </property>
+       <property name="topMargin">
+        <number>1</number>
+       </property>
+       <property name="rightMargin">
+        <number>1</number>
+       </property>
+       <property name="bottomMargin">
+        <number>1</number>
+       </property>
+       <item>
+        <widget class="QWidget" name="wdgTopMain" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>250</width>
+           <height>100</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>250</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QTabWidget" name="tbxTasks">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>250</width>
+              <height>300</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>250</width>
+              <height>100000</height>
+             </size>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::LeftToRight</enum>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">/*QToolBox::tab {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
+                                stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
+    border-radius: 3px;
+    color: darkgray;
+}
+
+QToolBox::tab:selected { 
+    font: italic;
+    color: black;
+}*/</string>
+            </property>
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <widget class="QWidget" name="tbxTasksPage1">
+             <attribute name="title">
+              <string>Bilddateien</string>
+             </attribute>
+             <layout class="QVBoxLayout" name="verticalLayout_7">
+              <property name="spacing">
+               <number>0</number>
+              </property>
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QWidget" name="wdgImageTable" native="true">
+                <layout class="QVBoxLayout" name="verticalLayout_5">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QFrame" name="frame">
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Plain</enum>
+                   </property>
+                   <layout class="QGridLayout" name="gridLayout_2">
+                    <item row="0" column="0">
+                     <widget class="QComboBox" name="cmbSession"/>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="chbNotReady">
+                   <property name="text">
+                    <string>unmarkierte Bilder anzeigen</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QFrozenRowTableWidget" name="image_table">
+                   <property name="font">
+                    <font>
+                     <family>Courier New</family>
+                     <pointsize>11</pointsize>
+                    </font>
+                   </property>
+                   <property name="alternatingRowColors">
+                    <bool>true</bool>
+                   </property>
+                   <property name="selectionMode">
+                    <enum>QAbstractItemView::SingleSelection</enum>
+                   </property>
+                   <property name="gridStyle">
+                    <enum>Qt::SolidLine</enum>
+                   </property>
+                   <property name="rowCount">
+                    <number>1</number>
+                   </property>
+                   <property name="columnCount">
+                    <number>3</number>
+                   </property>
+                   <attribute name="horizontalHeaderVisible">
+                    <bool>true</bool>
+                   </attribute>
+                   <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
+                    <bool>false</bool>
+                   </attribute>
+                   <attribute name="horizontalHeaderStretchLastSection">
+                    <bool>true</bool>
+                   </attribute>
+                   <attribute name="verticalHeaderVisible">
+                    <bool>false</bool>
+                   </attribute>
+                   <row/>
+                   <column/>
+                   <column/>
+                   <column/>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="tbxTasksPage2">
+             <attribute name="title">
+              <string>Dateneingabe</string>
+             </attribute>
+             <layout class="QVBoxLayout" name="verticalLayout_8">
+              <property name="spacing">
+               <number>2</number>
+              </property>
+              <property name="leftMargin">
+               <number>2</number>
+              </property>
+              <property name="topMargin">
+               <number>2</number>
+              </property>
+              <property name="rightMargin">
+               <number>2</number>
+              </property>
+              <property name="bottomMargin">
+               <number>2</number>
+              </property>
+              <item>
+               <widget class="QFrame" name="wgdMapInfo">
+                <property name="maximumSize">
+                 <size>
+                  <width>249</width>
+                  <height>360</height>
+                 </size>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_4">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QWidget" name="wdgMapTabButtons" native="true">
+                   <layout class="QHBoxLayout" name="horizontalLayout_2">
+                    <property name="spacing">
+                     <number>0</number>
+                    </property>
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QToolButton" name="btnPrevTile">
+                      <property name="enabled">
+                       <bool>true</bool>
+                      </property>
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                        <horstretch>1</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="toolTip">
+                       <string>vorherige Kachel</string>
+                      </property>
+                      <property name="text">
+                       <string>...</string>
+                      </property>
+                      <property name="icon">
+                       <iconset>
+                        <normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/goPrevious.png</normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/goPrevious.png</iconset>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QToolButton" name="btnNextTile">
+                      <property name="enabled">
+                       <bool>true</bool>
+                      </property>
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                        <horstretch>1</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="toolTip">
+                       <string>nächste Kachel</string>
+                      </property>
+                      <property name="text">
+                       <string/>
+                      </property>
+                      <property name="icon">
+                       <iconset>
+                        <normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/goNext.png</normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/goNext.png</iconset>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QToolButton" name="btnMapZoomExtent">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                        <horstretch>1</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="toolTip">
+                       <string>Gesamtdarstellung</string>
+                      </property>
+                      <property name="text">
+                       <string/>
+                      </property>
+                      <property name="icon">
+                       <iconset>
+                        <normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/mapFullExtent.png</normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/mapFullExtent.png</iconset>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QToolButton" name="btnMapZoom1by1">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                        <horstretch>1</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="toolTip">
+                       <string>Zoom 1:1</string>
+                      </property>
+                      <property name="text">
+                       <string>...</string>
+                      </property>
+                      <property name="icon">
+                       <iconset>
+                        <normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/mapZoom1by1.png</normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/mapZoom1by1.png</iconset>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QToolButton" name="btnMapPan">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                        <horstretch>1</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="toolTip">
+                       <string>In der Karte bewegen</string>
+                      </property>
+                      <property name="text">
+                       <string/>
+                      </property>
+                      <property name="icon">
+                       <iconset>
+                        <normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/mapPan.png</normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/mapPan.png</iconset>
+                      </property>
+                      <property name="checkable">
+                       <bool>true</bool>
+                      </property>
+                      <attribute name="buttonGroup">
+                       <string notr="true">btgMapMode</string>
+                      </attribute>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QToolButton" name="btnMapDigitize">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                        <horstretch>1</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="toolTip">
+                       <string>Objekte digitalisieren</string>
+                      </property>
+                      <property name="text">
+                       <string/>
+                      </property>
+                      <property name="icon">
+                       <iconset>
+                        <normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/mapDigitize.png</normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/mapDigitize.png</iconset>
+                      </property>
+                      <property name="checkable">
+                       <bool>true</bool>
+                      </property>
+                      <attribute name="buttonGroup">
+                       <string notr="true">btgMapMode</string>
+                      </attribute>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QToolButton" name="btnMapSelect">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                        <horstretch>1</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="toolTip">
+                       <string>Objekt auswählen</string>
+                      </property>
+                      <property name="text">
+                       <string/>
+                      </property>
+                      <property name="icon">
+                       <iconset>
+                        <normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/mapSelect.png</normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/mapSelect.png</iconset>
+                      </property>
+                      <property name="checkable">
+                       <bool>true</bool>
+                      </property>
+                      <attribute name="buttonGroup">
+                       <string notr="true">btgMapMode</string>
+                      </attribute>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QToolButton" name="btnMapRmObj">
+                      <property name="enabled">
+                       <bool>false</bool>
+                      </property>
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                        <horstretch>1</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="toolTip">
+                       <string>Objekt löschen</string>
+                      </property>
+                      <property name="text">
+                       <string/>
+                      </property>
+                      <property name="icon">
+                       <iconset>
+                        <normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/tabRemove.png</normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/tabRemove.png</iconset>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QWidget" name="wdgOverview" native="true">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>240</width>
+                     <height>240</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblPixel">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>180</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>240</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <pointsize>8</pointsize>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Position:  ------ ------ </string>
+                   </property>
+                   <property name="textFormat">
+                    <enum>Qt::PlainText</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblUTM">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <pointsize>8</pointsize>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>UTM ----------.-- ---------.-- m</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblScale">
+                   <property name="maximumSize">
+                    <size>
+                     <width>245</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <pointsize>8</pointsize>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Skale ----- -----</string>
+                   </property>
+                   <property name="textFormat">
+                    <enum>Qt::RichText</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="lblMode">
+                   <property name="maximumSize">
+                    <size>
+                     <width>240</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <pointsize>8</pointsize>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Mode</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QFrame" name="gbxLyrSelect">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>245</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <layout class="QGridLayout" name="gridLayout">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="spacing">
+                  <number>1</number>
+                 </property>
+                 <item row="3" column="0">
+                  <widget class="QRadioButton" name="rbVS">
+                   <property name="text">
+                    <string>Vo&amp;gel sw.</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                   <property name="dbvalue" stdset="0">
+                    <string>VS</string>
+                   </property>
+                   <attribute name="buttonGroup">
+                    <string notr="true">button_group_types</string>
+                   </attribute>
+                  </widget>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QRadioButton" name="rbVF">
+                   <property name="text">
+                    <string>Vogel fl.</string>
+                   </property>
+                   <property name="dbvalue" stdset="0">
+                    <string>VF</string>
+                   </property>
+                   <attribute name="buttonGroup">
+                    <string notr="true">button_group_types</string>
+                   </attribute>
+                  </widget>
+                 </item>
+                 <item row="1" column="0" colspan="2">
+                  <widget class="QCheckBox" name="chbHideMarker">
+                   <property name="text">
+                    <string>Markierung ausblenden</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="0">
+                  <widget class="QRadioButton" name="rbMM">
+                   <property name="text">
+                    <string>Meeress&amp;äuger</string>
+                   </property>
+                   <property name="dbvalue" stdset="0">
+                    <string>MM</string>
+                   </property>
+                   <attribute name="buttonGroup">
+                    <string notr="true">button_group_types</string>
+                   </attribute>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QRadioButton" name="rbUFO">
+                   <property name="text">
+                    <string>&amp;unbekannt</string>
+                   </property>
+                   <property name="dbvalue" stdset="0">
+                    <string>UO</string>
+                   </property>
+                   <attribute name="buttonGroup">
+                    <string notr="true">button_group_types</string>
+                   </attribute>
+                  </widget>
+                 </item>
+                 <item row="5" column="1">
+                  <widget class="QRadioButton" name="rbTR">
+                   <property name="text">
+                    <string>M&amp;üll</string>
+                   </property>
+                   <property name="dbvalue" stdset="0">
+                    <string>TR</string>
+                   </property>
+                   <attribute name="buttonGroup">
+                    <string notr="true">button_group_types</string>
+                   </attribute>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QRadioButton" name="rbAN">
+                   <property name="text">
+                    <string>an&amp;thropogen</string>
+                   </property>
+                   <property name="dbvalue" stdset="0">
+                    <string>AN</string>
+                   </property>
+                   <attribute name="buttonGroup">
+                    <string notr="true">button_group_types</string>
+                   </attribute>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QTableView" name="tbwObjects">
+                <property name="styleSheet">
+                 <string notr="true"/>
+                </property>
+                <property name="editTriggers">
+                 <set>QAbstractItemView::NoEditTriggers</set>
+                </property>
+                <property name="alternatingRowColors">
+                 <bool>true</bool>
+                </property>
+                <property name="selectionMode">
+                 <enum>QAbstractItemView::SingleSelection</enum>
+                </property>
+                <property name="selectionBehavior">
+                 <enum>QAbstractItemView::SelectRows</enum>
+                </property>
+                <property name="horizontalScrollMode">
+                 <enum>QAbstractItemView::ScrollPerPixel</enum>
+                </property>
+                <attribute name="verticalHeaderVisible">
+                 <bool>false</bool>
+                </attribute>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="tab">
+             <attribute name="title">
+              <string>Optionen</string>
+             </attribute>
+             <layout class="QGridLayout" name="gridLayout_3">
+              <item row="0" column="0">
+               <widget class="QToolButton" name="option_server">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Server wählen</string>
+                </property>
+                <property name="icon">
+                 <iconset theme="server">
+                  <normaloff/>
+                 </iconset>
+                </property>
+                <property name="toolButtonStyle">
+                 <enum>Qt::ToolButtonTextBesideIcon</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <spacer name="verticalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="1" column="0">
+               <widget class="QToolButton" name="option_admin">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Admin Zugang freischalten</string>
+                </property>
+                <property name="icon">
+                 <iconset theme="dialog-password">
+                  <normaloff/>
+                 </iconset>
+                </property>
+                <property name="toolButtonStyle">
+                 <enum>Qt::ToolButtonTextBesideIcon</enum>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QFrame" name="frmMap">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>1</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <family>Courier 10 Pitch</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::Panel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Sunken</enum>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <property name="spacing">
+           <number>1</number>
+          </property>
+          <property name="leftMargin">
+           <number>1</number>
+          </property>
+          <property name="topMargin">
+           <number>1</number>
+          </property>
+          <property name="rightMargin">
+           <number>1</number>
+          </property>
+          <property name="bottomMargin">
+           <number>1</number>
+          </property>
+          <item>
+           <widget class="QWidget" name="wdgMap" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>400</width>
+              <height>400</height>
+             </size>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::LeftToRight</enum>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QFrozenRowTableWidget</class>
+   <extends>QTableWidget</extends>
+   <header>../libs/QFrozenRowTableWidget.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+ <buttongroups>
+  <buttongroup name="button_group_types"/>
+  <buttongroup name="btgMapMode"/>
+ </buttongroups>
+</ui>
