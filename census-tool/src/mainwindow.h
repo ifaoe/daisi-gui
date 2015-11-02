@@ -12,6 +12,7 @@
 #include <qgsmaplayerregistry.h>
 #include "ovrmapcanvas.h"
 #include "cnsmapcanvas.h"
+#include "sqlreadytablemodel.h"
 #include "db.h"
 
 
@@ -51,13 +52,10 @@ private:
 
     QLabel * ready_image_warning;
 
-    QComboBox * combobox_cam_filter;
-    QComboBox * combobox_trac_filter;
-    QLineEdit * lineedit_image_filter;
-
     bool keyMarkerHide = false;
 
-    QSqlQueryModel* object_query_model = 0;
+    QSqlExtendedTableModel* object_table_model = 0;
+    SqlReadyTableModel * image_table_model = 0;
 
     CnsMapCanvas *mapCanvas = 0;
     OvrMapCanvas *ovrCanvas = 0;
@@ -65,10 +63,10 @@ private:
     void guiInitAdditionals();
     bool checkButtonByKey(QString tp);
     void initSessionFrame();
-    void initFilters();
     QString getFilterString();
     QAbstractButton * GetButtonByKey(QButtonGroup * button_group, QString key, QString value);
     void RefreshObjectList();
+    QStringList getColumnDataList(int column);
 signals:
 
 public slots:
@@ -77,16 +75,13 @@ public slots:
     void clearSelection();
     void deleteSelection();
     void handleImageSelection();
-    void objUpdateSelection();
-    void hideMarker(bool checked);
+    void objUpdateSelection(QModelIndex old_index,QModelIndex new_index);
     void handleSessionSelection();
-    void handleCamFilter();
-    void handleTrcFilter();
-    void handleImgFilter();
-    void handleMissingCheckBox();
+    void handleMissingCheckBox(int state);
 private slots:
 	void handleAdminPass();
 	void handleServerSelection();
+    void handleHeaderFilter(int index);
 };
 
 #endif // MAINWINDOW_H

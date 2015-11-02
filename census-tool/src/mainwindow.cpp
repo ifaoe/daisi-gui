@@ -5,6 +5,7 @@
 #include "ui_mainwindow.h"
 #include "db.h"
 #include "ServerSelection.h"
+#include "QSearchDialog.h"
 
 MainWindow::MainWindow(ConfigHandler *aConfig, Db * aDb)
     : QMainWindow(0), config(aConfig), ui(new Ui::MainWindow), db(aDb)
@@ -25,45 +26,47 @@ MainWindow::MainWindow(ConfigHandler *aConfig, Db * aDb)
 
     guiInitAdditionals();
 
-	ui->tbwObjects->setColumnWidth(0, 75);
-	ui->tbwObjects->setColumnWidth(1, 50);
-	ui->tbwObjects->setColumnWidth(2, 50);
-	ui->tbwObjects->setColumnWidth(3, 50);
-	ui->tbwObjects->setColumnWidth(4, 50);
-	ui->tbwObjects->setColumnWidth(5, 50);
-	ui->tbwObjects->setColumnWidth(6, 50);
-	ui->tbwObjects->setColumnWidth(7, 50);
-	ui->tbwObjects->setColumnWidth(8, 50);
-	ui->tbwObjects->hideColumn(5);
-	ui->tbwObjects->hideColumn(6);
-	ui->tbwObjects->hideColumn(7);
-	ui->tbwObjects->hideColumn(8);
-	ui->tbwObjects->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
-	ui->tbwObjects->horizontalHeader()->setStretchLastSection(true);
-	ui->tbwObjects->setBackgroundRole(QPalette::Base);
-	ui->tbwObjects->setAutoFillBackground( true );
-
 //	QPalette dark_palette = ui->tbwObjects->palette();
 //	ui->tbwObjects->viewport()->setBackgroundRole(QPalette::AlternateBase);
 ////	dark_palette.setColor(QPalette::Window, Qt::lightGray);
 //	dark_palette.setColor(QPalette::AlternateBase, Qt::gray);
 //	ui->tbwObjects->setPalette(dark_palette);
 
-	initFilters();
 	initSessionFrame();
 
-	filter_map["std"] = "TRUE";
+    object_table_model = db->getObjectView();
+    ui->tbwObjects->setModel(object_table_model);
+    ui->tbwObjects->hideColumn(object_table_model->fieldIndex("ux"));
+    ui->tbwObjects->hideColumn(object_table_model->fieldIndex("uy"));
+    ui->tbwObjects->hideColumn(object_table_model->fieldIndex("lx"));
+    ui->tbwObjects->hideColumn(object_table_model->fieldIndex("ly"));
+    ui->tbwObjects->hideColumn(object_table_model->fieldIndex("cam"));
+    ui->tbwObjects->hideColumn(object_table_model->fieldIndex("img"));
+    ui->tbwObjects->hideColumn(object_table_model->fieldIndex("session"));
+//    ui->tbwObjects->setBackgroundRole(QPalette::Base);
+//    ui->tbwObjects->setAutoFillBackground( true );
+    ui->tbwObjects->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
 
-    object_query_model = new QSqlQueryModel;
-    ui->tbwObjects->setModel(object_query_model);
+/*
+ * ModelView referenziert Datenbank-View daisi_bird_census_images
+ * session und rdy Spalte werden ausgeblendet
+ */
+    image_table_model = db->getImageView();
+    ui->image_table->setModel(image_table_model);
+    ui->image_table->hideColumn(image_table_model->fieldIndex("session"));
+    ui->image_table->hideColumn(image_table_model->fieldIndex("project_list"));
+    ui->image_table->hideColumn(image_table_model->fieldIndex("examined"));
+    ui->image_table->hideColumn(image_table_model->fieldIndex("analysed"));
+    ui->image_table->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+
+/*
+ * TODO:
+ * werden die beiden tableview selectionModels wirklich gebraucht?
+ */
 
     imgSelector = ui->image_table->selectionModel();
-    ui->image_table->setSelectionMode(QAbstractItemView::SingleSelection);
-	ui->image_table->setSelectionBehavior(QAbstractItemView::SelectRows);
 
     objSelector = ui->tbwObjects->selectionModel();
-    ui->tbwObjects->setSelectionMode(QAbstractItemView::SingleSelection);
-	ui->tbwObjects->setSelectionBehavior(QAbstractItemView::SelectRows);
 
     connect( ui->btnMapSelect, SIGNAL(clicked()), this, SLOT(clearSelection()));
 
@@ -71,15 +74,19 @@ MainWindow::MainWindow(ConfigHandler *aConfig, Db * aDb)
 
     connect( imgSelector, SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(handleImageSelection()));
 
-    connect( objSelector, SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(objUpdateSelection()));
+    connect( objSelector, SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this, SLOT(objUpdateSelection(QModelIndex,QModelIndex)));
 
     connect( ui->cmbSession, SIGNAL(currentIndexChanged(int)), this, SLOT(handleSessionSelection()));
 
-    connect( ui->chbHideMarker, SIGNAL(clicked(bool)), this, SLOT(hideMarker(bool)));
+    connect( ui->chbHideMarker, SIGNAL(clicked(bool)), mapCanvas, SLOT(hideMarker(bool)));
 
-    connect(ui->option_admin, SIGNAL(clicked()), this, SLOT(handleAdminPass()));
+    connect( ui->option_admin, SIGNAL(clicked()), this, SLOT(handleAdminPass()));
 
-    connect(ui->option_server, SIGNAL(clicked()),this, SLOT(handleServerSelection()));
+    connect( ui->option_server, SIGNAL(clicked()),this, SLOT(handleServerSelection()));
+
+    connect( ui->chbNotReady, SIGNAL(stateChanged(int)), this, SLOT(handleMissingCheckBox(int)));
+
+    connect( ui->image_table->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(handleHeaderFilter(int)));
 }
 
 // ------------------------------------------------------------------------
@@ -170,7 +177,8 @@ void MainWindow::guiInitAdditionals() {
     ready_image_warning->setStyleSheet("QLabel { background-color : red; color : black; }");
 
     /*
-     * NOT WORKING
+     * NOT WORKING:
+     * Versuch die "Bereits betrachtet" Warnung ohne StyleSheet zu ändern
     QPalette palette = ready_image_warning->palette();
     palette.setColor(ready_image_warning->backgroundRole(), Qt::darkRed);
     palette.setColor(ready_image_warning->foregroundRole(), Qt::darkRed);
@@ -178,38 +186,54 @@ void MainWindow::guiInitAdditionals() {
     */
 }
 
-// ----------------------------------------------------------------------
+/*
+ * Gibt eine komplette, distinkte Liste der Werte in der Bereits gefilterten Tabelle aus.
+ * Die Funktion operiert auf dem zugrundeliegenden Model.
+ * Wird für die Filterfunktion mittels QSearchDialog benötigt
+ * TODO: maximale Länge der Filterliste und max. Iterationszahl für sehr große Tabellen
+ */
+QStringList MainWindow::getColumnDataList(int column) {
+    QStringList return_list;
+    for (int row=0; row<image_table_model->rowCount(); row++) {
+        QString item = image_table_model->data(row, column).toString();
+        if (!return_list.contains(item))
+            return_list.append(item);
+    }
+    return return_list;
+}
+
+/*
+ * Verbindung der UI zur Datenbankschnittstelle um markierte Objekte zu löschen
+ */
 void MainWindow::deleteSelection() {
 	QModelIndex index = objSelector->selectedRows(0).at(0);
 	int rcns_id = ui->tbwObjects->model()->data(index).toInt();
-	db->deleteRawCensus(rcns_id, selected_cam, selected_file, config->getUser());
-	mapCanvas->UpdateObjectMarkers();
+    // Objekt aus der Datenbank löschen
+    db->deleteRawCensus(rcns_id, selected_cam, selected_file, config->getUser());
+    // Aktuelle Objektliste laden
+    // Das ist die sichere Variante zum seperaten Löschen in DB und UI
+    mapCanvas->UpdateObjectMarkers();
 }
 
-// ----------------------------------------------------------------------
 void MainWindow::clearSelection() {
 	mapCanvas->DeselectObjects();
 	objSelector->reset();
 }
 
-void MainWindow::hideMarker(bool checked) {
-	mapCanvas->HideMarkers(checked);
-}
+void MainWindow::objUpdateSelection(QModelIndex old_index,QModelIndex new_index) {
+    Q_UNUSED(old_index);
+    Q_UNUSED(new_index);
 
-// ----------------------------------------------------------------------
-void MainWindow::objUpdateSelection() {
-	if (objSelector->selectedRows().isEmpty()) return;
-    QModelIndex index = objSelector->selectedRows(0).at(0);
-    ui->tbwObjects->scrollTo(index);
+    int row = objSelector->currentIndex().row();
+    ui->tbwObjects->scrollTo(new_index);
     ui->btnMapRmObj->setEnabled(false);
 
     mapCanvas->DeselectObjects();
 
-    int rcns_id =  object_query_model->data(objSelector->selectedRows(0).at(0)).toInt();
-    QString user = object_query_model->data(objSelector->selectedRows(1).at(0)).toString();
-    QString type = object_query_model->data(objSelector->selectedRows(2).at(0)).toString();
-	double utm_x = object_query_model->data(objSelector->selectedRows(3).at(0)).toDouble();
-	double utm_y = object_query_model->data(objSelector->selectedRows(4).at(0)).toDouble();
+    int rcns_id =  object_table_model->data(row, object_table_model->fieldIndex("rcns_id")).toInt();
+    QString user = object_table_model->data(row, object_table_model->fieldIndex("usr")).toString();
+    double utm_x = object_table_model->data(row, object_table_model->fieldIndex("ux")).toDouble();
+    double utm_y = object_table_model->data(row, object_table_model->fieldIndex("uy")).toDouble();
 
 	mapCanvas->doCenter1by1(utm_x,utm_y);
 	if (mapCanvas->map_mode() == MAP_MODE_SELECT) {
@@ -227,8 +251,15 @@ void MainWindow::handleImageSelection()
 
 	objSelector->clearSelection();
 	int currentRow = imgSelector->selectedRows().at(0).row();
-	selected_file = QString(ui->image_table->item(currentRow, 2)->text());
-	selected_cam  = QString(ui->image_table->item(currentRow, 1)->text());
+    selected_file = image_table_model->data(currentRow, image_table_model->fieldIndex("img")).toString();
+    selected_cam  = image_table_model->data(currentRow, image_table_model->fieldIndex("cam")).toString();
+    bool image_done = image_table_model->data(currentRow, image_table_model->fieldIndex("examined")).toBool();
+    bool analysed = image_table_model->data(currentRow, image_table_model->fieldIndex("analysed")).toBool();
+
+    if (!analysed) {
+        QMessageBox::information(this, "Information", QString("Bild %1 auf Kamera %2 wurde aus der Auswertung genommen.").arg(selected_file).arg(selected_cam),"OK");
+        return;
+    }
 
 	  ui->chbHideMarker->setChecked(false);
 	  if (!mapCanvas->doSaveData(config->current_cam, config->current_image)) {
@@ -267,24 +298,24 @@ void MainWindow::handleImageSelection()
 	  config->current_cam = selected_cam;
 	  config->current_image = selected_file;
 
+      object_table_model->setFilter(QString("session='%1' AND cam='%2' AND img='%3'").arg(config->getProjectId()).arg(config->getCurrentCam()).arg(config->getCurrentImage()));
+      object_table_model->select();
+
 	  ui->tbxTasks->setCurrentIndex(1);
 	  mapCanvas->setFocus();
 	  mapCanvas->doSetupEditModus();
 
-	  db->UpdateObjectQuery(selected_cam, selected_file, object_query_model);
-	  ui->tbwObjects->hideColumn(3);
-	  ui->tbwObjects->hideColumn(4);
-	  ui->tbwObjects->hideColumn(5);
-	  ui->tbwObjects->hideColumn(6);
-	  mapCanvas->UpdateObjectMarkers();
+      mapCanvas->UpdateObjectMarkers();
 	  mapCanvas->setEnabled(true);
 	  ovrCanvas->setEnabled(true);
 
-	  if (db->isImageDone(config->getProjectId(), selected_cam, selected_file))
+      if (image_done)
 		  ready_image_warning->show();
 	  else
 		  ready_image_warning->hide();
  }
+
+
 // ----------------------------------------------------------------------
 
 bool MainWindow::checkButtonByKey(QString tp) {
@@ -302,8 +333,6 @@ bool MainWindow::checkButtonByKey(QString tp) {
 }
 
 void MainWindow::initSessionFrame() {
-	combobox_cam_filter->setEnabled(false);
-	combobox_trac_filter->setEnabled(false);
 	ui->cmbSession->clear();
 	ui->cmbSession->addItem("");
 	ui->cmbSession->addItems(db->getSessionList());
@@ -313,95 +342,38 @@ void MainWindow::handleSessionSelection() {
 	config->setProjectId(ui->cmbSession->currentText());
 	if (config->getProjectId().isEmpty())
 		return;
-    project * prj = db->getSessionParameters(config->getProjectId());
-    config->setFlightId(prj->flight_id);
-    config->setUtmSector(prj->utmSector);
-    config->setProjectPath(prj->path);
-    delete prj;
-    combobox_cam_filter->clear();
-    combobox_trac_filter->clear();
-    combobox_cam_filter->setEnabled(true);
-    combobox_trac_filter->setEnabled(true);
-	combobox_cam_filter->addItem("");
-	combobox_cam_filter->addItems(db->getCamList(config->getFlightId()));
-//	combobox_cam_filter->setMinimumWidth(combobox_cam_filter->minimumSize().width());
-	combobox_cam_filter->setCurrentIndex(0);
-	combobox_trac_filter->addItem("");
-	combobox_trac_filter->addItems(db->getTrcList(config->getFlightId()));
-	combobox_trac_filter->setCurrentIndex(0);
+    QStringList project_parameters = db->getSessionParameters(config->getProjectId());
+    config->setFlightId(project_parameters[0]);
+    config->setUtmSector(project_parameters[1].toInt());
+    config->setProjectPath(project_parameters[2]);
 
-	db->getImages(ui->image_table, getFilterString(), ui->chbNotReady->isChecked());
-}
-
-void MainWindow::initFilters() {
-	ui->image_table->setColumnCount(3);
-	ui->image_table->setColumnWidth(0,60);
-	ui->image_table->setColumnWidth(1,60);
-	ui->image_table->setHorizontalHeaderLabels(QStringList() << "TRC" << "CAM" << "IMG");
-	ui->image_table->horizontalHeader()->setStretchLastSection(true);
-
-	combobox_cam_filter = new QComboBox();
-	combobox_trac_filter = new QComboBox();
-	lineedit_image_filter = new QLineEdit();
-
-	ui->image_table->setCellWidget(0,0,combobox_trac_filter);
-	ui->image_table->setCellWidget(0,1,combobox_cam_filter);
-	ui->image_table->setCellWidget(0,2,lineedit_image_filter);
-
-    connect( combobox_cam_filter, SIGNAL(currentIndexChanged(int)), this, SLOT(handleCamFilter()));
-    connect( combobox_trac_filter, SIGNAL(currentIndexChanged(int)), this, SLOT(handleTrcFilter()));
-    connect( lineedit_image_filter, SIGNAL(returnPressed()), this, SLOT(handleImgFilter()));
-    connect( ui->chbNotReady, SIGNAL(stateChanged(int)), this, SLOT(handleMissingCheckBox()));
-}
-
-/*
- * TODO: Handle filters in one procedure. Also use maps.
- */
-
-void MainWindow::handleCamFilter() {
-	// if last value (all cameras) is selected show all columns
-	// else only show selected column
-	QString cam = combobox_cam_filter->currentText();
-	if(!cam.isEmpty()) {
-		filter_map["cam"] = "cam='" + cam + "'";
-	} else {
-		filter_map.remove("cam");
-	}
-
-	db->getImages(ui->image_table, getFilterString(), ui->chbNotReady->isChecked());
-}
-
-void MainWindow::handleTrcFilter() {
-	QString trc = combobox_trac_filter->currentText();
-	if (!trc.isEmpty()) {
-		filter_map["trc"] = "trc=" + trc;
-	} else {
-		filter_map.remove("trc");
-	}
-	db->getImages(ui->image_table, getFilterString(), ui->chbNotReady->isChecked());
-}
-
-void MainWindow::handleImgFilter() {
-	QString img = lineedit_image_filter->text();
-	if (!img.isEmpty()) {
-		if (img.startsWith("hd",Qt::CaseInsensitive))
-			filter_map["img"] = "img LIKE 'HD" + img.remove(0,2) + "'";
-		else
-			filter_map["img"] = "img LIKE 'HD" + img + "'";
-	} else {
-		filter_map.remove("img");
-	}
-
-	db->getImages(ui->image_table, getFilterString(), ui->chbNotReady->isChecked());
+    /*
+     * Filtern nach session und anschließend nach project_list.
+     * Operation auf unindizierter project_list ist sonst zu langsam.
+     * TODO: image_properties neu indizieren
+     */
+    filter_map.clear();
+    filter_map["session"] = QString("session='%1' AND project_list@>ARRAY['%2']").arg(config->getFlightId()).arg(ui->cmbSession->currentText());
+    ui->chbNotReady->setChecked(false);
+    image_table_model->setFilter(getFilterString());
+    image_table_model->select();
+    qDebug() << image_table_model->query().executedQuery();
+    qDebug() << image_table_model->filter();
 }
 
 QString MainWindow::getFilterString() {
-	QStringList filter_list =  filter_map.values();
+    QStringList filter_list = filter_map.values();
 	return filter_list.join(" AND ");
 }
 
-void MainWindow::handleMissingCheckBox() {
-	db->getImages(ui->image_table, getFilterString(), ui->chbNotReady->isChecked());
+void MainWindow::handleMissingCheckBox(int state) {
+    if (state == Qt::Checked)
+        filter_map["missing"] = "examined IS FALSE";
+    else
+        filter_map.remove("missing");
+    image_table_model->setFilter(getFilterString());
+    qDebug() << image_table_model->query().executedQuery();
+    qDebug() << image_table_model->filter();
 }
 
 QAbstractButton * MainWindow::GetButtonByKey(QButtonGroup * button_group, QString key, QString value) {
@@ -415,7 +387,7 @@ QAbstractButton * MainWindow::GetButtonByKey(QButtonGroup * button_group, QStrin
 }
 
 void MainWindow::RefreshObjectList() {
-	object_query_model->query().exec();
+    object_table_model->query().exec();
 }
 
 void MainWindow::handleAdminPass() {
@@ -452,7 +424,26 @@ void MainWindow::handleServerSelection() {
 	db->OpenDatabase();
 	mapCanvas->setEnabled(false);
 	ovrCanvas->setEnabled(false);
-	ui->image_table->clearContents();
-	object_query_model->clear();
+    ui->image_table->clearSelection();
+    ui->tbwObjects->clearSelection();
+    image_table_model->clear();
+    object_table_model->clear();
 	initSessionFrame();
+}
+
+
+void MainWindow::handleHeaderFilter(int index) {
+    QSearchDialog dialog;
+    dialog.updateItemList(getColumnDataList(index));
+    if (dialog.exec()) {
+        if (dialog.isSorted())
+            ui->image_table->sortByColumn(index, dialog.getSortingOrder());
+        if (dialog.getFilterString().isEmpty())
+            filter_map.remove(image_table_model->headerData(index, Qt::Horizontal).toString());
+        else
+            filter_map[image_table_model->headerData(index, Qt::Horizontal).toString()] =
+                    QString("cast(%1 as text) like '%%2%'").arg(image_table_model->record().fieldName(index)).arg(dialog.getFilterString());
+        image_table_model->setFilter(getFilterString());
+    }
+
 }

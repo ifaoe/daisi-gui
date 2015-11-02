@@ -36,7 +36,7 @@
 #include <qgslabel.h>
 #include <qgslabelattributes.h>
 #include <qgsfield.h>
-#include "QgsMapMarker.h"
+#include "mapmarker.h"
 
 class MeasurementDialog;
 
@@ -74,8 +74,8 @@ private:
     //    std::vector<QgsPoint> msmList;
     QgsPolyline msmList;
     double msmValue=-1;
-    std::vector<QgsMapMarker*> msmMarkers;
-    std::vector<QgsMapMarker*> objMarkers;
+    std::vector<MapCanvasMarker*> msmMarkers;
+    std::vector<MapCanvasMarker*> objMarkers;
 
     QSqlQueryModel * objModel = 0;
 

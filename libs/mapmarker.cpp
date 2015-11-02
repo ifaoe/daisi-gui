@@ -5,21 +5,21 @@
  *      Author: awg
  */
 
-#include "QgsMapMarker.h"
+#include "mapmarker.h"
 
-QgsMapMarker::QgsMapMarker(QgsMapCanvas * canvas) : QgsVertexMarker(canvas) {
+MapCanvasMarker::MapCanvasMarker(QgsMapCanvas * canvas) : QgsVertexMarker(canvas) {
     // TODO Auto-generated constructor stub
 }
 
-QgsMapMarker::~QgsMapMarker() {
+MapCanvasMarker::~MapCanvasMarker() {
     // TODO Auto-generated destructor stub
 }
 
-void QgsMapMarker::setFill(bool filled) {
+void MapCanvasMarker::setFill(bool filled) {
     mFilled = filled;
 }
 
-void QgsMapMarker::paint(QPainter * p) {
+void MapCanvasMarker::paint(QPainter * p) {
     qreal s = mIconSize;
     p->setRenderHint(QPainter::Antialiasing);
     QPen pen( mColor );
@@ -204,19 +204,19 @@ void QgsMapMarker::paint(QPainter * p) {
     }
 }
 
-void QgsMapMarker::setText(QString label) {
+void MapCanvasMarker::setText(QString label) {
     text = label;
 }
 
-void QgsMapMarker::setTextWidth(int width) {
+void MapCanvasMarker::setTextWidth(int width) {
     mTextWidth = width;
 }
 
-void QgsMapMarker::setTextColor(QColor color) {
+void MapCanvasMarker::setTextColor(QColor color) {
     mTextColor = color;
 }
 
-void QgsMapMarker::setTextOffset(double x, double y) {
+void MapCanvasMarker::setTextOffset(double x, double y) {
     mTextOffsetX = x;
     mTextOffsetY = y;
 }

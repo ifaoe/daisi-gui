@@ -8,15 +8,21 @@ SOURCES +=  QCategoryCheckButton.cpp \
             QSearchDialog.cpp \
             QCollapsibleToolbox.cpp \
             QFrozenRowTableWidget.cpp \
-            QgsMapMarker.cpp \
-    qsqlsortmodel.cpp
+            qsqlsortmodel.cpp \
+            daisimapcanvas.cpp \
+    qsqlextendedtablemodel.cpp \
+    mapmarker.cpp \
+    mapgeometry.cpp
 
 HEADERS +=  QCategoryCheckButton.h \
             QSearchDialog.h \
             QCollapsibleToolbox.h \
             QFrozenRowTableWidget.h \
-            QgsMapMarker.h \
-    qsqlsortmodel.h
+            qsqlsortmodel.h \
+            daisimapcanvas.h \
+    qsqlextendedtablemodel.h \
+    mapmarker.h \
+    mapgeometry.h
 
 INCLUDEPATH += /usr/include/qgis
 DEPENDPATH += /usr/include/qgis

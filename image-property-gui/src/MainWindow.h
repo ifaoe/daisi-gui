@@ -32,22 +32,21 @@ private:
 	DatabaseHandler * db = 0;
 	Ui::MainWindow * ui = 0;
 	QMap<QString, QString> filter_map;
-    QSqlSortModel * property_table;
+    QSqlSortModel * property_table = 0;
 	QMap<QString,int> index_list;
 	void LoadSession();
-	void InitFilters();
-	void ApplyFilters();
+    void ApplyFilters();
 	void SetTableQuery(QString where);
 	void SetTableData(QString column_name, QVariant data);
 	void UpdateProgress();
+    QVariant getModelItem(int row, int column);
+    QStringList getColumnDataList(int column);
 private slots:
-	void HandleServerSelection();
-	void HandleSessionSelection();
-	void HandleImageFilter();
-	void HandleTracFilter(int index);
-	void HandleCameraFilter(int index);
+    void HandleServerSelection(const QString & server);
+    void HandleSessionSelection(const QString & session);
 	void HandleSaveData(QAbstractButton * button);
 	void UpdateDatabaseProgress();
+    void handleHeaderFilter(int index);
 };
 
 #endif /* MAINWINDOW_H_ */

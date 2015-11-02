@@ -90,12 +90,12 @@ CnsMapCanvas::CnsMapCanvas(QWidget *parent,
 
     qgsLayerRegistry = QgsMapLayerRegistry::instance();
 
-    type_marker_icon_map_["VS"] = QgsMapMarker::ICON_CROSS_BOX;
-	type_marker_icon_map_["VF"] = QgsMapMarker::ICON_X_BOX;
-	type_marker_icon_map_["UO"] = QgsMapMarker::ICON_X_CIRCLE;
-	type_marker_icon_map_["TR"] = QgsMapMarker::ICON_CROSS_CIRCLE;
-	type_marker_icon_map_["AN"] = QgsMapMarker::ICON_CROSS_DIAMOND;
-	type_marker_icon_map_["MM"] = QgsMapMarker::ICON_X_DIAMOND;
+    type_marker_icon_map_["VS"] = MapCanvasMarker::ICON_CROSS_BOX;
+    type_marker_icon_map_["VF"] = MapCanvasMarker::ICON_X_BOX;
+    type_marker_icon_map_["UO"] = MapCanvasMarker::ICON_X_CIRCLE;
+    type_marker_icon_map_["TR"] = MapCanvasMarker::ICON_CROSS_CIRCLE;
+    type_marker_icon_map_["AN"] = MapCanvasMarker::ICON_CROSS_DIAMOND;
+    type_marker_icon_map_["MM"] = MapCanvasMarker::ICON_X_DIAMOND;
 
     type_marker_color_map_["VS"] = Qt::green;
 	type_marker_color_map_["VF"] = Qt::green;
@@ -190,8 +190,8 @@ void CnsMapCanvas::doCenter1by1(QgsPoint point) {
 void CnsMapCanvas::doCenter1by1(double x, double y) {
      int px, py;
      doCalcPixPos(QgsPoint(x,y),px,py);
-     int w2 = this->width()*scaleFactor/2;
-     int h2 = this->height()*scaleFactor/2;
+     int w2 = this->width()/2;
+     int h2 = this->height()/2;
      doCalcWorldPos(px-w2,py+h2,dblCurMinUtmX,dblCurMinUtmY);
      doCalcWorldPos(px+w2,py-h2,dblCurMaxUtmX,dblCurMaxUtmY);
      QgsRectangle rect(dblCurMinUtmX,
@@ -561,10 +561,6 @@ bool CnsMapCanvas::openPolyLayer(QString strCam, QString strFile) {
     return true;
 }
 
-double CnsMapCanvas::getScaleFactor() {
-	return scaleFactor;
-}
-
 bool CnsMapCanvas::refreshLayerSet() {
 
 	QList<QgsMapCanvasLayer> layerSet;
@@ -593,39 +589,40 @@ bool CnsMapCanvas::DeselectObjects() {
 }
 
 void CnsMapCanvas::UpdateObjectMarkers() {
-	DeselectObjects();
-	QSqlQueryModel * query_model = static_cast<QSqlQueryModel *>(ui->tbwObjects->model());
+    DeselectObjects();
+    QSqlTableModel * query_model = static_cast<QSqlTableModel *>(ui->tbwObjects->model());
+    query_model->select();
 //	query_model->clear();
-	db->UpdateObjectQuery(curCam,curImg,query_model);
+//    db->UpdateObjectQuery(curCam,curImg,query_model);
 //	query_model->query().exec();
-	QgsMapMarker * temp_marker;
-	for (int i=0; i<object_markers_.size(); i++) {
-		delete object_markers_.values().at(i);
-		delete object_locations_.values().at(i);
-	}
-	object_locations_.clear();
-	object_markers_.clear();
+    MapCanvasMarker * temp_marker;
+    for (int i=0; i<object_markers_.size(); i++) {
+        delete object_markers_.values().at(i);
+        delete object_locations_.values().at(i);
+    }
+    object_locations_.clear();
+    object_markers_.clear();
 
-	for (int i=0; i<query_model->rowCount(); i++) {
-		int rcns_id = query_model->record(i).value("rcns_id").toInt();
-		QString tp = query_model->record(i).value("tp").toString();
-		double ux = query_model->record(i).value("ux").toDouble();
-		double uy =query_model->record(i).value("uy").toDouble();
+    for (int i=0; i<query_model->rowCount(); i++) {
+        int rcns_id = query_model->data(query_model->index(i, query_model->fieldIndex("rcns_id"))).toInt();
+        QString tp = query_model->data(query_model->index(i, query_model->fieldIndex("tp"))).toString();
+        double ux = query_model->data(query_model->index(i, query_model->fieldIndex("ux"))).toDouble();
+        double uy =query_model->data(query_model->index(i, query_model->fieldIndex("uy"))).toDouble();
 
-		temp_marker =  new QgsMapMarker(this);
-		temp_marker->setCenter(QgsPoint(ux,uy));
-		temp_marker->setIconType(type_marker_icon_map_[tp]);
-		temp_marker->setIconColor(type_marker_color_map_[tp]);
-		temp_marker->setIconSize(8);
-		temp_marker->setDrawWidth(1);
+        temp_marker =  new MapCanvasMarker(this);
+        temp_marker->setCenter(QgsPoint(ux,uy));
+        temp_marker->setIconType(type_marker_icon_map_[tp]);
+        temp_marker->setIconColor(type_marker_color_map_[tp]);
+        temp_marker->setIconSize(8);
+        temp_marker->setDrawWidth(1);
 //		temp_marker->setText(QString::number(rcns_id));
-		object_markers_[rcns_id] = temp_marker;
-		object_locations_[rcns_id] = new QgsPoint(ux,uy);
-	}
-	qgis_edit_layer_->reload();
-	this->refresh();
-	ui->tbwObjects->resizeColumnsToContents();
-	ui->tbwObjects->horizontalHeader()->setStretchLastSection(true);
+        object_markers_[rcns_id] = temp_marker;
+        object_locations_[rcns_id] = new QgsPoint(ux,uy);
+    }
+//    qgis_edit_layer_->reload();
+//    this->refresh();
+    ui->tbwObjects->resizeColumnsToContents();
+    ui->tbwObjects->horizontalHeader()->setStretchLastSection(true);
 }
 
 void CnsMapCanvas::UpdateObjectSelection() {
@@ -682,7 +679,7 @@ bool CnsMapCanvas::SelectObjectById(int rcns_id) {
 	return false;
 }
 
-void CnsMapCanvas::HideMarkers(bool hide) {
+void CnsMapCanvas::hideMarker(bool hide) {
 	for (int i=0; i<object_markers_.size();i++) {
 		if (hide)
 			object_markers_.values().at(i)->hide();

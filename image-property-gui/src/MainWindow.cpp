@@ -8,18 +8,21 @@
 #include "MainWindow.h"
 #include <QInputDialog>
 #include <QSqlError>
+#include "QSearchDialog.h"
 
 MainWindow::MainWindow(ConfigHandler * cfg, DatabaseHandler * db)
 	: cfg(cfg), db(db), ui(new Ui::MainWindow) {
 	// TODO Auto-generated constructor stub
 	ui->setupUi(this);
 
-    property_table = db->getPropertyTable();
+    ui->combo_server->addItem("");
+    ui->combo_server->addItems(cfg->database_list());
 
-	connect(ui->actionMit_Server_verbinden, SIGNAL(triggered()),this, SLOT(HandleServerSelection()));
-	connect(ui->actionProject_laden, SIGNAL(triggered()),this, SLOT(HandleSessionSelection()));
+    connect(ui->combo_server, SIGNAL(currentIndexChanged(QString)),this, SLOT(HandleServerSelection(QString)));
+    connect(ui->combo_session, SIGNAL(currentIndexChanged(QString)),this, SLOT(HandleSessionSelection(QString)));
 
 	connect(ui->buttonGroup_save_type,SIGNAL(buttonClicked(QAbstractButton*)),this, SLOT(HandleSaveData(QAbstractButton*)));
+    connect(ui->tableView_image_properties->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(handleHeaderFilter(int)));
 
 }
 
@@ -28,30 +31,12 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::LoadSession() {
-	InitFilters();
-	ApplyFilters();
 	UpdateProgress();
-}
-
-void MainWindow::InitFilters() {
-	disconnect(ui->comboBox_cam, SIGNAL(currentIndexChanged(int)),this, SLOT(HandleCameraFilter(int)));
-	disconnect(ui->comboBox_trc, SIGNAL(currentIndexChanged(int)),this, SLOT(HandleTracFilter(int)));
-	disconnect(ui->lineEdit_image_filter, SIGNAL(editingFinished()),this, SLOT(HandleImageFilter()));
-
-	ui->comboBox_cam->clear();
-	ui->comboBox_cam->addItems(db->GetProjectCams());
-	ui->comboBox_trc->clear();
-	ui->comboBox_trc->addItems(db->GetProjectTracs());
-
-	connect(ui->comboBox_cam, SIGNAL(currentIndexChanged(int)),this, SLOT(HandleCameraFilter(int)));
-	connect(ui->comboBox_trc, SIGNAL(currentIndexChanged(int)),this, SLOT(HandleTracFilter(int)));
-	connect(ui->lineEdit_image_filter, SIGNAL(editingFinished()),this, SLOT(HandleImageFilter()));
 }
 
 void MainWindow::ApplyFilters() {
 	ui->tableView_image_properties->clearSelection();
-	QStringList filters = filter_map.values();
-	SetTableQuery(filters.join(" AND "));
+    SetTableQuery(static_cast<QStringList>(filter_map.values()).join(" AND "));
 	ui->tableView_image_properties->resizeColumnsToContents();
 	ui->tableView_image_properties->horizontalHeader()->setStretchLastSection(true);
 }
@@ -68,17 +53,32 @@ void MainWindow::UpdateProgress() {
 	ui->groupBox_ice->setTitle("Ice: " + db->GetPropertyProgress("ice"));
 }
 
-void MainWindow::HandleServerSelection() {
-	bool check;
-	QString server_location = QInputDialog::getItem(this,tr("Mit Server verbinden"),tr("Server:"),
-			cfg->database_list(),0,false,&check);
-	if (check) {
-		cfg->parse_database_info(server_location);
-		ui->actionProject_laden->setEnabled(true);
-	} else {
-		ui->actionProject_laden->setEnabled(false);
-		return;
-	}
+QVariant MainWindow::getModelItem(int row, int column) {
+    QModelIndex index = property_table->index(row, column);
+    return property_table->data(index);
+}
+
+QStringList MainWindow::getColumnDataList(int column) {
+    QStringList return_list;
+    for (int row=0; row<property_table->rowCount(); row++) {
+        QString item = getModelItem(row, column).toString();
+        if (!return_list.contains(item))
+            return_list.append(item);
+    }
+    return return_list;
+}
+
+/*
+ * SLOTS:
+ */
+
+
+void MainWindow::HandleServerSelection(const QString & server) {
+    ui->combo_session->clear();
+    ui->combo_session->addItem("");
+    if (server.isEmpty())
+        return;
+    cfg->parse_database_info(ui->combo_server->currentText());
 	db->OpenDatabase();
 
 	db->GetStuk4Codes("CLARITY",ui->comboBox_clarity);
@@ -86,10 +86,12 @@ void MainWindow::HandleServerSelection() {
 	db->GetStuk4Codes("SEASTATE",ui->comboBox_seastate);
 	db->GetStuk4Codes("ICE",ui->comboBox_ice);
 	db->GetStuk4Codes("TURBIDITY",ui->comboBox_turbidity);
+    ui->combo_session->addItems(db->GetProjectList());
 
-	property_table->setTable("image_properties");
-	property_table->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    property_table->select();
+    if (property_table != 0)
+        delete property_table;
+    property_table = db->getPropertyTable();
+    ui->tableView_image_properties->setModel(property_table);
     qDebug() << "Error: " << property_table->lastError().text();
 
 	index_list.clear();
@@ -111,7 +113,7 @@ void MainWindow::HandleServerSelection() {
  	ui->tableView_image_properties->horizontalHeader()->moveSection(index_list["trc"],0);
  	ui->tableView_image_properties->verticalHeader()->setResizeMode(QHeaderView::Fixed);
 
-	property_table->setFilter("FALSE");
+//	property_table->setFilter("FALSE");
     property_table->setOrderClause("ORDER BY trc, cam, img");
 }
 
@@ -162,48 +164,13 @@ void MainWindow::SetTableData(QString column_name, QVariant data) {
 	delete progress_dialog_;
 }
 
-void MainWindow::HandleSessionSelection() {
-	bool check;
-	QString project = QInputDialog::getItem(this,tr("Flug auswählen"),tr("Flug:"),
-			db->GetProjectList(),0,false,&check);
-	if (check) {
-		cfg->set_project(project);
-		filter_map["session"] = QString("session='%1'").arg(project);
-	} else {
-		filter_map.remove("session");
-		return;
-	}
-	LoadSession();
-}
-
-void MainWindow::HandleImageFilter() {
-	QString text = ui->lineEdit_image_filter->text();
-	if (text.isEmpty())
-		text = "%";
-	QString filter_text;
-	if(text.contains("HD",Qt::CaseInsensitive)) {
-		filter_text = text;
-	} else {
-		filter_text = "HD" + text;
-	}
-	filter_map["img"] = QString("img like '%1'").arg(filter_text);
-	ApplyFilters();
-}
-
-void MainWindow::HandleTracFilter(int index) {
-	if (index == 0)
-		filter_map.remove("trc");
-	else
-		filter_map["trc"] = QString("trc='%1'").arg(ui->comboBox_trc->currentText());
-	ApplyFilters();
-}
-
-void MainWindow::HandleCameraFilter(int index) {
-	if (index == 0)
-		filter_map.remove("cam");
-	else
-		filter_map["cam"] = QString("cam='%1'").arg(ui->comboBox_cam->currentText());
-	ApplyFilters();
+void MainWindow::HandleSessionSelection(const QString & session) {
+    if (session.isEmpty())
+        return;
+    filter_map["session"] = QString("session='%1'").arg(session);
+    cfg->set_project(session);
+    UpdateProgress();
+    ApplyFilters();
 }
 
 void MainWindow::HandleSaveData(QAbstractButton * button) {
@@ -226,4 +193,10 @@ void MainWindow::HandleSaveData(QAbstractButton * button) {
 void MainWindow::UpdateDatabaseProgress() {
 	progress_dialog_->setValue(progress_dialog_->maximum() - database_progess_);
 	database_progess_--;
+}
+
+
+void MainWindow::handleHeaderFilter(int index) {
+    QSearchDialog dialog;
+    dialog.updateItemList(getColumnDataList(index));
 }

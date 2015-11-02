@@ -60,6 +60,11 @@ void QSearchDialog::updateItemList(QStringList list) {
 	result_widget->addItems(list);
 }
 
+void QSearchDialog::setSortingEnabled(bool sorting) {
+    sort_ascend_button->setVisible(sorting);
+    sort_descend_button->setVisible(sorting);
+}
+
 // private slots
 
 void QSearchDialog::onAccept() {

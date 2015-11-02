@@ -15,6 +15,7 @@
 #include <QLabel>
 #include <QLayout>
 #include <QDialogButtonBox>
+#include <QAbstractItemView>
 
 class QSearchDialog: public QDialog {
 	Q_OBJECT;
@@ -24,7 +25,8 @@ public:
 	void updateItemList(QStringList list);
 	QString getFilterString() {return filter_text->text(); }
 	Qt::SortOrder getSortingOrder() { return sort_order; }
-	bool sortingEnabled() { return sorted; }
+    bool isSorted() { return sorted; }
+    void setSortingEnabled(bool sorting);
 private:
 	QDialogButtonBox * button_box;
 	QToolButton * sort_ascend_button;
@@ -35,6 +37,7 @@ private:
 	bool sorted = false;
 	Qt::SortOrder sort_order = Qt::AscendingOrder;
 
+    QAbstractItemView * view = 0;
 	QLabel * filter_label;
 	QVBoxLayout * vertical_layout;
 	QWidget * filter_widget;

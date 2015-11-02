@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     QgsMapMarker.cpp \
     ConfigHandler.cpp \
     ServerSettings.cpp \
-    ServerSelection.cpp
+    ServerSelection.cpp \
+    sqlreadytablemodel.cpp
 
 HEADERS  += mainwindow.h \
     cnsmapcanvas.h \
@@ -30,7 +31,8 @@ HEADERS  += mainwindow.h \
     QgsMapMarker.h \
     ConfigHandler.h \
     ServerSettings.h \
-    ServerSelection.h
+    ServerSelection.h \
+    sqlreadytablemodel.h
 
 FORMS    += mainwindow.ui \
             server_settings.ui\

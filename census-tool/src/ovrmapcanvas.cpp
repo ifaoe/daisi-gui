@@ -57,7 +57,7 @@ void OvrMapCanvas::doSelectNextTile() {
             	return;
             }
             int curRow = ui->image_table->selectionModel()->selectedRows().at(0).row();
-            if (curRow < ui->image_table->rowCount()) {
+            if (curRow < ui->image_table->model()->rowCount()) {
             	QModelIndex newRow =ui->image_table->selectionModel()->model()->index(curRow+1,0);
                 ui->image_table->selectionModel()->select(
                 		newRow, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
@@ -231,8 +231,8 @@ bool OvrMapCanvas::openImageTiles(QString strCam, QString strFile) {
                               x1, y1);
 
     QgsRectangle r0(x0, y0, x1, y1);
-    double utmTileWidth  = r0.width()*imgCanvas->getScaleFactor();
-    double utmTileHeight = r0.height()*imgCanvas->getScaleFactor();
+    double utmTileWidth  = r0.width();
+    double utmTileHeight = r0.height();
     double ttlWidth = qgs_image_envelope_->extent().width();
     double ttlHeight = qgs_image_envelope_->extent().height();
     int numX = floor(ttlWidth/utmTileWidth);

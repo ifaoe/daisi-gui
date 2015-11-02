@@ -219,7 +219,7 @@ bool Db::writeRawCensus(const QString type,
 // -------------------------------------------------------
 bool Db::deleteRawCensus(int id, const QString & cam, const QString & img, const QString & user) {
     QString query = config->replaceProjectSettings(ACFG_SQL_QRY_DEL_RCENSUS
-    		.arg(id).arg(cam).arg(img).arg(user));
+            .arg(id).arg(cam).arg(img));
     qDebug() << query;
     QSqlQuery req;
     if ( ! req.exec(query) ) {
@@ -229,35 +229,6 @@ bool Db::deleteRawCensus(int id, const QString & cam, const QString & img, const
     }
     return true;
 
-}
-
-void Db::readImageDone(const QString& cam, QStringList & ready_list) {
-    QString query = config->replaceProjectSettings(ACFG_SQL_QRY_READ_DONE.arg(cam));
-    qDebug() << query;
-    QSqlQuery req;
-    if ( ! req.exec(query) ) {
-    	qDebug() << req.lastError().text();
-        return;
-    }
-    while (req.next()) {
-    	ready_list.append(req.value(0).toString());
-    }
-}
-
-bool Db::isImageDone(const QString & session, const QString & cam, const QString & img) {
-	QString query = "SELECT max(rdy) FROM raw_images WHERE session='%1' AND cam='%2' AND img='%3'";
-	QSqlQuery req;
-	if (!req.exec(query.arg(session).arg(cam).arg(img))) {
-		qDebug() << req.lastError().text();
-		return false;
-	}
-	if (req.next())  {
-		if (req.value(0).toInt() == 1)
-			return true;
-		else
-			return false;
-	}
-	return false;
 }
 
 // -------------------------------------------------------
@@ -287,64 +258,6 @@ void Db::UpdateObjectQuery(const QString cam, const QString img, QSqlQueryModel 
     return;
 }
 
-// -------------------------------------------------------
-bool Db::getImages(QTableWidget *result, QString filter, bool missing){
-	QString query;
-	result->clearSelection();
-	result->clearContents();
-//	result->clear();
-	result->setRowCount(1);
-	if (missing)
-		query = config->replaceProjectSettings(ACFG_SQL_QRY_READ_IMAGES_NOT_READY.arg(filter));
-	else
-		query = config->replaceProjectSettings(ACFG_SQL_QRY_READ_IMAGES.arg(filter));
-
-    qDebug() << query;
-    QSqlQuery req;
-    if ( ! req.exec(query) ) {
-    	qDebug() << req.lastError().text();
-        return false;
-    }
-    QStringList rdy_cam1, rdy_cam2;
-    readImageDone(QString("1"), rdy_cam1);
-    readImageDone(QString("2"),rdy_cam2 );
-    result->setRowCount(req.size()+1);
-//    result->setColumnCount(3);
-//    result->horizontalHeader()->setStretchLastSection(true);
-//    result->setColumnWidth(0, 50);
-//    result->setColumnWidth(1, 50);
-//    result->setColumnWidth(2, 50);
-    int row = 1;
-    while (req.next()) {
-        QTableWidgetItem *wtrc = new QTableWidgetItem(QString(req.value(0).toString()));
-        QTableWidgetItem *wcam = new QTableWidgetItem(QString(req.value(1).toString()));
-        QTableWidgetItem *wimg = new QTableWidgetItem(QString(req.value(2).toString()));
-
-        wtrc->setTextAlignment(Qt::AlignHCenter);
-        wcam->setTextAlignment(Qt::AlignHCenter);
-        wimg->setTextAlignment(Qt::AlignHCenter);
-        result->setItem(row, 0, wtrc);
-        result->setItem(row, 1, wcam);
-        result->setItem(row, 2, wimg);
-        if ( req.value(1).toInt() == 1) {
-        	if( rdy_cam1.contains( req.value(2).toString() )) {
-        		result->item(row, 0)->setBackgroundColor(Qt::darkGreen);
-        		result->item(row, 1)->setBackgroundColor(Qt::darkGreen);
-        		result->item(row, 2)->setBackgroundColor(Qt::darkGreen);
-        	}
-        } else if (req.value(1).toInt() == 2) {
-			if (rdy_cam2.contains(req.value(2).toString() )) {
-        		result->item(row, 0)->setBackgroundColor(Qt::darkGreen);
-        		result->item(row, 1)->setBackgroundColor(Qt::darkGreen);
-        		result->item(row, 2)->setBackgroundColor(Qt::darkGreen);
-			}
-		}
-        row++;
-    }
-
-    return true;
-}
-
 QStringList Db::getSessionList() {
     QStringList sessionlist;
     QString query;
@@ -364,48 +277,44 @@ QStringList Db::getSessionList() {
     return sessionlist;
 }
 
-project * Db::getSessionParameters(const QString & session) {
-    project * prj = new project;
+QStringList Db::getSessionParameters(const QString & session) {
+    QStringList return_list;
     QString query =
-    		"SELECT project_id, flight_id, utm_sector, path, image_filter FROM "
-    		"projects where project_id='" + session + "' ORDER BY project_id";
+            "SELECT flight_id, utm_sector, path FROM "
+            "projects where project_id='" + session + "'";
     qDebug() << query;
     QSqlQuery req;
     if ( ! req.exec(query) ) {
     	qDebug() << req.lastError().text();
-        return prj;
+        return return_list;
     }
-    if(req.next()) {
-    		prj->project_id = QString(req.value(0).toString());
-    		prj->flight_id = QString(req.value(1).toString());
-    		prj->utmSector = req.value(2).toInt();
-    		prj->path = QString(req.value(3).toString());
-    }
-    return prj;
+    if(req.next())
+        for (int i=0; i<3; i++)
+            return_list.append(QString(req.value(i).toString()));
+    return return_list;
 }
 
-QStringList Db::getCamList(const QString & session) {
-	Q_UNUSED(session);
-//	QString query = "SELECT distinct cam FROM sync_utm32"
-	//STUB TODO: Get cams
-	// right now only 2 cams
-	QStringList cams;
-	cams.append("1");
-	cams.append("2");
-	return cams;
+SqlReadyTableModel * Db::getImageView() {
+    SqlReadyTableModel * model = new SqlReadyTableModel;
+    model->setTable("daisi_bird_census_images");
+    model->setHeaderData(model->fieldIndex("session"), Qt::Horizontal,"Projekt", Qt::DisplayRole);
+    model->setHeaderData(model->fieldIndex("trc"), Qt::Horizontal,"Trc", Qt::DisplayRole);
+    model->setHeaderData(model->fieldIndex("cam"), Qt::Horizontal,"Cam", Qt::DisplayRole);
+    model->setHeaderData(model->fieldIndex("img"), Qt::Horizontal,"Bild", Qt::DisplayRole);
+    model->setHeaderData(model->fieldIndex("examined"), Qt::Horizontal,"Status", Qt::DisplayRole);
+    return model;
 }
 
-QStringList Db::getTrcList(const QString & session) {
-	QStringList trc_list;
-	QString query =
-			QString("SELECT distinct gps_trc FROM sync_utm32 where session='%1' ORDER BY gps_trc").arg(session);
-    qDebug() << query;
-    QSqlQuery req;
-    if ( ! req.exec(query) ) {
-    	qDebug() << req.lastError().text();
-        return trc_list;
-    }
-    while(req.next())
-    	trc_list.append(req.value(0).toString());
-    return trc_list;
+QSqlExtendedTableModel * Db::getObjectView() {
+    QSqlExtendedTableModel * model = new QSqlExtendedTableModel;
+    model->setTable("daisi_bird_census_objects");
+    model->setHeaderData(model->fieldIndex("tp"), Qt::Horizontal, "Typ", Qt::DisplayRole);
+    model->setHeaderData(model->fieldIndex("usr"), Qt::Horizontal, "Nutzer", Qt::DisplayRole);
+    model->setHeaderData(model->fieldIndex("rcns_id"), Qt::Horizontal, "Objekt ID", Qt::DisplayRole);
+    model->setHeaderData(model->fieldIndex("ux"), Qt::Horizontal, "UTM X", Qt::DisplayRole);
+    model->setHeaderData(model->fieldIndex("uy"), Qt::Horizontal, "UTM Y", Qt::DisplayRole);
+    model->setHeaderData(model->fieldIndex("session"), Qt::Horizontal, "Projekt", Qt::DisplayRole);
+    model->setHeaderData(model->fieldIndex("cam"), Qt::Horizontal, "Kamera", Qt::DisplayRole);
+    model->setHeaderData(model->fieldIndex("img"), Qt::Horizontal, "Bildnummer", Qt::DisplayRole);
+    return model;
 }

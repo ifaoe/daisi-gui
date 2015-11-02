@@ -39,7 +39,10 @@ DatabaseHandler::~DatabaseHandler() {
 }
 
 QSqlSortModel * DatabaseHandler::getPropertyTable() {
+    qDebug() << "Calling  DatabaseHandler::getPropertyTable()";
     QSqlSortModel * model = new QSqlSortModel;
+    model->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    model->setTable("image_properties");
     return model;
 }
 

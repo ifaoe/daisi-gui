@@ -21,6 +21,9 @@
 #include <qgsfeature.h>
 #include "ConfigHandler.h"
 #include <ctime>
+#include "sqlreadytablemodel.h"
+#include "qsqlextendedtablemodel.h"
+#include <QSqlTableModel>
 
 typedef struct std::tm time_struct;
 
@@ -37,13 +40,9 @@ public:
 
     bool OpenDatabase();
 
-    bool getImages(QTableWidget *result, QString filter, bool missing);
-
     void UpdateObjectQuery(const QString cam, const QString img, QSqlQueryModel * model);
 
     bool deleteRawCensus(int id, const QString & cam, const QString & img, const QString & usr);
-
-    void readImageDone(const QString & cam, QStringList & ready_list);
 
     bool writeImageDone(const int imgRdy, const int id);
 
@@ -79,13 +78,11 @@ public:
 
     QStringList getSessionList();
 
-    QStringList getCamList(const QString & session);
+    QStringList getSessionParameters(const QString & session);
 
-    QStringList getTrcList(const QString  & session);
+    SqlReadyTableModel * getImageView();
 
-    project * getSessionParameters(const QString & session);
-
-    bool isImageDone(const QString & session, const QString & cam, const QString & img);
+    QSqlExtendedTableModel * getObjectView();
 
 private:
     ConfigHandler *config;

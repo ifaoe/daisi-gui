@@ -11,10 +11,10 @@
 #include <qgsvertexmarker.h>
 #include <QPainter>
 
-class QgsMapMarker: public QgsVertexMarker {
+class MapCanvasMarker: public QgsVertexMarker {
 public:
-    QgsMapMarker(QgsMapCanvas * canvas);
-    virtual ~QgsMapMarker();
+    MapCanvasMarker(QgsMapCanvas * canvas);
+    virtual ~MapCanvasMarker();
     void paint( QPainter * p);
     void setFill(bool filled = false);
     void setFillColor(QColor color) {mFillColor = color;}

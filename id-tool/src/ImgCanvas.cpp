@@ -133,9 +133,9 @@ bool ImgCanvas::loadObject(census * obj) {
         int mcen = objModel->record(i).value(4).toInt();
         int ccen = objModel->record(i).value(5).toInt();
 
-        QgsMapMarker * marker = new QgsMapMarker(this);
+        MapCanvasMarker * marker = new MapCanvasMarker(this);
         marker->setCenter(QgsPoint(ux,uy));
-        marker->setIconType(QgsMapMarker::ICON_CIRCLE);
+        marker->setIconType(MapCanvasMarker::ICON_CIRCLE);
         marker->setIconSize(5);
         marker->setDrawWidth(1);
         marker->setIconColor(Qt::black);
@@ -215,8 +215,8 @@ void ImgCanvas::handleCanvasClicked(const QgsPoint & point) {
     msmList.push_back(point);
 
 
-    QgsMapMarker * vmarker = new QgsMapMarker(this);
-    vmarker->setIconType(QgsMapMarker::ICON_CROSS);
+    MapCanvasMarker * vmarker = new MapCanvasMarker(this);
+    vmarker->setIconType(MapCanvasMarker::ICON_CROSS);
     vmarker->setCenter(point);
     vmarker->setIconSize(9);
     vmarker->setPenWidth(2);

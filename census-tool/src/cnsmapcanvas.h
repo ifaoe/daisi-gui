@@ -64,8 +64,7 @@ public:
     void doSetupEditModus();
     bool doSaveData(QString cam, QString file);
     void setOvrCanvas(OvrMapCanvas* ovrCvs);
-    int map_mode() { return map_mode_; };
-    double getScaleFactor();
+    int map_mode() { return map_mode_; }
     bool DeselectObjects();
     QgsVectorLayer * qgis_edit_layer() {return qgis_edit_layer_;}
     QgsVectorLayer * qgis_poly_layer() {return qgis_poly_layer_;}
@@ -73,7 +72,6 @@ public:
     void UpdateObjectMarkers();
     bool SelectObjectByLocation(const QgsPoint & point);
     bool SelectObjectById(int rcns_id);
-    void HideMarkers(bool hide);
     int current_object_selection() {return current_object_selection_;}
 signals:
     
@@ -89,7 +87,7 @@ public slots:
     void doHandleKeyPressed(QKeyEvent* keyEvent);
     void doHandleKeyReleased(QKeyEvent* keyEvent);
     void doUpdateStatus();
-
+    void hideMarker(bool hide);
 
 private:
     Ui::MainWindow* ui = 0;
@@ -165,8 +163,6 @@ private:
 
     int map_mode_ = MAP_MODE_INSPECT;
 
-    double scaleFactor = 1.0;
-
     /** Tastaturhandler */
     bool keyCtrl  = false;
     bool keyAlt   = false;
@@ -179,7 +175,7 @@ private:
     QgsRasterDataProvider* qgsImgProvider = 0;
     QgsMapLayerRegistry * qgsLayerRegistry;
 
-    QMap<int,QgsMapMarker *> object_markers_;
+    QMap<int,MapCanvasMarker *> object_markers_;
     QMap<int,QgsPoint*> object_locations_;
     int current_object_selection_ = -1;
 

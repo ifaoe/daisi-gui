@@ -982,7 +982,7 @@ void MainWindow::showFilterDialog(int index) {
 	QSearchDialog dialog;
 	dialog.updateItemList(getColumnDataList(index));
 	if (dialog.exec()) {
-		if (dialog.sortingEnabled())
+        if (dialog.isSorted())
 			wdgObjects->tblObjects->sortByColumn(index, dialog.getSortingOrder());
 		if (dialog.getFilterString().isEmpty())
 			filterMap.remove(object_model->headerData(index, Qt::Horizontal).toString());

@@ -3,7 +3,7 @@ QT += core gui sql
 TARGET = daisi-img-prop
 TEMPLATE = app
 
-SOURCES += 2015-07-image-properties-gui.cpp \
+SOURCES += main.cpp \
         MainWindow.cpp \
         ConfigHandler.cpp \
         DatabaseHandler.cpp
