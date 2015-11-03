@@ -262,9 +262,9 @@ QStringList Db::getSessionList() {
     QStringList sessionlist;
     QString query;
     if (config->getAdmin())
-    	query = config->replaceProjectSettings("SELECT project_id FROM projects where active>0");
+        query = config->replaceProjectSettings("SELECT project_id FROM projects where active>0 ORDER BY project_id");
     else
-    	query = config->replaceProjectSettings("SELECT project_id FROM projects where active=1");
+        query = config->replaceProjectSettings("SELECT project_id FROM projects where active=1 ORDER BY project_id");
     qDebug() << query;
     QSqlQuery req;
     if ( ! req.exec(query) ) {

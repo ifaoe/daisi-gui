@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>481</width>
-    <height>780</height>
+    <height>805</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -80,7 +80,7 @@
             <string>...</string>
            </property>
            <property name="icon">
-            <iconset theme="preferences-system-privacy">
+            <iconset theme="view-list-text">
              <normaloff/>
             </iconset>
            </property>
@@ -118,7 +118,7 @@
             <string>...</string>
            </property>
            <property name="icon">
-            <iconset theme="preferences-system-privacy">
+            <iconset theme="view-list-text">
              <normaloff/>
             </iconset>
            </property>
@@ -180,7 +180,7 @@
             <string>...</string>
            </property>
            <property name="icon">
-            <iconset theme="accessories-text-editor">
+            <iconset theme="view-list-text">
              <normaloff/>
             </iconset>
            </property>
@@ -218,7 +218,7 @@
             <string>...</string>
            </property>
            <property name="icon">
-            <iconset theme="accessories-text-editor">
+            <iconset theme="view-list-text">
              <normaloff/>
             </iconset>
            </property>
@@ -778,7 +778,7 @@
              <string>Körperlänge</string>
             </property>
             <property name="icon">
-             <iconset theme="applications-engineering">
+             <iconset theme="measure">
               <normaloff/>
              </iconset>
             </property>
@@ -802,7 +802,7 @@
              <string>Spannweite</string>
             </property>
             <property name="icon">
-             <iconset theme="applications-engineering">
+             <iconset theme="measure">
               <normaloff/>
              </iconset>
             </property>
@@ -932,7 +932,7 @@
           <item row="0" column="0">
            <widget class="QRadioButton" name="rbMammalBehaveOver">
             <property name="text">
-             <string comment="OW">durchbricht Wasseroberfläche</string>
+             <string comment="OW">durchbricht Wasseroberfl&amp;äche</string>
             </property>
             <property name="checked">
              <bool>true</bool>
@@ -1467,15 +1467,15 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="btngBirdAge"/>
-  <buttongroup name="btngMammalAge"/>
   <buttongroup name="btngAnthroQual"/>
-  <buttongroup name="buttongroup_nosight"/>
-  <buttongroup name="btngBirdBeh"/>
   <buttongroup name="btngBirdSex"/>
   <buttongroup name="btng_misc_qual"/>
-  <buttongroup name="btngMammalQual"/>
   <buttongroup name="btngMammalBeh"/>
+  <buttongroup name="btngMammalQual"/>
+  <buttongroup name="btngBirdAge"/>
+  <buttongroup name="btngMammalAge"/>
+  <buttongroup name="buttongroup_nosight"/>
   <buttongroup name="btngBirdQual"/>
+  <buttongroup name="btngBirdBeh"/>
  </buttongroups>
 </ui>

@@ -56,6 +56,7 @@ unix: LIBS += -L/usr/lib/\
  -lqgis_core\
  -lqgis_gui
  
-RESOURCES += ui/style.qrc
+VPATH += ui
+RESOURCES += style.qrc icons.qrc
 
 include(../common.pri)

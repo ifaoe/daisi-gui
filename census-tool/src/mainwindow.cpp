@@ -59,6 +59,11 @@ MainWindow::MainWindow(ConfigHandler *aConfig, Db * aDb)
     ui->image_table->hideColumn(image_table_model->fieldIndex("analysed"));
     ui->image_table->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
 
+    if (config->getAdmin()) {
+        ui->option_admin->setEnabled(false);
+        ui->option_admin->setIcon(QIcon::fromTheme("object-unlocked"));
+    }
+
 /*
  * TODO:
  * werden die beiden tableview selectionModels wirklich gebraucht?

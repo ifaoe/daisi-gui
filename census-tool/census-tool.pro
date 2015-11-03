@@ -8,8 +8,6 @@ QT       += core gui sql xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += console
-
 TARGET = daisi-census-tool
 TEMPLATE = app
 

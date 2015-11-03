@@ -23,20 +23,19 @@ int main(int argc, char *argv[])
 	QCoreApplication::setOrganizationName("ifaoe");
 	QCoreApplication::setOrganizationDomain("ifaoe.de");
 	QCoreApplication::setApplicationName("daisi-bird-view");
-	QIcon::setThemeName("gnome");
+    QIcon::setThemeName("breeze");
 	QStringList theme_paths;
 	theme_paths << "/usr/share/icons/";
 	QIcon::setThemeSearchPaths(theme_paths);
     QApplication app(argc, argv);
     QFile file(":qdarkstyle/style.qss");
-//    QFile file("/home/awg/workspace/projects/2014-10-Bird-View/ui/style.qss");
      if(file.open(QIODevice::ReadOnly | QIODevice::Text))
      {
          app.setStyleSheet(file.readAll());
          file.close();
      }
 //    QApplication::setDesktopSettingsAware(false);
-//    QApplication::setStyle("GTK+");
+//    QApplication::setStyle("breeze-dark");
     ConfigHandler *config = new ConfigHandler;
     config->InitSettings();
 

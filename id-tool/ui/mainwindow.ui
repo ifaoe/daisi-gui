@@ -52,9 +52,19 @@
           <string>...</string>
          </property>
          <property name="icon">
-          <iconset theme="zoom-original">
-           <normaloff/>
-          </iconset>
+          <iconset theme="zoom-original"/>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
          </property>
         </widget>
        </item>
@@ -67,9 +77,13 @@
           <string>...</string>
          </property>
          <property name="icon">
-          <iconset theme="help-faq">
-           <normaloff/>
-          </iconset>
+          <iconset theme="flag-green"/>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -101,9 +115,13 @@
           <string>...</string>
          </property>
          <property name="icon">
-          <iconset theme="zoom-out">
-           <normaloff/>
-          </iconset>
+          <iconset theme="zoom-out"/>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
         </widget>
        </item>
@@ -116,9 +134,13 @@
           <string>...</string>
          </property>
          <property name="icon">
-          <iconset theme="zoom-in">
-           <normaloff/>
-          </iconset>
+          <iconset theme="zoom-in"/>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
         </widget>
        </item>
@@ -131,9 +153,13 @@
           <string>...</string>
          </property>
          <property name="icon">
-          <iconset theme="applications-internet">
-           <normaloff/>
-          </iconset>
+          <iconset theme="internet-web-browser"/>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -149,9 +175,13 @@
           <string>...</string>
          </property>
          <property name="icon">
-          <iconset theme="zoom-fit-best">
-           <normaloff/>
-          </iconset>
+          <iconset theme="zoom-fit-best"/>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
         </widget>
        </item>
@@ -164,9 +194,13 @@
           <string>...</string>
          </property>
          <property name="icon">
-          <iconset theme="applications-system">
-           <normaloff/>
-          </iconset>
+          <iconset theme="measure"/>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
         </widget>
        </item>
@@ -176,9 +210,13 @@
           <string>...</string>
          </property>
          <property name="icon">
-          <iconset theme="dialog-password">
-           <normaloff/>
-          </iconset>
+          <iconset theme="system-users"/>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
          </property>
         </widget>
        </item>

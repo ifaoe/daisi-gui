@@ -146,7 +146,7 @@ QToolBox::tab:selected {
 }*/</string>
             </property>
             <property name="currentIndex">
-             <number>1</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="tbxTasksPage1">
              <attribute name="title">
@@ -330,8 +330,7 @@ QToolBox::tab:selected {
                        <string>...</string>
                       </property>
                       <property name="icon">
-                       <iconset>
-                        <normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/goPrevious.png</normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/goPrevious.png</iconset>
+                       <iconset theme="arrow-left"/>
                       </property>
                      </widget>
                     </item>
@@ -353,8 +352,7 @@ QToolBox::tab:selected {
                        <string/>
                       </property>
                       <property name="icon">
-                       <iconset>
-                        <normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/goNext.png</normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/goNext.png</iconset>
+                       <iconset theme="arrow-right"/>
                       </property>
                      </widget>
                     </item>
@@ -379,8 +377,7 @@ QToolBox::tab:selected {
                        <string/>
                       </property>
                       <property name="icon">
-                       <iconset>
-                        <normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/mapFullExtent.png</normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/mapFullExtent.png</iconset>
+                       <iconset theme="zoom-fit-best"/>
                       </property>
                      </widget>
                     </item>
@@ -405,8 +402,7 @@ QToolBox::tab:selected {
                        <string>...</string>
                       </property>
                       <property name="icon">
-                       <iconset>
-                        <normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/mapZoom1by1.png</normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/mapZoom1by1.png</iconset>
+                       <iconset theme="zoom-original"/>
                       </property>
                      </widget>
                     </item>
@@ -431,8 +427,7 @@ QToolBox::tab:selected {
                        <string/>
                       </property>
                       <property name="icon">
-                       <iconset>
-                        <normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/mapPan.png</normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/mapPan.png</iconset>
+                       <iconset theme="transform-move"/>
                       </property>
                       <property name="checkable">
                        <bool>true</bool>
@@ -463,8 +458,7 @@ QToolBox::tab:selected {
                        <string/>
                       </property>
                       <property name="icon">
-                       <iconset>
-                        <normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/mapDigitize.png</normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/mapDigitize.png</iconset>
+                       <iconset theme="format-add-node"/>
                       </property>
                       <property name="checkable">
                        <bool>true</bool>
@@ -495,8 +489,7 @@ QToolBox::tab:selected {
                        <string/>
                       </property>
                       <property name="icon">
-                       <iconset>
-                        <normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/mapSelect.png</normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/mapSelect.png</iconset>
+                       <iconset theme="edit-node"/>
                       </property>
                       <property name="checkable">
                        <bool>true</bool>
@@ -530,8 +523,7 @@ QToolBox::tab:selected {
                        <string/>
                       </property>
                       <property name="icon">
-                       <iconset>
-                        <normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/tabRemove.png</normaloff>../../../../../../usr/local/ifaoe/settings/daisi/birdcensus/icons/tabRemove.png</iconset>
+                       <iconset theme="format-remove-node"/>
                       </property>
                      </widget>
                     </item>
@@ -821,7 +813,7 @@ QToolBox::tab:selected {
                  <string>Server wählen</string>
                 </property>
                 <property name="icon">
-                 <iconset theme="server">
+                 <iconset theme="server-database">
                   <normaloff/>
                  </iconset>
                 </property>
@@ -855,7 +847,7 @@ QToolBox::tab:selected {
                  <string>Admin Zugang freischalten</string>
                 </property>
                 <property name="icon">
-                 <iconset theme="dialog-password">
+                 <iconset theme="object-locked">
                   <normaloff/>
                  </iconset>
                 </property>

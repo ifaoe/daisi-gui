@@ -57,6 +57,9 @@
             <property name="text">
              <string>Speichern</string>
             </property>
+            <property name="icon">
+             <iconset theme="document-save"/>
+            </property>
             <property name="dbvalue" stdset="0">
              <string>glare_key</string>
             </property>
@@ -88,6 +91,9 @@
            <widget class="QPushButton" name="pushButton_save_seastate">
             <property name="text">
              <string>Speichern</string>
+            </property>
+            <property name="icon">
+             <iconset theme="document-save"/>
             </property>
             <property name="dbvalue" stdset="0">
              <string>seastate</string>
@@ -121,6 +127,9 @@
             <property name="text">
              <string>Speichern</string>
             </property>
+            <property name="icon">
+             <iconset theme="document-save"/>
+            </property>
             <property name="dbvalue" stdset="0">
              <string>turbidity</string>
             </property>
@@ -153,6 +162,9 @@
             <property name="text">
              <string>Speichern</string>
             </property>
+            <property name="icon">
+             <iconset theme="document-save"/>
+            </property>
             <property name="dbvalue" stdset="0">
              <string>clarity</string>
             </property>
@@ -184,6 +196,9 @@
            <widget class="QPushButton" name="pushButton_save_ice">
             <property name="text">
              <string>Speichern</string>
+            </property>
+            <property name="icon">
+             <iconset theme="document-save"/>
             </property>
             <property name="dbvalue" stdset="0">
              <string>ice</string>
@@ -244,6 +259,9 @@
            <widget class="QPushButton" name="pushButton_save_remarks">
             <property name="text">
              <string>Speichern</string>
+            </property>
+            <property name="icon">
+             <iconset theme="document-save"/>
             </property>
             <property name="dbvalue" stdset="0">
              <string>remarks</string>
