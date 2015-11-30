@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ColumnOptions</class>
+ <widget class="QDialog" name="ColumnOptions">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>501</width>
+    <height>459</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Spaltenauswahl</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="1" column="0" colspan="2">
+    <widget class="QFrame" name="frame">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QCheckBox" name="box_usr">
+        <property name="text">
+         <string>Endbestimmer (usr)</string>
+        </property>
+        <property name="dbvalue" stdset="0">
+         <string>usr</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttongroup_column_boxes</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="box_pre_usr">
+        <property name="text">
+         <string>Vorsortierer (pre_usr)</string>
+        </property>
+        <property name="dbvalue" stdset="0">
+         <string>pre_usr</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttongroup_column_boxes</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="box_confidence">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Bestimmungssicherheit (confidence)</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <property name="dbvalue" stdset="0">
+         <string>confidence</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttongroup_column_boxes</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="box_name">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Name (name)</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <property name="dbvalue" stdset="0">
+         <string>name</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttongroup_column_boxes</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="box_id_code">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>EURING-/Stuk4-Codes (id_code)</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <property name="dbvalue" stdset="0">
+         <string>id_code</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttongroup_column_boxes</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="box_beh">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Verhalten (beh)</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <property name="dbvalue" stdset="0">
+         <string>beh</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttongroup_column_boxes</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="box_age">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Alter (age)</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <property name="dbvalue" stdset="0">
+         <string>age</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttongroup_column_boxes</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="box_age_year">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Alter/Jahre (age_years)</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <property name="dbvalue" stdset="0">
+         <string>age_year</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttongroup_column_boxes</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="box_stuk4_ass">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Assoziationscodes (stuk4_ass)</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <property name="dbvalue" stdset="0">
+         <string>stuk4_ass</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttongroup_column_boxes</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="box_stuk4_beh">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Verhaltenscodes (stuk4_beh)</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <property name="dbvalue" stdset="0">
+         <string>stuk4_beh</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttongroup_column_boxes</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="box_group_objects">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Gruppenzugehörigkeit (group_objects)</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <property name="dbvalue" stdset="0">
+         <string>group_objects</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttongroup_column_boxes</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="box_family_group">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Familiengruppen (family_group)</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <property name="dbvalue" stdset="0">
+         <string>family_group</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttongroup_column_boxes</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+     <zorder>box_id_code</zorder>
+     <zorder>box_family_group</zorder>
+     <zorder>box_stuk4_beh</zorder>
+     <zorder>box_confidence</zorder>
+     <zorder>box_stuk4_ass</zorder>
+     <zorder>box_group_objects</zorder>
+     <zorder>box_beh</zorder>
+     <zorder>box_age_year</zorder>
+     <zorder>box_name</zorder>
+     <zorder>box_age</zorder>
+     <zorder>box_usr</zorder>
+     <zorder>box_pre_usr</zorder>
+     <zorder>verticalSpacer</zorder>
+    </widget>
+   </item>
+   <item row="5" column="0" colspan="2">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>479</width>
+        <height>70</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QCheckBox" name="box_rcns_id">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Objekt ID (rcns_id)</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <property name="dbvalue" stdset="0">
+          <string>rcns_id</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">buttongroup_column_boxes</string>
+         </attribute>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>ColumnOptions</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>ColumnOptions</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <buttongroups>
+  <buttongroup name="buttongroup_column_boxes">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+ </buttongroups>
+</ui>
