@@ -4,6 +4,7 @@
 #include "ConfigHandler.h"
 #include "ServerSelection.h"
 #include <QInputDialog>
+#include "qfusionstyle.h"
 
 int main(int argc, char *argv[])
 {
@@ -11,11 +12,31 @@ int main(int argc, char *argv[])
    	QCoreApplication::setOrganizationName("ifaoe");
    	QCoreApplication::setOrganizationDomain("ifaoe.de");
    	QCoreApplication::setApplicationName("daisi-bird-census");
-    QIcon::setThemeName("breeze-dark");
+    QIcon::setThemeName("breeze");
 	QStringList theme_paths;
 	theme_paths << "/usr/share/icons/";
 	QIcon::setThemeSearchPaths(theme_paths);
     QApplication app(argc, argv);
+
+    QFusionStyle * fusion_style = new QFusionStyle;
+    app.setStyle(fusion_style);
+
+    QPalette palette;
+    palette.setColor(QPalette::Window, QColor(53,53,53));
+    palette.setColor(QPalette::WindowText, Qt::white);
+    palette.setColor(QPalette::Base, QColor(15,15,15));
+    palette.setColor(QPalette::AlternateBase, QColor(53,53,53));
+    palette.setColor(QPalette::ToolTipBase, QColor(53,53,53));
+    palette.setColor(QPalette::ToolTipText, Qt::white);
+    palette.setColor(QPalette::Text, Qt::white);
+    palette.setColor(QPalette::Button, QColor(53,53,53));
+    palette.setColor(QPalette::ButtonText, Qt::white);
+    palette.setColor(QPalette::BrightText, Qt::red);
+
+    palette.setColor(QPalette::Highlight, QColor(142,45,197).lighter());
+    palette.setColor(QPalette::HighlightedText, Qt::black);
+    app.setPalette(palette);
+
     QFile file(":qdarkstyle/style.qss");
     if(file.open(QIODevice::ReadOnly | QIODevice::Text))
     {

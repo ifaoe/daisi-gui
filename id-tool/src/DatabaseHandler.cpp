@@ -18,6 +18,7 @@
 #include <QSqlTableModel>
 #include <QTableView>
 #include <QHeaderView>
+#include <QDateTime>
 
 DatabaseHandler::DatabaseHandler(ConfigHandler *cfgArg) :config(cfgArg) {
     // TODO Auto-generated constructor stub
@@ -247,6 +248,7 @@ bool DatabaseHandler::writeCensus(census * obj) {
     // insert or update records in db
     if (table.rowCount() == 0) { //INSERT
         qDebug() << "Insert!";
+        record.setValue("time_create", QDateTime::currentDateTime());
         // remove first entry of record
         // auto increment of id is handled by postgres
         record.remove(0);
@@ -318,6 +320,8 @@ void DatabaseHandler::setRecordTable(QSqlRecord * record, census * obj) {
     record->setValue("stuk4_ass", "{"+obj->stuk4_ass.join(",")+"}");
     record->setValue("group_objects", "{"+obj->group.join(",")+"}");
     record->setValue("family_group", "{"+obj->family.join(",")+"}");
+
+    record->setValue("time_modify", QDateTime::currentDateTime());
 }
 
 /*

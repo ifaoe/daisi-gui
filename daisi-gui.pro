@@ -2,11 +2,11 @@ TEMPLATE = subdirs
 
 CONFIG += ordered
 
-SUBDIRS = libs census-tool id-tool image-property-gui reference-gui
+SUBDIRS = libs census-tool id-tool image-property-gui reference-gui fusion
 
-census-tool.depends         = libs
-id-tool.depends             = libs
-image-property-gui.depends  = libs
-reference-gui.depends       = libs
+census-tool.depends         = libs fusion
+id-tool.depends             = libs fusion
+image-property-gui.depends  = libs fusion
+reference-gui.depends       = libs fusion
 
 #RESOURCES += shared/ui/style.qrc

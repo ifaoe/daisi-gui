@@ -17,23 +17,45 @@
 #include "ConfigHandler.h"
 #include "mainwindow.h"
 #include "DatabaseHandler.h"
+#include "qfusionstyle.h"
 
 int main(int argc, char *argv[])
 {
 	QCoreApplication::setOrganizationName("ifaoe");
 	QCoreApplication::setOrganizationDomain("ifaoe.de");
 	QCoreApplication::setApplicationName("daisi-bird-view");
-    QIcon::setThemeName("breeze");
+    QIcon::setThemeName("oxygen");
 	QStringList theme_paths;
 	theme_paths << "/usr/share/icons/";
 	QIcon::setThemeSearchPaths(theme_paths);
     QApplication app(argc, argv);
-    QFile file(":qdarkstyle/style.qss");
-     if(file.open(QIODevice::ReadOnly | QIODevice::Text))
-     {
-         app.setStyleSheet(file.readAll());
-         file.close();
-     }
+
+    QFusionStyle * fusion_style = new QFusionStyle;
+    app.setStyle(fusion_style);
+
+    QPalette palette;
+    palette.setColor(QPalette::Window, QColor(53,53,53));
+    palette.setColor(QPalette::WindowText, Qt::white);
+    palette.setColor(QPalette::Base, QColor(15,15,15));
+    palette.setColor(QPalette::AlternateBase, QColor(53,53,53));
+    palette.setColor(QPalette::ToolTipBase, Qt::white);
+    palette.setColor(QPalette::ToolTipText, Qt::white);
+    palette.setColor(QPalette::Text, Qt::white);
+    palette.setColor(QPalette::Button, QColor(53,53,53));
+    palette.setColor(QPalette::ButtonText, Qt::white);
+    palette.setColor(QPalette::BrightText, Qt::red);
+
+    palette.setColor(QPalette::Highlight, QColor(142,45,197).lighter());
+    palette.setColor(QPalette::HighlightedText, Qt::black);
+    app.setPalette(palette);
+
+//    app.setStyle("breeze");
+//    QFile file(":qdarkstyle/style.qss");
+//     if(file.open(QIODevice::ReadOnly | QIODevice::Text))
+//     {
+//         app.setStyleSheet(file.readAll());
+//         file.close();
+//     }
 //    QApplication::setDesktopSettingsAware(false);
 //    QApplication::setStyle("breeze-dark");
     ConfigHandler *config = new ConfigHandler;

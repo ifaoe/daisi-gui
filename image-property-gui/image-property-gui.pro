@@ -17,9 +17,10 @@ FORMS    += main_window.ui
 			
 
 INCLUDEPATH += ../libs/
-
-
 LIBS += -L ../libs -llibs
+
+INCLUDEPATH += ../fusion/
+LIBS += -L../fusion -lfusion
 
 unix: LIBS += -L/usr/lib/ \
     -lboost_program_options

@@ -23,6 +23,7 @@
 #include <qgsmultibandcolorrenderer.h>
 #include <QLineEdit>
 #include <QInputDialog>
+#include <QSqlRecord>
 #include "QSearchDialog.h"
 
 MainWindow::MainWindow( ConfigHandler *cfgArg, DatabaseHandler *dbArg, QWidget *parent) :
@@ -266,15 +267,15 @@ void MainWindow::UiPreSelection(census * cobj) {
             wdgCensus->wdgTabTypes->setCurrentIndex(0);
             int index = wdgCensus->cmbBird->findText(cobj->name);
             wdgCensus->cmbBird->setCurrentIndex(index);
-            selectButtonByString(wdgCensus->btngBirdQual, QString::number(cobj->confidence));
-            selectButtonByString(wdgCensus->btngBirdBeh, cobj->behavior);
+            selectButtonByString(wdgCensus->buttongroup_bird_confidence, QString::number(cobj->confidence));
+            selectButtonByString(wdgCensus->buttongroup_bird_behaviour, cobj->behavior);
             if(cobj->gender != "") {
                 wdgCensus->gbxBirdGender->setChecked(true);
-                selectButtonByString(wdgCensus->btngBirdSex, cobj->gender);
+                selectButtonByString(wdgCensus->buttongroup_bird_sex, cobj->gender);
             }
             if(cobj->age != "" || cobj->age_year>0) {
                 wdgCensus->gbxBirdAge->setChecked(true);
-                selectButtonByString(wdgCensus->btngBirdAge, cobj->age);
+                selectButtonByString(wdgCensus->buttongroup_bird_age, cobj->age);
                 index = wdgCensus->cmb_bird_age->findData(curObj->age_year);
                 wdgCensus->cmb_bird_age->setCurrentIndex(index);
             }
@@ -291,11 +292,11 @@ void MainWindow::UiPreSelection(census * cobj) {
             wdgCensus->wdgTabTypes->setCurrentIndex(1);
             int index = wdgCensus->cmbMammal->findText(cobj->name);
             wdgCensus->cmbMammal->setCurrentIndex(index);
-            selectButtonByString(wdgCensus->btngMammalQual, QString::number(cobj->confidence));
-            selectButtonByString(wdgCensus->btngMammalBeh, cobj->behavior);
+            selectButtonByString(wdgCensus->buttongroup_mammal_confidence, QString::number(cobj->confidence));
+            selectButtonByString(wdgCensus->buttongroup_mammal_behaviour, cobj->behavior);
             if (cobj->age != "") {
                 wdgCensus->gbxMammalAge->setChecked(true);
-                selectButtonByString(wdgCensus->btngMammalAge, cobj->age);
+                selectButtonByString(wdgCensus->buttongroup_mammal_age, cobj->age);
             }
             if (cobj->length > 0 )
                 wdgCensus->lblMammalSizeLength->setText(QString::number(cobj->length));
@@ -304,16 +305,16 @@ void MainWindow::UiPreSelection(census * cobj) {
             int index = wdgCensus->cmbAnthroName->findData(cobj->code);
             wdgCensus->cmbAnthroName->setCurrentIndex(index);
             wdgCensus->wdgTabTypes->setCurrentIndex(2);
-            selectButtonByString(wdgCensus->btngAnthroQual, QString::number(cobj->confidence));
+            selectButtonByString(wdgCensus->buttongroup_anthro_confidence, QString::number(cobj->confidence));
         } else if (cobj ->type== "MISC"  || curObj->type == "TR" ) {
         	if (curObj->type == "TR") curObj->code = "7101";
         	int index = wdgCensus->cmb_misc_name->findData(cobj->code);
         	wdgCensus->cmb_misc_name->setCurrentIndex(index);
         	wdgCensus->wdgTabTypes->setCurrentIndex(3);
-        	selectButtonByString(wdgCensus->btng_misc_qual, QString::number(cobj->confidence));
+            selectButtonByString(wdgCensus->buttongroup_misc_confidence, QString::number(cobj->confidence));
         } else { //NoSighting tab
             wdgCensus->wdgTabTypes->setCurrentIndex(4);
-            selectButtonByString(wdgCensus->buttongroup_nosight, QString::number(cobj->confidence));
+            selectButtonByString(wdgCensus->buttongroup_nosight_confidence, QString::number(cobj->confidence));
         }
 }
 
@@ -392,6 +393,7 @@ void MainWindow::initCollapsibleMenu(){
     wdgCensus = new Ui::wdgCensus;
     wdgCensus->setupUi(widget);
     ui->toolbox_widget->addWidget("Bestimmungstabellen", widget);
+    ui->toolbox_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     widget = new QFrame;
     wdgGraphics = new Ui::wdgGraphics;
@@ -708,11 +710,11 @@ void MainWindow::handleSaveButton() {
     if(curObj->type == "BIRD") {
     	check_required = true;
     	SaveComboBoxSelection(wdgCensus->cmbBird);
-    	curObj->confidence = GetButtonGroupValue(wdgCensus->btngBirdQual, "dbvalue").toInt();
-    	curObj->behavior = GetButtonGroupValue(wdgCensus->btngBirdBeh, "dbvalue").toString();
-    	curObj->gender = GetGroupBoxValue(wdgCensus->gbxBirdGender, wdgCensus->btngBirdSex, "dbvalue").toString();
+        curObj->confidence = GetButtonGroupValue(wdgCensus->buttongroup_bird_confidence, "dbvalue").toInt();
+        curObj->behavior = GetButtonGroupValue(wdgCensus->buttongroup_bird_behaviour, "dbvalue").toString();
+        curObj->gender = GetGroupBoxValue(wdgCensus->gbxBirdGender, wdgCensus->buttongroup_bird_sex, "dbvalue").toString();
     	if (wdgCensus->gbxBirdAge->isChecked()) {
-    		curObj->age = GetButtonGroupValue(wdgCensus->btngBirdAge, "dbvalue").toString();
+            curObj->age = GetButtonGroupValue(wdgCensus->buttongroup_bird_age, "dbvalue").toString();
     		curObj->age_year = GetComboBoxItem(wdgCensus->cmb_bird_age).toInt();
     	} else {
     		curObj->age = "";
@@ -723,17 +725,17 @@ void MainWindow::handleSaveButton() {
     				wdgCensus->combo_box_plumage->currentIndex()).toString();
     	else
     		curObj->plumage = "";
-    }else if (curObj->type == "MAMMAL") {
+    } else if (curObj->type == "MAMMAL") {
     	check_required = true;
     	SaveComboBoxSelection(wdgCensus->cmbMammal);
-        curObj->confidence = GetButtonGroupValue(wdgCensus->btngMammalQual,"dbvalue").toInt();
-        curObj->behavior = GetButtonGroupValue(wdgCensus->btngMammalBeh, "dbvalue").toString();
-		curObj->age = GetGroupBoxValue(wdgCensus->gbxMammalAge, wdgCensus->btngMammalAge, "dbvalue").toString();
+        curObj->confidence = GetButtonGroupValue(wdgCensus->buttongroup_mammal_confidence,"dbvalue").toInt();
+        curObj->behavior = GetButtonGroupValue(wdgCensus->buttongroup_mammal_behaviour, "dbvalue").toString();
+        curObj->age = GetGroupBoxValue(wdgCensus->gbxMammalAge, wdgCensus->buttongroup_mammal_age, "dbvalue").toString();
         curObj->age_year = -1;
         curObj->gender = "";
     } else if (curObj->type == "NOSIGHT" || curObj->type=="UNKNOWN" ) {
         curObj->name = "";
-        curObj->confidence = GetButtonGroupValue(wdgCensus->buttongroup_nosight, "dbvalue").toInt();
+        curObj->confidence = GetButtonGroupValue(wdgCensus->buttongroup_nosight_confidence, "dbvalue").toInt();
         curObj->behavior = "";
         curObj->age = "";
         curObj->code = "";
@@ -744,7 +746,7 @@ void MainWindow::handleSaveButton() {
     } else if (curObj->type == "ANTHRO") {
         curObj->name = wdgCensus->cmbAnthroName->currentText();
         curObj->code = GetComboBoxItem(wdgCensus->cmbAnthroName).toString();
-        curObj->confidence = GetButtonGroupValue(wdgCensus->btngAnthroQual, "dbvalue").toInt();
+        curObj->confidence = GetButtonGroupValue(wdgCensus->buttongroup_anthro_confidence, "dbvalue").toInt();
         curObj->behavior = "";
         curObj->age = "";
         curObj->age_year = -1;
@@ -753,7 +755,7 @@ void MainWindow::handleSaveButton() {
     } else if (curObj->type == "MISC") {
         curObj->name = wdgCensus->cmb_misc_name->currentText();
         curObj->code = GetComboBoxItem(wdgCensus->cmb_misc_name).toString();
-        curObj->confidence = GetButtonGroupValue(wdgCensus->btng_misc_qual, "dbvalue").toInt();
+        curObj->confidence = GetButtonGroupValue(wdgCensus->buttongroup_misc_confidence, "dbvalue").toInt();
         curObj->behavior = "";
         curObj->age = "";
         curObj->age_year = -1;
@@ -988,7 +990,7 @@ void MainWindow::showFilterDialog(int index) {
 			filterMap.remove(object_model->headerData(index, Qt::Horizontal).toString());
 		else
 			filterMap[object_model->headerData(index, Qt::Horizontal).toString()] = QString("cast(%1 as text) like '%%2%'")
-				.arg(object_model->headerData(index, Qt::Horizontal, 101).toString()).arg(dialog.getFilterString());
+                .arg(object_model->record(0).fieldName(index)).arg(dialog.getFilterString());
 		object_model->setFilter(static_cast<QStringList>(filterMap.values()).join(" AND "));
 	}
 
@@ -998,6 +1000,8 @@ void MainWindow::handleUserSwitch() {
 	bool ok;
 	QString password, user;
 	user = QInputDialog::getText(this, tr("Nutzer wechseln"), tr("User:"), QLineEdit::Normal,QString(),&ok);
+    if (!ok)
+        return;
 	password = QInputDialog::getText(this, tr("Admin Zugang freischalten"), tr("Passwort:"), QLineEdit::Password,QString(),&ok);
 	/*
 	 * MD5 sum of password
@@ -1020,5 +1024,5 @@ void MainWindow::handleUserSwitch() {
 			message.setStandardButtons(QMessageBox::Ok);
 			message.exec();
 		}
-	}
+    }
 }

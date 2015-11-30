@@ -344,10 +344,12 @@ void MainWindow::initSessionFrame() {
 }
 
 void MainWindow::handleSessionSelection() {
+    qDebug() << ui->cmbSession->currentText();
 	config->setProjectId(ui->cmbSession->currentText());
 	if (config->getProjectId().isEmpty())
 		return;
     QStringList project_parameters = db->getSessionParameters(config->getProjectId());
+    qDebug() << config->getProjectId();
     config->setFlightId(project_parameters[0]);
     config->setUtmSector(project_parameters[1].toInt());
     config->setProjectPath(project_parameters[2]);

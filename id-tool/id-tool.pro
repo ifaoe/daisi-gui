@@ -18,7 +18,13 @@ SOURCES +=  main.cpp\
             CensorSqlTableModel.cpp \
             IdSelectionDialog.cpp \
             ObjectSelectionDialog.cpp \
-            MeasurementDialog.cpp 
+            MeasurementDialog.cpp \ 
+    censuswidget.cpp \
+    censusbird.cpp \
+    censusmammal.cpp \
+    censusanthro.cpp \
+    censusmisc.cpp \
+    censusnosight.cpp
 		
 HEADERS  += mainwindow.h\
             ImgCanvas.h \
@@ -29,7 +35,13 @@ HEADERS  += mainwindow.h\
             census.hpp \
             IdSelectionDialog.h \
             ObjectSelectionDialog.h \
-            MeasurementDialog.h
+            MeasurementDialog.h \
+    censuswidget.h \
+    censusbird.h \
+    censusmammal.h \
+    censusanthro.h \
+    censusmisc.h \
+    censusnosight.h
         
 FORMS    += mainwindow.ui \
             sessiondialog.ui \
@@ -40,16 +52,24 @@ FORMS    += mainwindow.ui \
             dialog_idselection.ui \
             dialog_object_selection.ui \
             dialog_measurement.ui \
-            widget_census_shared.ui
+            widget_census_shared.ui \
+    ui/censuswidget.ui \
+    ui/censusbird.ui \
+    ui/censusmammal.ui \
+    ui/censusanthro.ui \
+    ui/censusmisc.ui \
+    ui/censusnosight.ui
 
 INCLUDEPATH += /usr/include/qgis
 DEPENDPATH += /usr/include/qgis
 
 INCLUDEPATH += ../libs/
+LIBS += -L ../libs -llibs
 
 DEFINES += GUI_EXPORT= CORE_EXPORT=
 
-LIBS += -L ../libs -llibs
+INCLUDEPATH += ../fusion/
+LIBS += -L../fusion -lfusion
 
 unix: LIBS += -L/usr/lib/\
  -lgdal \

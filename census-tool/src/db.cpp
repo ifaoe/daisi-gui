@@ -164,6 +164,7 @@ bool Db::writeRawImage(const bool insert, const int id,
                        const QString usr, const QString session,
                        const QString tmWhen, const QString tmSeen) {
   QString lstr;
+  qDebug() << "Save: " << session;
   if (insert) {
     lstr = "INSERT INTO raw_images "
            "(epsg, cam, img, usr, session, tm_when, tm_seen) VALUES "

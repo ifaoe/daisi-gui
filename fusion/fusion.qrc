@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/qt-project.org/styles/commonstyle">
+        <file>images/fusion_groupbox.png</file>
+        <file>images/fusion_arrow.png</file>
+    </qresource>
+</RCC>
