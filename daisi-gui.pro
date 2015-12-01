@@ -2,7 +2,7 @@ TEMPLATE = subdirs
 
 CONFIG += ordered
 
-SUBDIRS = libs census-tool id-tool image-property-gui reference-gui fusion
+SUBDIRS = libs fusion census-tool id-tool image-property-gui reference-gui
 
 census-tool.depends         = libs fusion
 id-tool.depends             = libs fusion

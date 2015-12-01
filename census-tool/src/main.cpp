@@ -37,12 +37,12 @@ int main(int argc, char *argv[])
     palette.setColor(QPalette::HighlightedText, Qt::black);
     app.setPalette(palette);
 
-    QFile file(":qdarkstyle/style.qss");
-    if(file.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        app.setStyleSheet(file.readAll());
-        file.close();
-    }
+//    QFile file(":qdarkstyle/style.qss");
+//    if(file.open(QIODevice::ReadOnly | QIODevice::Text))
+//    {
+//        app.setStyleSheet(file.readAll());
+//        file.close();
+//    }
 
     ConfigHandler* config = new ConfigHandler();
     config->InitSettings();
