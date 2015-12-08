@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
    	QCoreApplication::setOrganizationName("ifaoe");
    	QCoreApplication::setOrganizationDomain("ifaoe.de");
    	QCoreApplication::setApplicationName("daisi-bird-census");
-    QIcon::setThemeName("breeze");
+    QIcon::setThemeName("breeze-dark");
 	QStringList theme_paths;
 	theme_paths << "/usr/share/icons/";
 	QIcon::setThemeSearchPaths(theme_paths);

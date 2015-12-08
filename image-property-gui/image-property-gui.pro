@@ -20,7 +20,7 @@ INCLUDEPATH += ../libs/
 LIBS += -L ../libs -llibs
 
 INCLUDEPATH += ../fusion/
-LIBS += -L../fusion -lfusion
+LIBS += ../fusion/libfusion.a
 
 unix: LIBS += -L/usr/lib/ \
     -lboost_program_options

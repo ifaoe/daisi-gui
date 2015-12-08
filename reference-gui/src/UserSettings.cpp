@@ -44,10 +44,10 @@ void UserSettings::AddDatabase(const QString & id, const QString & host, int por
 }
 
 void UserSettings::InitSettings() {
-	if (!QFile::exists(fileName())) {
+//	if (!QFile::exists(fileName())) {
 		AddDatabase("Rostock", "192.168.118.35", 5432, "daisi", "daisi","18ifaoe184");
 		AddDatabase("Hamburg", "192.168.200.35", 5432, "daisi", "daisi","18ifaoe184");
-	}
+//	}
 }
 
 /*

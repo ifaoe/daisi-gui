@@ -109,7 +109,7 @@ private slots:
 	void handleMapToolButton();
 	void handleOneToOneZoom();
 	void handleDirDial();
-	void handleUsrSelect(int index);
+    void handleUsrSelect();
 	void handleBrightnessSlider();
 	void handleContrastSlider();
 	void handleBrightnessReset();

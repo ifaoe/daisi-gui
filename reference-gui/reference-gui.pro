@@ -40,7 +40,7 @@ LIBS += -L ../libs -llibs
 INCLUDEPATH += ../libs/
 
 INCLUDEPATH += ../fusion/
-LIBS += -L../fusion -lfusion
+LIBS += ../fusion/libfusion.a
 
 INCLUDEPATH += /usr/include/qgis
 DEPENDPATH += /usr/include/qgis

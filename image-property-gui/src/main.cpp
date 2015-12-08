@@ -13,7 +13,7 @@
 #include "qfusionstyle.h"
 
 int main(int argc, char * argv[]) {
-    QIcon::setThemeName("breeze");
+    QIcon::setThemeName("breeze-dark");
     QStringList theme_paths;
     theme_paths << "/usr/share/icons/";
     QIcon::setThemeSearchPaths(theme_paths);

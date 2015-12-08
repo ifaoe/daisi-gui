@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 	QCoreApplication::setOrganizationName("ifaoe");
 	QCoreApplication::setOrganizationDomain("ifaoe.de");
 	QCoreApplication::setApplicationName("daisi-bird-view");
-    QIcon::setThemeName("oxygen");
+    QIcon::setThemeName("breeze-dark");
 	QStringList theme_paths;
 	theme_paths << "/usr/share/icons/";
 	QIcon::setThemeSearchPaths(theme_paths);
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     palette.setColor(QPalette::WindowText, Qt::white);
     palette.setColor(QPalette::Base, QColor(15,15,15));
     palette.setColor(QPalette::AlternateBase, QColor(53,53,53));
-    palette.setColor(QPalette::ToolTipBase, Qt::white);
+    palette.setColor(QPalette::ToolTipBase, QColor(53,53,53));
     palette.setColor(QPalette::ToolTipText, Qt::white);
     palette.setColor(QPalette::Text, Qt::white);
     palette.setColor(QPalette::Button, QColor(53,53,53));

@@ -69,7 +69,7 @@ LIBS += -L ../libs -llibs
 DEFINES += GUI_EXPORT= CORE_EXPORT=
 
 INCLUDEPATH += ../fusion/
-LIBS += -L../fusion -lfusion
+LIBS += ../fusion/libfusion.a
 
 unix: LIBS += -L/usr/lib/\
  -lgdal \

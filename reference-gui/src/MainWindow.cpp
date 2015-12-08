@@ -268,6 +268,7 @@ void MainWindow::HandleTypeFilter(int index){
 
 void MainWindow::HandleServerSelection() {
 	bool check;
+    qDebug() << config->getDatabaseList();
 	QString database = QInputDialog::getItem(this,tr("Datenbank auswählen..."),tr("Datenbank:"),
 			config->getDatabaseList(),0,false,&check);
 	if (check) {

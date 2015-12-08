@@ -62,6 +62,7 @@ public:
     void doCenter1by1(double x, double y);
     void doCenter1by1(QgsPoint point);
     void doSetupEditModus();
+    bool saveData(QString cam, QString file);
     bool doSaveData(QString cam, QString file);
     void setOvrCanvas(OvrMapCanvas* ovrCvs);
     int map_mode() { return map_mode_; }
@@ -88,7 +89,7 @@ public slots:
     void doHandleKeyReleased(QKeyEvent* keyEvent);
     void doUpdateStatus();
     void hideMarker(bool hide);
-
+    void closeCanvas();
 private:
     Ui::MainWindow* ui = 0;
     ConfigHandler* config;
@@ -197,8 +198,6 @@ private:
     bool openPolyLayer(QString strCam, QString strFile);
 
     bool openEditLayer(const QString strCam, const QString strFile);
-
-    bool saveData(QString cam, QString file);
 
     bool refreshLayerSet();
 

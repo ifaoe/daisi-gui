@@ -344,7 +344,13 @@ void MainWindow::initSessionFrame() {
 }
 
 void MainWindow::handleSessionSelection() {
-    qDebug() << ui->cmbSession->currentText();
+    if (!mapCanvas->saveData(config->current_cam, config->current_image)) {
+        QMessageBox::critical(this,"Fehler","Fehler beim Sichern der Daten fuer"
+                              "Metadaten fuer "+config->current_cam+" Kamera "+config->current_image+
+                              "\n konnte nicht gesichert werden!",
+                             "OK");
+        imgSelector->clearSelection();
+    }
 	config->setProjectId(ui->cmbSession->currentText());
 	if (config->getProjectId().isEmpty())
 		return;

@@ -525,17 +525,15 @@ bool MainWindow::CheckInputValidity() {
  */
 void MainWindow::handleDirDial() {
 	if (curObj == 0) return;
-    qDebug() << "Handle direction dial with value: " << dirDial->value();
     curObj->direction = (dirDial->value() + 180)%360;
-    qDebug() << curObj->direction;
 }
 
 /*
  * Read results for the selected censor and set the Ui elements respectively
  */
-void MainWindow::handleUsrSelect(int index) {
+void MainWindow::handleUsrSelect() {
     census * obj;
-    if (index == -1) return;
+    if(wdgCensus->cmbUsers->currentText().isEmpty()) return;
     obj = db->getRawObjectData(QString::number(curObj->id), wdgCensus->cmbUsers->currentText());
     UiPreSelection(obj);
     delete obj;
@@ -620,7 +618,7 @@ void MainWindow::handleSessionSelection() {
 }
 
 void MainWindow::handleObjectSelection() {
-	wdgCensus->cmbUsers->disconnect();
+    wdgCensus->button_user_select->disconnect();
     wdgGraphics->sldBrightness->setValue(0);
     wdgGraphics->sldContrast->setValue(0);
 
@@ -644,6 +642,7 @@ void MainWindow::handleObjectSelection() {
     }
 
     if (curObj->type.isEmpty()) curObj->type = type;
+
     censorList = db->getUserList(objId);
     wdgCensus->cmbUsers->addItems(censorList);
 
@@ -670,10 +669,10 @@ void MainWindow::handleObjectSelection() {
 
     if (db->getCensorCount(QString::number(curObj->id), "1", config->getUser()) >= 2
             || db->getMaxCensor(QString::number(curObj->id)) >= 2) {
-        wdgCensus->cmbUsers->setDisabled(false);
+        wdgCensus->button_user_select->setDisabled(false);
     } else {
         wdgCensus->cmbUsers->clear();
-        wdgCensus->cmbUsers->setDisabled(true);
+        wdgCensus->button_user_select->setDisabled(true);
     }
 
     wdgCensus->btnBirdSizeLength->setEnabled(true);
@@ -697,7 +696,7 @@ void MainWindow::handleObjectSelection() {
             QString("Project: %1, Kamera: %2, Bild: %3, Objekt ID: %4")
             .arg(curObj->session).arg(curObj->camera).arg(curObj->image).arg(curObj->id)
             );
-    connect(wdgCensus->cmbUsers, SIGNAL(currentIndexChanged(int)), this, SLOT(handleUsrSelect(int)));
+    connect(wdgCensus->button_user_select, SIGNAL(clicked()), this, SLOT(handleUsrSelect()));
 }
 
 void MainWindow::handleSaveButton() {

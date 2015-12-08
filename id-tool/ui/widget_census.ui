@@ -84,8 +84,7 @@
            </property>
            <property name="icon">
             <iconset theme="view-list-text">
-             <normaloff/>
-            </iconset>
+             <normaloff>.</normaloff>.</iconset>
            </property>
           </widget>
          </item>
@@ -122,8 +121,7 @@
            </property>
            <property name="icon">
             <iconset theme="view-list-text">
-             <normaloff/>
-            </iconset>
+             <normaloff>.</normaloff>.</iconset>
            </property>
           </widget>
          </item>
@@ -187,8 +185,7 @@
            </property>
            <property name="icon">
             <iconset theme="view-list-text">
-             <normaloff/>
-            </iconset>
+             <normaloff>.</normaloff>.</iconset>
            </property>
           </widget>
          </item>
@@ -225,8 +222,7 @@
            </property>
            <property name="icon">
             <iconset theme="view-list-text">
-             <normaloff/>
-            </iconset>
+             <normaloff>.</normaloff>.</iconset>
            </property>
           </widget>
          </item>
@@ -348,8 +344,7 @@
         </property>
         <property name="icon">
          <iconset theme="document-save">
-          <normaloff/>
-         </iconset>
+          <normaloff>.</normaloff>.</iconset>
         </property>
        </widget>
       </item>
@@ -363,8 +358,7 @@
         </property>
         <property name="icon">
          <iconset theme="edit-delete">
-          <normaloff/>
-         </iconset>
+          <normaloff>.</normaloff>.</iconset>
         </property>
         <property name="checkable">
          <bool>false</bool>
@@ -407,6 +401,30 @@
          <enum>Qt::ClickFocus</enum>
         </property>
        </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="button_user_select">
+        <property name="text">
+         <string>OK</string>
+        </property>
+        <property name="icon">
+         <iconset theme="dialog-ok">
+          <normaloff>.</normaloff>.</iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item>
        <widget class="QCheckBox" name="chbSaveCensus">
@@ -736,8 +754,7 @@
             </property>
             <property name="icon">
              <iconset theme="measure">
-              <normaloff/>
-             </iconset>
+              <normaloff>.</normaloff>.</iconset>
             </property>
            </widget>
           </item>
@@ -762,8 +779,7 @@
             </property>
             <property name="icon">
              <iconset theme="measure">
-              <normaloff/>
-             </iconset>
+              <normaloff>.</normaloff>.</iconset>
             </property>
            </widget>
           </item>
@@ -1403,8 +1419,7 @@ Wasseroberfl&amp;äche</string>
             </property>
             <property name="icon">
              <iconset theme="measure">
-              <normaloff/>
-             </iconset>
+              <normaloff>.</normaloff>.</iconset>
             </property>
            </widget>
           </item>
@@ -1927,15 +1942,15 @@ Wasseroberfl&amp;äche</string>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttongroup_bird_sex"/>
-  <buttongroup name="buttongroup_anthro_confidence"/>
   <buttongroup name="buttongroup_bird_behaviour"/>
   <buttongroup name="buttongroup_mammal_confidence"/>
-  <buttongroup name="buttongroup_mammal_age"/>
+  <buttongroup name="buttongroup_anthro_confidence"/>
+  <buttongroup name="buttongroup_bird_confidence"/>
+  <buttongroup name="buttongroup_mammal_behaviour"/>
   <buttongroup name="buttongroup_nosight_confidence"/>
   <buttongroup name="buttongroup_bird_age"/>
+  <buttongroup name="buttongroup_mammal_age"/>
   <buttongroup name="buttongroup_misc_confidence"/>
-  <buttongroup name="buttongroup_mammal_behaviour"/>
-  <buttongroup name="buttongroup_bird_confidence"/>
+  <buttongroup name="buttongroup_bird_sex"/>
  </buttongroups>
 </ui>

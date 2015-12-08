@@ -51,7 +51,7 @@ DEPENDPATH += /usr/include/qgis
 INCLUDEPATH += ../libs/
 
 INCLUDEPATH += ../fusion/
-LIBS += -L../fusion -lfusion
+LIBS += ../fusion/libfusion.a
 
 DEFINES += GUI_EXPORT= CORE_EXPORT=
 

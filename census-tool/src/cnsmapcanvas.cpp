@@ -687,3 +687,6 @@ void CnsMapCanvas::hideMarker(bool hide) {
 			object_markers_.values().at(i)->show();
 	}
 }
+
+void CnsMapCanvas::closeCanvas() {
+}
