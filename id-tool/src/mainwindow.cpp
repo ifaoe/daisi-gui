@@ -1049,6 +1049,8 @@ void MainWindow::handleUserSwitch() {
                 message.exec();
                 return;
             }
+        } else {
+            return;
         }
     }
 
