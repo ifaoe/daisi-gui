@@ -136,7 +136,7 @@ QStringList DatabaseHandler::getUserList(QString objId) {
     qDebug() << "Getting user list from database.";
     QStringList userList;
 //    userList.append(cfg->user());
-    QString qstr = "SELECT usr FROM census WHERE rcns_id=" + objId + " ORDER BY censor, fcns_id";
+    QString qstr = "SELECT usr FROM census WHERE rcns_id=" + objId + " AND mark_delete IS NULL ORDER BY censor, fcns_id";
     qDebug() << qstr;
     QSqlQuery query(qstr);
     QString user;
@@ -312,6 +312,9 @@ void DatabaseHandler::setRecordTable(QSqlRecord * record, census * obj) {
 
     if (obj->span > 0) record->setValue("width", obj->span);
     else record->setNull("width");
+
+    if (obj->log.isEmpty()) record->setNull("log");
+    else record->setValue("log", obj->log);
 
     if (obj->plumage.isEmpty()) record->setNull("plumage");
     else record->setValue("plumage",obj->plumage);
@@ -495,7 +498,7 @@ void DatabaseHandler::GetBirdPlumageClasses(QComboBox * cmb_box) {
 
 void DatabaseHandler::deleteCensusData(QString objId, QString usr) {
     qDebug() << "Delete data from user: " + usr + " ID: " + objId + "." << endl;
-    QString qstr = "DELETE FROM census WHERE rcns_id=" + objId + " AND usr='" + usr + "'";
+    QString qstr = "UPDATE census set mark_delete=true, delete_hint='By user request. ' || delete_hint WHERE rcns_id=" + objId + " AND usr='" + usr + "'";
     qDebug() << qstr;
     QSqlQuery query(qstr);
     query.exec();

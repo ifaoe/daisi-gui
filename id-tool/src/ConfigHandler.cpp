@@ -40,6 +40,10 @@ beginGroup("Database");
 endGroup();
 }
 
+QString ConfigHandler::getSystemUser() {
+    return QString(getenv("USER"));
+}
+
 void ConfigHandler::setPreferredDatabase(const QString & database) {
 	setValue("Database/preferred", database);
 }
@@ -78,6 +82,14 @@ void ConfigHandler::setAppMaximized(bool max) {
 
 bool ConfigHandler::getAppMaximized() {
 	return value("MainWindow/maximized",false).toBool();
+}
+
+void ConfigHandler::setAdmin(bool permission) {
+    setValue("admin",permission);
+}
+
+bool ConfigHandler::getAdmin() {
+    return value("admin",false).toBool();
 }
 
 QStringList ConfigHandler::getDatabaseList() {

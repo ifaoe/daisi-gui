@@ -37,6 +37,8 @@ public:
 	QPoint getAppPosition();
 	void setAppSize(QSize size);
 	QSize getAppSize();
+    void setAdmin(bool permission);
+    bool getAdmin();
 	void setAppMaximized(bool max);
 	bool getAppMaximized();
 	void setPreferredDatabase(const QString & database);
@@ -45,6 +47,7 @@ public:
 	QString getPreferredSession();
 	QStringList getDatabaseList();
 	DatabaseInfo getDatabaseInfo(const QString & id);
+    QString getSystemUser();
 private:
     QString user;
 };

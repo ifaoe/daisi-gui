@@ -67,6 +67,8 @@ private:
 
     QDial * dirDial;
 
+    QLabel * user_change_warning;
+
     QMap<QString, QString> filterMap;
 
     // Treewidgets
@@ -130,6 +132,7 @@ private slots:
 	void HandleActiveCensusElements();
 	void HandleServerSelection();
 	void handleUserSwitch();
+    void userDefault();
 	void showFilterDialog(int index);
 };
 

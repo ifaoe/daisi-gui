@@ -42,7 +42,9 @@ int main(int argc, char *argv[])
     palette.setColor(QPalette::ToolTipText, Qt::white);
     palette.setColor(QPalette::Text, Qt::white);
     palette.setColor(QPalette::Button, QColor(53,53,53));
-    palette.setColor(QPalette::ButtonText, Qt::white);
+    palette.setColor(QPalette::Disabled, QPalette::ButtonText, QColor(53,53,53).lighter());
+    palette.setColor(QPalette::Active, QPalette::ButtonText, Qt::white);
+    palette.setColor(QPalette::Inactive, QPalette::ButtonText, Qt::white);
     palette.setColor(QPalette::BrightText, Qt::red);
 
     palette.setColor(QPalette::Highlight, QColor(142,45,197).lighter());

@@ -50,6 +50,7 @@ struct census {
     QStringList stuk4_ass;
     QStringList group;
     QStringList family;
+    QString log = "";
 };
 
 

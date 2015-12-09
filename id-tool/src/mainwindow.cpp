@@ -94,7 +94,8 @@ MainWindow::MainWindow( ConfigHandler *cfgArg, DatabaseHandler *dbArg, QWidget *
     connect(ui->toolbutton_map_view, SIGNAL(clicked()), this, SLOT(handleMapToolButton()));
     connect(ui->toolbutton_zoom_original, SIGNAL(clicked()), this, SLOT(handleOneToOneZoom()));
     connect(ui->toolbutton_take_measurement, SIGNAL(clicked()), this, SLOT(handleMiscMeasurement()));
-    connect(ui->toolbutton_user_switch, SIGNAL(clicked()), this, SLOT(handleUserSwitch()));
+    connect(wdgCensus->button_user_switch, SIGNAL(clicked()), this, SLOT(handleUserSwitch()));
+    connect(wdgCensus->button_user_default, SIGNAL(clicked()), this, SLOT(userDefault()));
 
     wdgCensus->btnBirdSizeLength->setEnabled(false);
     wdgCensus->btnBirdSizeSpan->setEnabled(false);
@@ -178,6 +179,20 @@ QVariant MainWindow::getObjectItemData(int row, int column) {
 void MainWindow::initMapView() {
     // Setup image and map
     imgcvs = new ImgCanvas(ui->wdgImg, ui, config, db);
+
+    user_change_warning = new QLabel(imgcvs);
+    if (config->getUser() != config->getSystemUser())
+        user_change_warning->show();
+    else
+        user_change_warning->hide();
+
+    user_change_warning->setText(QString("Bestimmung als Nutzer: %1").arg(config->getUser()));
+
+    QFont font("Sans Serif", 14, QFont::Bold);
+    user_change_warning->setFont(font);
+
+    user_change_warning->setStyleSheet("QLabel { background-color : red; color : black; }");
+
     geoMap = new QWebView(ui->wdgImg);
     lytFrmImg = new QVBoxLayout;
     lytFrmImg->setMargin(0);
@@ -700,7 +715,7 @@ void MainWindow::handleObjectSelection() {
 }
 
 void MainWindow::handleSaveButton() {
-    qDebug() << "Trying to save as user: " << curObj->usr;
+    qDebug() << "Trying to save as user: " << config->getUser();
 
     curObj->type = wdgCensus->wdgTabTypes->currentWidget()->property("dbvalue").toString();
 
@@ -769,17 +784,17 @@ void MainWindow::handleSaveButton() {
 
     curObj->remarks = wdgCensus->textedit_remarks->toPlainText();
 
-    if (check_required || curObj->confidence != 1 || db->getMaxCensor(QString::number(curObj->id), curObj->usr) > 0) {
+    if (check_required || curObj->confidence != 1 || db->getMaxCensor(QString::number(curObj->id), config->getUser()) > 0) {
     	int tmpcensor = 0;
-		if (db->getMaxCensor(QString::number(curObj->id), curObj->usr) >= 2) {
+        if (db->getMaxCensor(QString::number(curObj->id), config->getUser()) >= 2) {
 			tmpcensor = 0;
-		} else if (db->getMaxCensor(QString::number(curObj->id), curObj->usr) == 1) {
+        } else if (db->getMaxCensor(QString::number(curObj->id), config->getUser()) == 1) {
 			if (db->getCensorCount(QString::number(curObj->id), "1", config->getUser()) > 1) {
 				tmpcensor = 3;
 			} else {
 				tmpcensor = 2;
 			}
-		} else if (db->getMaxCensor(QString::number(curObj->id), curObj->usr) < 1) {
+        } else if (db->getMaxCensor(QString::number(curObj->id), config->getUser()) < 1) {
 			tmpcensor = 1;
 		} else {
 			tmpcensor = -1;
@@ -848,6 +863,11 @@ void MainWindow::handleSaveButton() {
     } else {
         curObj->imageQuality = 0;
     }
+
+    //write user
+    curObj->usr = config->getUser();
+    if (config->getUser() != config->getSystemUser())
+        curObj->log.append(QString("Saved as %1 by %2. ").arg(config->getUser()).arg(config->getSystemUser()));
 
     // write object data to db
     if (!db->writeCensus(curObj)) {
@@ -996,32 +1016,46 @@ void MainWindow::showFilterDialog(int index) {
 }
 
 void MainWindow::handleUserSwitch() {
-	bool ok;
-	QString password, user;
-	user = QInputDialog::getText(this, tr("Nutzer wechseln"), tr("User:"), QLineEdit::Normal,QString(),&ok);
-    if (!ok)
-        return;
-	password = QInputDialog::getText(this, tr("Admin Zugang freischalten"), tr("Passwort:"), QLineEdit::Password,QString(),&ok);
-	/*
-	 * MD5 sum of password
-	 * b90793dee6e8828cef899658c45ad8aa
-	 */
+    if (!config->getAdmin()) {
+        bool ok;
+        QString password;
+        password = QInputDialog::getText(this, tr("Admin Zugang freischalten"), tr("Passwort:"), QLineEdit::Password,QString(),&ok);
 
-	QCryptographicHash password_hash(QCryptographicHash::Md5);
-	password_hash.addData(password.toStdString().c_str());
-	if (ok ) {
-		if(QString(QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Md5).toHex())
-				== QString("b90793dee6e8828cef899658c45ad8aa")) {
-			QMessageBox message;
-			message.setText(tr("Nutzer erfolgreich gewechselt."));
-			message.setStandardButtons(QMessageBox::Ok);
-			message.exec();
-			config->setUser(user);
-		} else {
-			QMessageBox message;
-			message.setText("Nutzerwechsel fehlgeschlagen: Falsches Passwort.");
-			message.setStandardButtons(QMessageBox::Ok);
-			message.exec();
-		}
+        //MD5 sum of password
+        //b90793dee6e8828cef899658c45ad8aa
+        QCryptographicHash password_hash(QCryptographicHash::Md5);
+        password_hash.addData(password.toStdString().c_str());
+        if (ok ) {
+            if(QString(QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Md5).toHex())
+                    == QString("b90793dee6e8828cef899658c45ad8aa")) {
+                QMessageBox message;
+                message.setText(tr("Freischaltung erfolgreich."));
+                message.setStandardButtons(QMessageBox::Ok);
+                message.exec();
+                config->setAdmin(true);
+            } else {
+                QMessageBox message;
+                message.setText("Freischaltung fehlgeschlagen.");
+                message.setStandardButtons(QMessageBox::Ok);
+                message.exec();
+                return;
+            }
+        }
     }
+
+
+    config->setUser(wdgCensus->cmbUsers->currentText());
+    user_change_warning->setText(QString("Bestimmung als Nutzer: %1").arg(config->getUser()));
+    if (config->getUser() != config->getSystemUser())
+        user_change_warning->show();
+    else
+        user_change_warning->hide();
+}
+
+void MainWindow::userDefault() {
+    if (!config->getAdmin())
+        return;
+    config->setUser(config->getSystemUser());
+    user_change_warning->setText(QString("Bestimmung als Nutzer: %1").arg(config->getUser()));
+    user_change_warning->hide();
 }

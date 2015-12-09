@@ -414,6 +414,27 @@
        </widget>
       </item>
       <item>
+       <widget class="QToolButton" name="button_user_switch">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset theme="security-high">
+          <normaloff>.</normaloff>.</iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="button_user_default">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset theme="security-low"/>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -1942,15 +1963,15 @@ Wasseroberfl&amp;äche</string>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttongroup_bird_behaviour"/>
-  <buttongroup name="buttongroup_mammal_confidence"/>
-  <buttongroup name="buttongroup_anthro_confidence"/>
   <buttongroup name="buttongroup_bird_confidence"/>
+  <buttongroup name="buttongroup_mammal_confidence"/>
   <buttongroup name="buttongroup_mammal_behaviour"/>
-  <buttongroup name="buttongroup_nosight_confidence"/>
-  <buttongroup name="buttongroup_bird_age"/>
-  <buttongroup name="buttongroup_mammal_age"/>
-  <buttongroup name="buttongroup_misc_confidence"/>
+  <buttongroup name="buttongroup_anthro_confidence"/>
   <buttongroup name="buttongroup_bird_sex"/>
+  <buttongroup name="buttongroup_mammal_age"/>
+  <buttongroup name="buttongroup_nosight_confidence"/>
+  <buttongroup name="buttongroup_misc_confidence"/>
+  <buttongroup name="buttongroup_bird_behaviour"/>
+  <buttongroup name="buttongroup_bird_age"/>
  </buttongroups>
 </ui>
