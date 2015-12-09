@@ -214,7 +214,7 @@ void MainWindow::initMapView() {
  * the census struct.
  */
 void MainWindow::UiPreSelection(census * cobj) {
-
+    curObj->censor = cobj->censor;
     // Save Census checkbox ticked?
     // save all info but size and direction
     if (wdgCensus->chbSaveCensus->isChecked()) {
@@ -666,13 +666,19 @@ void MainWindow::handleObjectSelection() {
     UiPreSelection(curObj);
 
     // handle user selection
-    if ((curObj->censor > 0) && (db->getMaxCensor(QString::number(curObj->id),config->getUser()) > 1)) {
-        wdgCensus->btnDelete->setEnabled(false);
-        wdgCensus->btnSave->setEnabled(false);
-    } else {
+    if (config->getAdmin()) {
         wdgCensus->btnDelete->setEnabled(true);
         wdgCensus->btnSave->setEnabled(true);
+    } else {
+        if ((curObj->censor > 0) && (db->getMaxCensor(QString::number(curObj->id),config->getUser()) > 1)) {
+            wdgCensus->btnDelete->setEnabled(false);
+            wdgCensus->btnSave->setEnabled(false);
+        } else {
+            wdgCensus->btnDelete->setEnabled(true);
+            wdgCensus->btnSave->setEnabled(true);
+        }
     }
+
     if (curObj->censor < 0)
         wdgCensus->btnDelete->setEnabled(false);
 
@@ -785,6 +791,7 @@ void MainWindow::handleSaveButton() {
 
     curObj->remarks = wdgCensus->textedit_remarks->toPlainText();
 
+    if (!user_changed) {
     if (check_required || curObj->confidence != 1 || db->getMaxCensor(QString::number(curObj->id), config->getUser()) > 0) {
     	int tmpcensor = 0;
         if (db->getMaxCensor(QString::number(curObj->id), config->getUser()) >= 2) {
@@ -856,6 +863,7 @@ void MainWindow::handleSaveButton() {
 		}
     } else {
     	curObj->censor = 2;
+    }
     }
 
 
@@ -1047,14 +1055,18 @@ void MainWindow::handleUserSwitch() {
 
     config->setUser(wdgCensus->cmbUsers->currentText());
     user_change_warning->setText(QString("Bestimmung als Nutzer: %1").arg(config->getUser()));
-    if (config->getUser() != config->getSystemUser())
+    if (config->getUser() != config->getSystemUser()) {
         user_change_warning->show();
-    else
+        user_changed = true;
+    } else {
         user_change_warning->hide();
+        user_changed = false;
+    }
+    handleUsrSelect();
 }
 
 void MainWindow::userDefault() {
-    if (!config->getAdmin())
+    if (!user_changed)
         return;
     config->setUser(config->getSystemUser());
     user_change_warning->setText(QString("Bestimmung als Nutzer: %1").arg(config->getUser()));

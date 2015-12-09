@@ -200,7 +200,7 @@ census * DatabaseHandler::getRawObjectData(QString objId, QString usr) {
     delete query;
     qDebug() << "Getting object specific data for ID: " << objId;
     qstr =    "SELECT tp, name, confidence, beh, age, gen, dir, rem, censor, imgqual, length, width"
-            ", stuk4_beh, stuk4_ass, group_objects, family_group,id_code,age_year,plumage"
+            ", stuk4_beh, stuk4_ass, group_objects, family_group,id_code,age_year,plumage, censor"
             " FROM census WHERE rcns_id=" + objId + " AND usr='" + usr + "'";
     qDebug() << qstr;
     // if there is already an entry in census db-table,
@@ -229,6 +229,7 @@ census * DatabaseHandler::getRawObjectData(QString objId, QString usr) {
         	obj->age_year = query->value(17).toInt();
         if (!query->value(18).toString().isEmpty())
         	obj->plumage = query->value(18).toString();
+        obj->censor = query->value(19).toInt();
     }
     delete query;
     return obj;

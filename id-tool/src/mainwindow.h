@@ -68,6 +68,7 @@ private:
     QDial * dirDial;
 
     QLabel * user_change_warning;
+    bool user_changed = false;
 
     QMap<QString, QString> filterMap;
 
