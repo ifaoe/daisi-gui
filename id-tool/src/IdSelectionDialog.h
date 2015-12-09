@@ -22,14 +22,16 @@ public:
 	QAbstractItemModel * dataModel() { return dlg_->tbv_idselection->model();}
 	void set_id_column(int column) { id_column_ = column; }
 	int id_column() {return id_column_;}
-	void set_id_list(QStringList * id_list) {id_list_ = id_list; UpdateSelection(); UpdateInfoLabel();}
+    void set_id_list(QStringList input) {id_list = input; UpdateSelection(); UpdateInfoLabel();}
 	void set_info_label(QLabel * label) {info_label_ = label;}
+    QStringList getIdList() {return id_list;}
 	void UpdateSelection();
 	void ToggleHidden();
 	void UpdateInfoLabel();
 private:
     QLabel * info_label_;
 	QStringList * id_list_;
+    QStringList id_list;
 	QWidget * parent_;
 	Ui::dlg_idselection * dlg_;
 	QSqlQueryModel * data_model_;

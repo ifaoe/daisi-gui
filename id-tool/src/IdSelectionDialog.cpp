@@ -41,15 +41,15 @@ void IdSelectionDialog::resizeEvent(QResizeEvent * e) {
 
 
 void IdSelectionDialog::HandleSaveButton() {
-    id_list_->clear();
+    id_list.clear();
     QModelIndexList index = dlg_->tbv_idselection->selectionModel()->selectedRows();
     for (int i=0; i<index.size(); i++) {
         int row = index[i].row();
-        id_list_->push_back(
+        id_list.push_back(
                 dlg_->tbv_idselection->model()->data(
                         dlg_->tbv_idselection->model()->index(row,0)).toString());
     }
-    qSort(*id_list_);
+    qSort(id_list);
     UpdateInfoLabel();
 	this->close();
 	hidden_ = true;
@@ -78,8 +78,8 @@ void IdSelectionDialog::setDataModel(QSqlQueryModel * model) {
 
 void IdSelectionDialog::UpdateSelection() {
 	dlg_->tbv_idselection->clearSelection();
-    for (int i=0; i<id_list_->size(); i++) {
-        QModelIndex tmpind = GetDataRow(id_list_->at(i));
+    for (int i=0; i<id_list.size(); i++) {
+        QModelIndex tmpind = GetDataRow(id_list.at(i));
         if (tmpind.isValid())
             dlg_->tbv_idselection->selectionModel()->select(tmpind,
                     QItemSelectionModel::Select|QItemSelectionModel::Rows);
@@ -87,5 +87,5 @@ void IdSelectionDialog::UpdateSelection() {
 }
 
 void IdSelectionDialog::UpdateInfoLabel() {
-	info_label_->setText(id_list_->join(", "));
+    info_label_->setText(id_list.join(", "));
 }

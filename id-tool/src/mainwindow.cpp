@@ -234,16 +234,15 @@ void MainWindow::UiPreSelection(census * cobj) {
         return;
     }
 
-    association_dialog->set_id_list(&cobj->stuk4_ass);
-    behaviour_dialog->set_id_list(&cobj->stuk4_beh);
-    family_dialog->set_id_list(&cobj->family);
-    group_dialog->set_id_list(&cobj->group);
+
 
 //    // handle those differently -- courtesy of the stuk4 table widget
-    curObj->stuk4_ass = cobj->stuk4_ass;
-    curObj->stuk4_beh = cobj->stuk4_beh;
-    curObj->length = cobj->length;
-    curObj->span = cobj->span;
+    for (int i=0; i<cobj->stuk4_ass.size(); i++)
+
+    association_dialog->set_id_list(cobj->stuk4_ass);
+    behaviour_dialog->set_id_list(cobj->stuk4_beh);
+    family_dialog->set_id_list(cobj->family);
+    group_dialog->set_id_list(cobj->group);
 
     wdgCensus->textedit_remarks->clear();
 
@@ -664,11 +663,6 @@ void MainWindow::handleObjectSelection() {
     group_dialog->setDataModel(db->getCloseObjects(curObj));
     family_dialog->setDataModel(db->getCloseObjects(curObj));
 
-    association_dialog->set_id_list(&curObj->stuk4_ass);
-    behaviour_dialog->set_id_list(&curObj->stuk4_beh);
-    family_dialog->set_id_list(&curObj->family);
-    group_dialog->set_id_list(&curObj->group);
-
     UiPreSelection(curObj);
 
     // handle user selection
@@ -781,6 +775,13 @@ void MainWindow::handleSaveButton() {
     }
 
     if (!CheckInputValidity()) return;
+
+    curObj->stuk4_ass = association_dialog->getIdList();
+    curObj->stuk4_beh = behaviour_dialog->getIdList();
+    curObj->family = family_dialog->getIdList();
+    curObj->group = group_dialog->getIdList();
+
+
 
     curObj->remarks = wdgCensus->textedit_remarks->toPlainText();
 
