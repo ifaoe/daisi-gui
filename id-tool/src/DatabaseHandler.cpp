@@ -132,19 +132,15 @@ bool DatabaseHandler::GetAnthroObjectList(QComboBox * combo_box) {
 	return true;
 }
 
-QStringList DatabaseHandler::getUserList(QString objId) {
-    qDebug() << "Getting user list from database.";
+QStringList DatabaseHandler::getUserList(int objId) {
+    qDebug() << "Getting user list from database. For id " << objId;
     QStringList userList;
-//    userList.append(cfg->user());
-    QString qstr = "SELECT usr FROM census WHERE rcns_id=" + objId + " AND mark_delete IS NULL ORDER BY censor, fcns_id";
-    qDebug() << qstr;
-    QSqlQuery query(qstr);
-    QString user;
+    QString qstr = "SELECT DISTINCT usr, censor FROM census WHERE rcns_id=%1 AND mark_delete IS NULL ORDER BY censor";
+    QSqlQuery query(qstr.arg(objId));
+    qDebug() << query.executedQuery();
     if (query.size() == -1) return userList;
     while(query.next()) {
-        user = query.value(0).toString();
-        if (!userList.contains(user))
-            userList.append(user);
+        userList.append(query.value(0).toString());
     }
     return userList;
 }
@@ -177,7 +173,7 @@ QSqlQuery * DatabaseHandler::getObjectResult(QString session, QString user, QStr
 
 census * DatabaseHandler::getRawObjectData(QString objId, QString usr) {
     qDebug() << "Getting raw object data for object ID: " << objId;
-    QString qstr = "SELECT rcns_id, session, epsg, cam, img, tp, px, py, ux, uy, lx, ly FROM raw_census WHERE rcns_id=" + objId;
+    QString qstr = "SELECT rcns_id, session, epsg, cam, img, tp, px, py, ux, uy, lx, ly, tp FROM raw_census WHERE rcns_id=" + objId;
     qDebug() << qstr;
     QSqlQuery * query = new QSqlQuery(qstr);
     census *obj = new census;
@@ -197,6 +193,7 @@ census * DatabaseHandler::getRawObjectData(QString objId, QString usr) {
     obj->lx = query->value(10).toDouble();
     obj->ly = query->value(11).toDouble();
     obj->usr = usr;
+    obj->type = query->value(12).toString();
     delete query;
     qDebug() << "Getting object specific data for ID: " << objId;
     qstr =    "SELECT tp, name, confidence, beh, age, gen, dir, rem, censor, imgqual, length, width"
@@ -467,7 +464,7 @@ void DatabaseHandler::GetBirdAgeClasses(QComboBox * cmb_box) {
 	qDebug() << qstr;
 	QSqlQuery query(qstr);
 	while (query.next()) {
-		cmb_box->addItem(query.value(1).toString(), query.value(0));
+        cmb_box->addItem(query.value(1).toString(), query.value(0));
 	}
 }
 

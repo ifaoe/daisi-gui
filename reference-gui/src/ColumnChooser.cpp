@@ -48,7 +48,9 @@ void ColumnChooser::addColumn(QString text, QString column_name) {
     column_layout->addWidget(box, current_row, current_column);
     current_row++;
     column_boxes->addButton(box);
-//    resize(main_widget->sizeHint());
+    column_widget->updateGeometry();
+    main_widget->updateGeometry();
+    setFixedSize(main_widget->sizeHint());
 }
 
 void ColumnChooser::onAccept() {

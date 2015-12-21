@@ -22,12 +22,11 @@ public:
     virtual ~MeasurementDialog();
     void updateStatusMessage(QString text);
     void updateInfoMessage(QString text);
-    void startMeasurement(double * value, QLabel * label);
+    void startMeasurement(double * value);
 private:
     void closeEvent(QCloseEvent *e);
     ImgCanvas * cvs = 0;
     double * value = 0;
-    QLabel * label = 0;
     bool running = false;
     Ui::dlgMeasurement * dlg = 0;
 private slots:

@@ -33,39 +33,28 @@ void MeasurementDialog::updateInfoMessage(QString text) {
 void MeasurementDialog::handleAccept() {
     running=false;
     close();
-    if (value == 0 || label == 0) {
+    if (value == 0) {
         cvs->endMeasurement();
         return;
     }
     *value = cvs->endMeasurement();
-    if (*value > 0) {
-        label->setText(QString::number(*value) + " m");
-    } else {
-        *value=-1.0;
-        label->clear();
-    }
 }
 
 void MeasurementDialog::handleReject() {
     running=false;
     cvs->endMeasurement();
     close();
-    if (value != 0 && label != 0) {
-        label->clear();
-        *value = -1.0;
-    }
 }
 
-void MeasurementDialog::startMeasurement(double * val, QLabel * lbl) {
+void MeasurementDialog::startMeasurement(double * val) {
     if (running) return;
     running = true;
     updateStatusMessage(QString::fromUtf8("Messung läuft."));
     updateInfoMessage(QString::fromUtf8("Bitte Messpunkte setzen."));
     value = val;
-    label = lbl;
     cvs->beginMeasurement(this);
 
-    if (value == 0 || label == 0)
+    if (value == 0)
         dlg->btbMeasurement->button(QDialogButtonBox::Save)->hide();
     else
         dlg->btbMeasurement->button(QDialogButtonBox::Save)->show();

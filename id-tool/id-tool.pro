@@ -18,13 +18,8 @@ SOURCES +=  main.cpp\
             CensorSqlTableModel.cpp \
             IdSelectionDialog.cpp \
             ObjectSelectionDialog.cpp \
-            MeasurementDialog.cpp \ 
-    censuswidget.cpp \
-    censusbird.cpp \
-    censusmammal.cpp \
-    censusanthro.cpp \
-    censusmisc.cpp \
-    censusnosight.cpp
+            MeasurementDialog.cpp \
+            censuswidget.cpp
 		
 HEADERS  += mainwindow.h\
             ImgCanvas.h \
@@ -36,12 +31,7 @@ HEADERS  += mainwindow.h\
             IdSelectionDialog.h \
             ObjectSelectionDialog.h \
             MeasurementDialog.h \
-    censuswidget.h \
-    censusbird.h \
-    censusmammal.h \
-    censusanthro.h \
-    censusmisc.h \
-    censusnosight.h
+            censuswidget.h
         
 FORMS    += mainwindow.ui \
             sessiondialog.ui \
@@ -52,13 +42,7 @@ FORMS    += mainwindow.ui \
             dialog_idselection.ui \
             dialog_object_selection.ui \
             dialog_measurement.ui \
-            widget_census_shared.ui \
-    ui/censuswidget.ui \
-    ui/censusbird.ui \
-    ui/censusmammal.ui \
-    ui/censusanthro.ui \
-    ui/censusmisc.ui \
-    ui/censusnosight.ui
+            widget_census_shared.ui
 
 INCLUDEPATH += /usr/include/qgis
 DEPENDPATH += /usr/include/qgis

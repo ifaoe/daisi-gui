@@ -29,13 +29,13 @@
 #include "ConfigHandler.h"
 #include "ui_widget_sessions.h"
 #include "ui_widget_objects.h"
-#include "ui_widget_census.h"
 #include "ui_widget_graphics.h"
 #include "QCategoryCheckButton.h"
 #include "MeasurementDialog.h"
 #include "IdSelectionDialog.h"
 #include "QCollapsibleToolbox.h"
 #include "CensorSqlTableModel.h"
+#include "censuswidget.h"
 
 namespace Ui {
 class MainWindow;
@@ -67,74 +67,46 @@ private:
 
     QDial * dirDial;
 
-    QLabel * user_change_warning;
-    bool user_changed = false;
-
     QMap<QString, QString> filterMap;
 
     // Treewidgets
     Ui::wdgSessions * wdgSession;
     Ui::wdgObjects * wdgObjects;
-    Ui::wdgCensus * wdgCensus;
     Ui::wdgGraphics * wdgGraphics;
+    CensusWidget * census_widget;
 
     QSet<int> sortSet;
 
     MeasurementDialog * measurementWindow = 0;
 
-    IdSelectionDialog * group_dialog = 0;
-    IdSelectionDialog * family_dialog = 0;
-    IdSelectionDialog * association_dialog = 0;
-    IdSelectionDialog * behaviour_dialog = 0;
-
-    QVariant GetGroupBoxValue(QGroupBox * gbx, QButtonGroup * btng, QString value);
-    QVariant GetButtonGroupValue(QButtonGroup * btng, QString value);
-    void selectButtonByString(QButtonGroup * btnGrp, QString str);
     void initMapView();
-    void UiPreSelection(census * cobj);
     void initFilters();
     void initCollapsibleMenu();
-    void initCensusWidget();
     void initSessionWidget();
-    bool compareResults(census * cobj, census * pobj);
-    void conductMeasurement(double * length, QLabel * label);
-    bool CheckInputValidity();
-    QVariant GetComboBoxItem(QComboBox * combo_box);
-    void SaveComboBoxSelection(QComboBox * combo_box);
+    void conductMeasurement(double * length);
     void updateTodoObjects();
     QVariant getObjectItemData(int row, int column);
     QStringList getColumnDataList(int column);
 public slots:
-
 private slots:
 	void handleSessionSelection();
 	void handleObjectSelection();
 	void handleMapToolButton();
 	void handleOneToOneZoom();
 	void handleDirDial();
-    void handleUsrSelect();
 	void handleBrightnessSlider();
 	void handleContrastSlider();
 	void handleBrightnessReset();
 	void handleContrastReset();
 	void handleCensorFilter(int index);
 	void handleUserCensorFilter(int index);
-	void handleDeleteButton();
-	void handleSaveButton();
-	void handleBirdSpanMeasurement();
-	void handleBirdLengthMeasurement();
-	void handleMammalLengthMeasurement();
+    void widthMeasurement();
+    void lengthMeasurement();
 	void handleMiscMeasurement();
 	void handleFlightInfoAction();
-	void HandleAssociationSelection();
-	void HandleBehaviourSelection();
-	void HandleGroupSelection();
-	void HandleFamilySelection();
-	void HandleActiveCensusElements();
 	void HandleServerSelection();
-	void handleUserSwitch();
-    void userDefault();
 	void showFilterDialog(int index);
+    void selectNextObject();
 };
 
 #endif // MAINWINDOW_H

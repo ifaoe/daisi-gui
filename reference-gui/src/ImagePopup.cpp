@@ -7,7 +7,7 @@
 
 #include "ImagePopup.h"
 
-ImagePopup::ImagePopup(QWidget * canvas, ImageCanvas * image_canvas, QWidget * parent) : QWidget(parent, Qt::Window),
+ImagePopup::ImagePopup(QWidget * canvas, ImageCanvas * image_canvas, QWidget * parent) : QWidget(parent),
 	ui(new Ui::widget_image_popup), widget_canvas(canvas), image_canvas(image_canvas), parent(parent) {
 	ui->setupUi(this);
 	ui->widget_image->setLayout(canvas->layout());

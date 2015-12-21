@@ -8,7 +8,7 @@
 #ifndef SRC_IMAGEPOPUP_H_
 #define SRC_IMAGEPOPUP_H_
 
-#include <qwidget.h>
+#include <QDialog>
 #include "ui_image_popup.h"
 #include "ImageCanvas.h"
 #include <qgsmaptoolpan.h>

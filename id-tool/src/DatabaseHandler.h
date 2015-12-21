@@ -32,7 +32,7 @@ public:
     QSqlQuery * getObjectResult(QString session, QString user, QString filter="", QString order="");
     census * getRawObjectData(QString objId, QString usr);
     bool getSpeciesList(QString type, QComboBox * combo_box);
-    QStringList getUserList(QString objId);
+    QStringList getUserList(int objId);
     census * getCensusData(QString objId);
     bool writeCensus(census * obj);
     QString getProjectPath(QString session);

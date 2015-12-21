@@ -63,9 +63,6 @@ MainWindow::MainWindow(UserSettings * config, DatabaseHandler * db)
 	SetupTables();
 	HandleColumnVisibility();
 
-	connect(ui->table_view_objects->selectionModel(),
-			SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
-			SLOT(HandleSelectionChange(const QItemSelection &, const QItemSelection &)));
 	connect(ui->actionMit_Server_verbinden,SIGNAL(triggered()),this,SLOT(HandleServerSelection()));
 	connect(ui->button_image_popup, SIGNAL(clicked()),this,SLOT(HandleImagePopup()));
 	connect(ui->actionSpalten,SIGNAL(triggered()),this,SLOT(HandleColumnChooser()));
@@ -120,9 +117,13 @@ MainWindow::~MainWindow() {
 //}
 
 void MainWindow::HandleFilter() {
+    disconnect(ui->table_view_objects->selectionModel());
 	census_model->setFilter( static_cast<QStringList>(filter_map.values()).join(" AND ") );
 	census_model->select();
 	ui->table_view_objects->resizeColumnsToContents();
+    connect(ui->table_view_objects->selectionModel(),
+            SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
+            SLOT(HandleSelectionChange(const QItemSelection &, const QItemSelection &)));
 }
 
 void MainWindow::SetupTables() {
@@ -287,5 +288,5 @@ void MainWindow::HandleServerSelection() {
 
 void MainWindow::HandleImagePopup() {
 	ImagePopup * window = new ImagePopup(ui->widget_image, canvas, this);
-	window->show();
+    window->show();
 }
