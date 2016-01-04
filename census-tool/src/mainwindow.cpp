@@ -303,7 +303,11 @@ void MainWindow::handleImageSelection()
 	  config->current_cam = selected_cam;
 	  config->current_image = selected_file;
 
-      object_table_model->setFilter(QString("session='%1' AND cam='%2' AND img='%3'").arg(config->getProjectId()).arg(config->getCurrentCam()).arg(config->getCurrentImage()));
+    if (config->getProjectId().startsWith("Testdatensatz") && !config->getAdmin())
+        object_table_model->setFilter(QString("session='%1' AND cam='%2' AND img='%3' AND usr='%4'")
+                                      .arg(config->getProjectId()).arg(config->getCurrentCam()).arg(config->getCurrentImage()).arg(config->getUser()));
+    else
+        object_table_model->setFilter(QString("session='%1' AND cam='%2' AND img='%3'").arg(config->getProjectId()).arg(config->getCurrentCam()).arg(config->getCurrentImage()));
       object_table_model->select();
 
 	  ui->tbxTasks->setCurrentIndex(1);
@@ -409,14 +413,14 @@ void MainWindow::handleAdminPass() {
 	password = QInputDialog::getText(this, tr("Admin Zugang freischalten"), tr("Passwort:"), QLineEdit::Password,QString(),&ok);
 	/*
 	 * MD5 sum of password
-	 * 72ead00ca661b02c2dd8e677433ad390
+     * 5d2e35ab7e9e437b5a81a55ef8a1c895
 	 */
 
 	QCryptographicHash password_hash(QCryptographicHash::Md5);
 	password_hash.addData(password.toStdString().c_str());
 	if (ok ) {
 		if(QString(QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Md5).toHex())
-				== QString("72ead00ca661b02c2dd8e677433ad390")) {
+                == QString("5d2e35ab7e9e437b5a81a55ef8a1c895")) {
 			QMessageBox message;
 			message.setText(tr("Adminzugang erfolgreich freigeschaltet."));
 			message.setStandardButtons(QMessageBox::Ok);
