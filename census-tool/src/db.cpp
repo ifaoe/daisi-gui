@@ -297,8 +297,9 @@ QStringList Db::getSessionParameters(const QString & session) {
 
 SqlReadyTableModel * Db::getImageView() {
     SqlReadyTableModel * model = new SqlReadyTableModel;
-    model->setTable("daisi_bird_census_images");
-    model->setHeaderData(model->fieldIndex("session"), Qt::Horizontal,"Projekt", Qt::DisplayRole);
+    model->setTable("daisi_dev.bird_census_images");
+    model->setHeaderData(model->fieldIndex("session"), Qt::Horizontal,"Flug", Qt::DisplayRole);
+    model->setHeaderData(model->fieldIndex("project"), Qt::Horizontal,"Projekt", Qt::DisplayRole);
     model->setHeaderData(model->fieldIndex("trc"), Qt::Horizontal,"Trc", Qt::DisplayRole);
     model->setHeaderData(model->fieldIndex("cam"), Qt::Horizontal,"Cam", Qt::DisplayRole);
     model->setHeaderData(model->fieldIndex("img"), Qt::Horizontal,"Bild", Qt::DisplayRole);

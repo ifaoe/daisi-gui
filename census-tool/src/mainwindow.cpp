@@ -54,6 +54,7 @@ MainWindow::MainWindow(ConfigHandler *aConfig, Db * aDb)
     image_table_model = db->getImageView();
     ui->image_table->setModel(image_table_model);
     ui->image_table->hideColumn(image_table_model->fieldIndex("session"));
+    ui->image_table->hideColumn(image_table_model->fieldIndex("project"));
     ui->image_table->hideColumn(image_table_model->fieldIndex("project_list"));
     ui->image_table->hideColumn(image_table_model->fieldIndex("examined"));
     ui->image_table->hideColumn(image_table_model->fieldIndex("analysed"));
@@ -370,7 +371,7 @@ void MainWindow::handleSessionSelection() {
      * TODO: image_properties neu indizieren
      */
     filter_map.clear();
-    filter_map["session"] = QString("session='%1' AND project_list@>ARRAY['%2']").arg(config->getFlightId()).arg(ui->cmbSession->currentText());
+    filter_map["session"] = QString("session='%1' AND project='%2'").arg(config->getFlightId()).arg(ui->cmbSession->currentText());
     ui->chbNotReady->setChecked(false);
     image_table_model->setFilter(getFilterString());
     image_table_model->select();
