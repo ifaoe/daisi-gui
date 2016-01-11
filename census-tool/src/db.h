@@ -1,7 +1,6 @@
 #ifndef DB_H
 #define DB_H
 
-#include <libconfig.h++>
 #include <QPlainTextEdit>
 #include <QTableWidget>
 #include <QString>
