@@ -37,13 +37,13 @@ void OvrMapCanvas::doSelectNextTile() {
     	curTile++;
     	doSelectTile(curTile);
     } else {
-        QMessageBox msgBox;
-        msgBox.setText("Das Ende des Bildes wurde erreicht.");
-        msgBox.setInformativeText(trUtf8("Soll das nächste Bild geladen werden? (Aktuelles Bild wird als fertig markiert!)"));
-        QAbstractButton *nextButton = msgBox.addButton(trUtf8("Ja"), QMessageBox::YesRole);
-        QAbstractButton *stayButton = msgBox.addButton(trUtf8("Nein"), QMessageBox::NoRole);
-        msgBox.exec();
-        if(msgBox.clickedButton() == nextButton) {
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this,trUtf8("Ende des Bildes"),trUtf8("Soll das nächste Bild geladen werden? (Aktuelles Bild wird als fertig markiert!)"),
+                                      QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+
+
+
+        if(reply == QMessageBox::Yes) {
             int rawImgID = -1;
             QString rawImgTmWhen = "";
             QString rawImgTmSeen = "";
@@ -62,8 +62,8 @@ void OvrMapCanvas::doSelectNextTile() {
                 ui->image_table->selectionModel()->select(
                 		newRow, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
             }
-        } else if (msgBox.clickedButton() == stayButton) {
-
+        } else {
+            return;
         }
     }
 }
