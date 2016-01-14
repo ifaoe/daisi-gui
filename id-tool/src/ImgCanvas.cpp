@@ -102,10 +102,20 @@ bool ImgCanvas::loadObject(census * obj) {
         return false;
     }
     imgProvider = imgLayer->dataProvider();
+    QgsContrastEnhancement* qgsContrastEnhRed = new QgsContrastEnhancement(imgProvider->dataType(cfg->getRedChannel()));
+//    qgsContrastEnhRed->setMinimumValue(0);
+//    qgsContrastEnhRed->setMaximumValue(pow(2, 8*qgsImgProvider->dataTypeSize(config->getRedChannel())));
+//    qgsContrastEnhRed->setContrastEnhancementAlgorithm(QgsContrastEnhancement::StretchToMinimumMaximum);
 
-    QgsContrastEnhancement* qgsContrastEnhRed = new QgsContrastEnhancement(QGis::UInt16);
-    QgsContrastEnhancement* qgsContrastEnhGreen = new QgsContrastEnhancement(QGis::UInt16);
-    QgsContrastEnhancement* qgsContrastEnhBlue = new QgsContrastEnhancement(QGis::UInt16);
+    QgsContrastEnhancement* qgsContrastEnhGreen = new QgsContrastEnhancement(imgProvider->dataType(cfg->getGreenChannel()));
+//    qgsContrastEnhGreen->setMinimumValue(0);
+//    qgsContrastEnhGreen->setMaximumValue(pow(2, 8*qgsImgProvider->dataTypeSize(config->getGreenChannel())));
+//    qgsContrastEnhGreen->setContrastEnhancementAlgorithm(QgsContrastEnhancement::StretchToMinimumMaximum);
+
+    QgsContrastEnhancement* qgsContrastEnhBlue = new QgsContrastEnhancement(imgProvider->dataType(cfg->getBlueChannel()));
+//    qgsContrastEnhBlue->setMinimumValue(0);
+//    qgsContrastEnhBlue->setMaximumValue(pow(2, 8*qgsImgProvider->dataTypeSize(config->getBlueChannel())));
+//    qgsContrastEnhBlue->setContrastEnhancementAlgorithm(QgsContrastEnhancement::StretchToMinimumMaximum);
 
     QgsMultiBandColorRenderer* renderer = new QgsMultiBandColorRenderer( imgProvider, 1, 2, 3,
                 qgsContrastEnhRed, qgsContrastEnhGreen, qgsContrastEnhBlue);

@@ -48,6 +48,9 @@ public:
 	QStringList getDatabaseList();
 	DatabaseInfo getDatabaseInfo(const QString & id);
     QString getSystemUser();
+    int getRedChannel();
+    int getGreenChannel();
+    int getBlueChannel();
 private:
     QString user;
 };

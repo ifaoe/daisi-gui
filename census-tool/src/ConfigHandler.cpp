@@ -118,36 +118,12 @@ int ConfigHandler::getRedChannel() {
 	return value("QGis/red_channel",1).toInt();
 }
 
-double ConfigHandler::getRedMinValue() {
-	return value("QGis/red_channel_min", 0.).toDouble();
-}
-
-double ConfigHandler::getRedMaxValue() {
-	return value("QGis/red_channel_max", 65000.).toDouble();
-}
-
 int ConfigHandler::getGreenChannel() {
 	return value("QGis/green_channel",2).toInt();
 }
 
-double ConfigHandler::getGreenMinValue() {
-	return value("QGis/green_channel_min", 0.).toDouble();
-}
-
-double ConfigHandler::getGreenMaxValue() {
-	return value("QGis/green_channel_max", 65000.).toDouble();
-}
-
 int ConfigHandler::getBlueChannel() {
 	return value("QGis/blue_channel",3).toInt();
-}
-
-double ConfigHandler::getBlueMinValue() {
-	return value("QGis/blue_channel_min", 0.).toDouble();
-}
-
-double ConfigHandler::getBlueMaxValue() {
-	return value("QGis/blue_channel_max", 65000.).toDouble();
 }
 
 int ConfigHandler::getTileWidth() {

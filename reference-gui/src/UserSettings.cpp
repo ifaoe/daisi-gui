@@ -102,3 +102,15 @@ QStringList UserSettings::getDatabaseList() {
 	endGroup();
 	return children;
 }
+
+int UserSettings::getRedChannel() {
+    return value("QGis/red_channel",1).toInt();
+}
+
+int UserSettings::getGreenChannel() {
+    return value("QGis/green_channel",2).toInt();
+}
+
+int UserSettings::getBlueChannel() {
+    return value("QGis/blue_channel",3).toInt();
+}

@@ -40,6 +40,9 @@ public:
 	QString getPreferredDatabase();
 	QStringList getDatabaseList();
 	DatabaseInfo getDatabaseInfo(const QString & id);
+    int getRedChannel();
+    int getGreenChannel();
+    int getBlueChannel();
 };
 
 #endif /* SRC_USERSETTINGS_H_ */

@@ -468,23 +468,20 @@ bool CnsMapCanvas::openRasterLayer(const QString imagePath,
     qDebug() <<"rasterLayer UnitY "+QString::number(dblUnitPixY);
 
 
-    QgsContrastEnhancement* qgsContrastEnhRed = new QgsContrastEnhancement(QGis::UInt16);
-    qgsContrastEnhRed->setMinimumValue(config->getRedMinValue());
-    qgsContrastEnhRed->setMaximumValue(config->getRedMaxValue());
-    qgsContrastEnhRed->setContrastEnhancementAlgorithm (
-    		QgsContrastEnhancement::StretchToMinimumMaximum);
+    QgsContrastEnhancement* qgsContrastEnhRed = new QgsContrastEnhancement(qgsImgProvider->dataType(config->getRedChannel()));
+//    qgsContrastEnhRed->setMinimumValue(0);
+//    qgsContrastEnhRed->setMaximumValue(pow(2, 8*qgsImgProvider->dataTypeSize(config->getRedChannel())));
+//    qgsContrastEnhRed->setContrastEnhancementAlgorithm(QgsContrastEnhancement::StretchToMinimumMaximum);
 
-    QgsContrastEnhancement* qgsContrastEnhGreen = new QgsContrastEnhancement(QGis::UInt16);
-    qgsContrastEnhGreen->setMinimumValue(config->getGreenMinValue());
-    qgsContrastEnhGreen->setMaximumValue(config->getGreenMaxValue());
-    qgsContrastEnhGreen->setContrastEnhancementAlgorithm (
-    		QgsContrastEnhancement::StretchToMinimumMaximum);
+    QgsContrastEnhancement* qgsContrastEnhGreen = new QgsContrastEnhancement(qgsImgProvider->dataType(config->getGreenChannel()));
+//    qgsContrastEnhGreen->setMinimumValue(0);
+//    qgsContrastEnhGreen->setMaximumValue(pow(2, 8*qgsImgProvider->dataTypeSize(config->getGreenChannel())));
+//    qgsContrastEnhGreen->setContrastEnhancementAlgorithm(QgsContrastEnhancement::StretchToMinimumMaximum);
 
-    QgsContrastEnhancement* qgsContrastEnhBlue = new QgsContrastEnhancement(QGis::UInt16);
-    qgsContrastEnhBlue->setMinimumValue(config->getBlueMinValue());
-    qgsContrastEnhBlue->setMaximumValue(config->getBlueMaxValue());
-    qgsContrastEnhBlue->setContrastEnhancementAlgorithm (
-    		QgsContrastEnhancement::StretchToMinimumMaximum);
+    QgsContrastEnhancement* qgsContrastEnhBlue = new QgsContrastEnhancement(qgsImgProvider->dataType(config->getBlueChannel()));
+//    qgsContrastEnhBlue->setMinimumValue(0);
+//    qgsContrastEnhBlue->setMaximumValue(pow(2, 8*qgsImgProvider->dataTypeSize(config->getBlueChannel())));
+//    qgsContrastEnhBlue->setContrastEnhancementAlgorithm(QgsContrastEnhancement::StretchToMinimumMaximum);
 
     QgsMultiBandColorRenderer* renderer = new QgsMultiBandColorRenderer(
                 qgsImgProvider,

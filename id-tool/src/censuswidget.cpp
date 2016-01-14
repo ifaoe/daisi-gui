@@ -250,7 +250,8 @@ bool CensusWidget::compareResults(census * current, census * census) {
  * the census struct.
  */
 void CensusWidget::uiPreselection(census * cobj) {
-    current_object->censor = cobj->censor;
+    if (cobj->usr == config->getUser())
+        current_object->censor = cobj->censor;
     // Save Census checkbox ticked?
     // save all info but size and direction
     if (ui->chbSaveCensus->isChecked()) {
@@ -432,78 +433,78 @@ void CensusWidget::saveObject() {
     current_object->remarks = ui->textedit_remarks->toPlainText();
 
     if (!userChanged()) {
-    if (check_required || current_object->confidence != 1 || db->getMaxCensor(QString::number(current_object->id), config->getUser()) > 0) {
-        int tmpcensor = 0;
-        if (db->getMaxCensor(QString::number(current_object->id), config->getUser()) >= 2) {
-            tmpcensor = 0;
-        } else if (db->getMaxCensor(QString::number(current_object->id), config->getUser()) == 1) {
-            if (db->getCensorCount(QString::number(current_object->id), "1", config->getUser()) > 1) {
-                tmpcensor = 3;
+        if (check_required || current_object->confidence != 1 || db->getMaxCensor(QString::number(current_object->id), config->getUser()) > 0) {
+            int tmpcensor = 0;
+            if (db->getMaxCensor(QString::number(current_object->id), config->getUser()) >= 2) {
+                tmpcensor = 0;
+            } else if (db->getMaxCensor(QString::number(current_object->id), config->getUser()) == 1) {
+                if (db->getCensorCount(QString::number(current_object->id), "1", config->getUser()) > 1) {
+                    tmpcensor = 3;
+                } else {
+                    tmpcensor = 2;
+                }
+            } else if (db->getMaxCensor(QString::number(current_object->id), config->getUser()) < 1) {
+                tmpcensor = 1;
             } else {
-                tmpcensor = 2;
+                tmpcensor = -1;
             }
-        } else if (db->getMaxCensor(QString::number(current_object->id), config->getUser()) < 1) {
-            tmpcensor = 1;
-        } else {
-            tmpcensor = -1;
-        }
 
-        switch (tmpcensor) {
-            case -1: {
-                qDebug() << "Kann Nuzter nicht bestimmen!";
-                current_object->censor = -1;
-                break;
-            } case 0: {
-                qDebug() << "Zusätzlicher Bestimmer.";
-                current_object->censor = 0;
-                QMessageBox * msgBox = new QMessageBox();
-                msgBox->setText(trUtf8("Objekt bereits Endbestimmt. Abspeichern als zusätzliche Bestimmung."));
-                msgBox->addButton(trUtf8("Ok"), QMessageBox::YesRole);
-                msgBox->exec();
-                delete msgBox;
-                break;
-            } case 1: {
-                qDebug() << "Erster Bestimmer.";
-                current_object->censor = 1;
-                break;
-            } case 2: {
-                qDebug() << "Zweiter Bestimmer.";
-                current_object->censor = 2;
-                census * cenObj = db->getCensusData(QString::number(current_object->id));
-                bool agree = compareResults(current_object, cenObj);
-                if (!agree) {
+            switch (tmpcensor) {
+                case -1: {
+                    qDebug() << "Kann Nuzter nicht bestimmen!";
+                    current_object->censor = -1;
+                    break;
+                } case 0: {
+                    qDebug() << "Zusätzlicher Bestimmer.";
+                    current_object->censor = 0;
                     QMessageBox * msgBox = new QMessageBox();
-                    msgBox->setText(QString::fromUtf8("Keine Übereinstimmung zum Erstbestimmer.\n"
-                            " Noch keine Endbestimmung möglich.\n"
-                            "Bestimmung als Vorbestimmer."));
+                    msgBox->setText(trUtf8("Objekt bereits Endbestimmt. Abspeichern als zusätzliche Bestimmung."));
                     msgBox->addButton(trUtf8("Ok"), QMessageBox::YesRole);
                     msgBox->exec();
                     delete msgBox;
+                    break;
+                } case 1: {
+                    qDebug() << "Erster Bestimmer.";
                     current_object->censor = 1;
+                    break;
+                } case 2: {
+                    qDebug() << "Zweiter Bestimmer.";
+                    current_object->censor = 2;
+                    census * cenObj = db->getCensusData(QString::number(current_object->id));
+                    bool agree = compareResults(current_object, cenObj);
+                    if (!agree) {
+                        QMessageBox * msgBox = new QMessageBox();
+                        msgBox->setText(QString::fromUtf8("Keine Übereinstimmung zum Erstbestimmer.\n"
+                                " Noch keine Endbestimmung möglich.\n"
+                                "Bestimmung als Vorbestimmer."));
+                        msgBox->addButton(trUtf8("Ok"), QMessageBox::YesRole);
+                        msgBox->exec();
+                        delete msgBox;
+                        current_object->censor = 1;
+                    }
+                    break;
+                } case 3: {
+                    qDebug() << "Ditter Bestimmer.";
+                    current_object->censor = 2;
+                    QMessageBox * msgBox = new QMessageBox();
+                    msgBox->setText("Endbestimmung als " + QString::number(censor_list.size()) + ". Bestimmer. \n"
+                            + "Bitte mit " + censor_list.join(", ") + " abstimmen.");
+                    msgBox->addButton(trUtf8("Ok"), QMessageBox::YesRole);
+                    QAbstractButton *noButton = msgBox->addButton(trUtf8("Abbrechen"), QMessageBox::NoRole);
+                    msgBox->exec();
+                    if (msgBox->clickedButton() == noButton) {
+                        delete msgBox;
+                        return;
+                    }
+                    break;
+                } default: {
+                    qDebug() << "Exit route on switch!";
+                    exit(1);
                 }
-                break;
-            } case 3: {
-                qDebug() << "Ditter Bestimmer.";
-                current_object->censor = 2;
-                QMessageBox * msgBox = new QMessageBox();
-                msgBox->setText("Endbestimmung als " + QString::number(censor_list.size()) + ". Bestimmer. \n"
-                        + "Bitte mit " + censor_list.join(", ") + " abstimmen.");
-                msgBox->addButton(trUtf8("Ok"), QMessageBox::YesRole);
-                QAbstractButton *noButton = msgBox->addButton(trUtf8("Abbrechen"), QMessageBox::NoRole);
-                msgBox->exec();
-                if (msgBox->clickedButton() == noButton) {
-                    delete msgBox;
-                    return;
-                }
-                break;
-            } default: {
-                qDebug() << "Exit route on switch!";
-                exit(1);
             }
+        } else {
+            current_object->censor = 2;
         }
-    } else {
-        current_object->censor = 2;
-    }
     }
 
 

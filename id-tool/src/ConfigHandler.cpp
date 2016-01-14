@@ -117,3 +117,15 @@ DatabaseInfo ConfigHandler::getDatabaseInfo(const QString & id) {
 	endGroup();
 	return info;
 }
+
+int ConfigHandler::getRedChannel() {
+    return value("QGis/red_channel",1).toInt();
+}
+
+int ConfigHandler::getGreenChannel() {
+    return value("QGis/green_channel",2).toInt();
+}
+
+int ConfigHandler::getBlueChannel() {
+    return value("QGis/blue_channel",3).toInt();
+}
