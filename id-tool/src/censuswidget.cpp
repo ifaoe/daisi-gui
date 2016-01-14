@@ -250,8 +250,10 @@ bool CensusWidget::compareResults(census * current, census * census) {
  * the census struct.
  */
 void CensusWidget::uiPreselection(census * cobj) {
+    // Check if preselection is from another user
     if (cobj->usr == config->getUser())
         current_object->censor = cobj->censor;
+
     // Save Census checkbox ticked?
     // save all info but size and direction
     if (ui->chbSaveCensus->isChecked()) {

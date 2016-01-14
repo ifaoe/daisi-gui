@@ -460,7 +460,7 @@ void MainWindow::handleHeaderFilter(int index) {
             filter_map.remove(image_table_model->headerData(index, Qt::Horizontal).toString());
         else
             filter_map[image_table_model->headerData(index, Qt::Horizontal).toString()] =
-                    QString("cast(%1 as text) like '%%2%'").arg(image_table_model->record().fieldName(index)).arg(dialog.getFilterString());
+                    QString("cast(%1 as text) LIKE '%2'").arg(image_table_model->record().fieldName(index)).arg(dialog.getFilterString());
         image_table_model->setFilter(getFilterString());
     }
 
