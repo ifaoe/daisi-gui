@@ -7,6 +7,7 @@
 #include "ConfigHandler.h"
 #include "DatabaseHandler.h"
 #include "IdSelectionDialog.h"
+#include "ImgCanvas.h"
 
 namespace Ui {
 class CensusWidget;
@@ -17,11 +18,9 @@ class CensusWidget : public QFrame
     Q_OBJECT
 
 public:
-    explicit CensusWidget(QFrame *parent = 0, ConfigHandler * conf = 0, DatabaseHandler * database = 0);
+    explicit CensusWidget(QFrame *parent = 0, ConfigHandler * conf = 0, DatabaseHandler * database = 0,
+                          ImgCanvas * canvas = 0);
     ~CensusWidget();
-
-    void setObjectLength(double length);
-    void setObjectWidth(double width);
 
     void setupMetaData();
     void setDirectionData(int angle);
@@ -30,6 +29,7 @@ private:
     ConfigHandler * config = 0;
     DatabaseHandler * db = 0;
     Ui::CensusWidget *ui = 0;
+    ImgCanvas * image_canavas = 0;
 
     IdSelectionDialog * association_dialog;
     IdSelectionDialog * behaviour_dialog;
@@ -65,14 +65,18 @@ public slots:
     void deleteObject();
 
     void loadObjectData(census * object);
+
+    void setObjectLength(double length);
+    void setObjectWidth(double width);
+
 private slots:
-    void passMeasureLength(){ if(current_object!=0) emit measureLength(); }
-    void passMeasureWidth() { if(current_object!=0) emit measureWidth(); }
+    void passMeasureLength(){ if(current_object!=0) image_canavas->beginMeasurement(1); }
+    void passMeasureWidth() { if(current_object!=0) image_canavas->beginMeasurement(2); }
+    void receiveMeasurement(int type, double size);
 signals:
     void dataChanged();
     void directionChanged(int angle);
-    void measureLength();
-    void measureWidth();
+
     void nextObject();
 };
 

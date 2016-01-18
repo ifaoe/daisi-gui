@@ -467,6 +467,12 @@ bool CnsMapCanvas::openRasterLayer(const QString imagePath,
     qDebug() <<"rasterLayer UnitX "+QString::number(dblUnitPixX);
     qDebug() <<"rasterLayer UnitY "+QString::number(dblUnitPixY);
 
+    /*
+     * No Data Values deaktivieren.
+     * Verursachen Probleme in Bezug auf georeferenzierte JPEGs oder JPEG komprimierte TIFFs
+     */
+    for ( int bandNo = 1; bandNo <= qgsImgProvider->bandCount(); bandNo++ )
+        qgsImgProvider->setUseSrcNoDataValue( bandNo, false );
 
     QgsContrastEnhancement* qgsContrastEnhRed = new QgsContrastEnhancement(qgsImgProvider->dataType(config->getRedChannel()));
 //    qgsContrastEnhRed->setMinimumValue(0);

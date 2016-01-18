@@ -4,8 +4,8 @@
 #include <QMessageBox>
 #include <QCryptographicHash>
 
-CensusWidget::CensusWidget(QFrame *parent, ConfigHandler * conf, DatabaseHandler * database) :
-    QFrame(parent), config(conf), db(database), ui(new Ui::CensusWidget)
+CensusWidget::CensusWidget(QFrame *parent, ConfigHandler * conf, DatabaseHandler * database, ImgCanvas * canvas) :
+    QFrame(parent), config(conf), db(database), ui(new Ui::CensusWidget), image_canavas(canvas)
 {
     ui->setupUi(parent);
 
@@ -23,8 +23,9 @@ CensusWidget::CensusWidget(QFrame *parent, ConfigHandler * conf, DatabaseHandler
     connect(ui->btnSave, SIGNAL(clicked()), this, SLOT(saveObject()));
     connect(ui->btnDelete, SIGNAL(clicked()), this, SLOT(deleteObject()));
 
-    connect(ui->button_length, SIGNAL(clicked()), this, SLOT(passMeasureLength()));
-    connect(ui->button_width, SIGNAL(clicked()), this, SLOT(passMeasureWidth()));
+    connect(ui->button_length, SIGNAL(released()), this, SLOT(passMeasureLength()));
+    connect(ui->button_width, SIGNAL(released()), this, SLOT(passMeasureWidth()));
+    connect(image_canavas, SIGNAL(measurementDone(int,double)), this, SLOT(receiveMeasurement(int,double)));
 
     connect(ui->button_user_select, SIGNAL(clicked()), this, SLOT(userSelection()));
     connect(ui->button_user_switch, SIGNAL(clicked()), this, SLOT(userSwitch()));
@@ -193,6 +194,7 @@ bool CensusWidget::sanityCheck() {
 }
 
 void CensusWidget::setDirectionData(int angle) {
+    qDebug() << angle;
     if (current_object == 0) return;
     if (angle > 0)
         current_object->direction = angle;
@@ -272,7 +274,13 @@ void CensusWidget::uiPreselection(census * cobj) {
         return;
     }
 
+    /*
+     * emit Signal um Richtungsanzeiger zu ändern
+     * die Eigentliche Richtungsangabe muss zusätzlich getan werden,
+     * weil setValue nicht das Signal SliderReleased triggered
+     */
     emit directionChanged(cobj->direction);
+    current_object->direction = cobj->direction;
 
     association_dialog->set_id_list(cobj->stuk4_ass);
     behaviour_dialog->set_id_list(cobj->stuk4_beh);
@@ -605,4 +613,13 @@ void CensusWidget::loadObjectData(census * object) {
         ui->btnSave->setEnabled(false);
         ui->btnDelete->setEnabled(false);
     }
+}
+
+void CensusWidget::receiveMeasurement(int type, double size) {
+    qDebug() << "Received";
+    qDebug() << type << " " << size;
+    if (type == 1)
+        setObjectLength(size);
+    if (type == 2)
+        setObjectWidth(size);
 }

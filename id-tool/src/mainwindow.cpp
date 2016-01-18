@@ -32,6 +32,7 @@ MainWindow::MainWindow( ConfigHandler *cfgArg, DatabaseHandler *dbArg, QWidget *
     Q_UNUSED(parent);
     ui->setupUi(this);
 
+    initMapView();
     initCollapsibleMenu();
     initFilters();
 
@@ -60,14 +61,11 @@ MainWindow::MainWindow( ConfigHandler *cfgArg, DatabaseHandler *dbArg, QWidget *
         qFatal("Postgresql/PostGIS");
     }
 
-    initMapView();
     initSessionWidget();
 
     objSelector = wdgObjects->tblObjects->selectionModel();
     wdgObjects->tblObjects->setSelectionMode(QAbstractItemView::SingleSelection);
     wdgObjects->tblObjects->setSelectionBehavior(QAbstractItemView::SelectRows);
-
-    measurementWindow = new MeasurementDialog(imgcvs);
 
     connect( objSelector, SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(handleObjectSelection()));
 
@@ -78,9 +76,6 @@ MainWindow::MainWindow( ConfigHandler *cfgArg, DatabaseHandler *dbArg, QWidget *
     connect(wdgGraphics->btnBrightnessReset, SIGNAL(clicked()),
             this, SLOT(handleBrightnessReset()));
     connect(wdgGraphics->btnContrastReset, SIGNAL(clicked()), this, SLOT(handleContrastReset()));
-
-    connect(census_widget, SIGNAL(measureLength()), this, SLOT(lengthMeasurement()));
-    connect(census_widget, SIGNAL(measureWidth()), this, SLOT(widthMeasurement()));
 
     connect(ui->toolbutton_map_view, SIGNAL(clicked()), this, SLOT(handleMapToolButton()));
     connect(ui->toolbutton_zoom_original, SIGNAL(clicked()), this, SLOT(handleOneToOneZoom()));
@@ -94,8 +89,6 @@ MainWindow::MainWindow( ConfigHandler *cfgArg, DatabaseHandler *dbArg, QWidget *
 MainWindow::~MainWindow()
 {
     delete ui;
-    measurementWindow->close();
-    delete measurementWindow;
 	config->setAppPosition(pos());
 	config->setAppSize(size());
 	config->setAppMaximized(isMaximized());
@@ -191,9 +184,8 @@ void MainWindow::initMapView() {
     dirDial->setNotchesVisible(false);
     dirDial->setStyle(new QMotifStyle);
     dirDial->setInvertedAppearance(true);
-
+    dirDial->setTracking(false);
     connect(dirDial, SIGNAL(sliderReleased()), this, SLOT(handleDirDial()));
-    connect(census_widget, SIGNAL(directionChanged(int)), dirDial, SLOT(setValue(int)));
 }
 
 void MainWindow::initCollapsibleMenu(){
@@ -211,12 +203,14 @@ void MainWindow::initCollapsibleMenu(){
     ui->toolbox_widget->addWidget("Objektauswahl", widget);
 
     widget = new QFrame;
-    census_widget = new CensusWidget(widget, config, db);
+    census_widget = new CensusWidget(widget, config, db, imgcvs);
     ui->toolbox_widget->addWidget("Bestimmungstabellen", widget);
     ui->toolbox_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
+    connect(census_widget, SIGNAL(directionChanged(int)), dirDial, SLOT(setValue(int)));
     connect(census_widget, SIGNAL(dataChanged()), this, SLOT(handleSessionSelection()));
     connect(census_widget, SIGNAL(nextObject()), this, SLOT(selectNextObject()));
+    connect(census_widget, SIGNAL(directionChanged(int)), dirDial, SLOT(setValue(int)));
 
     widget = new QFrame;
     wdgGraphics = new Ui::wdgGraphics;
@@ -265,11 +259,6 @@ QStringList MainWindow::getColumnDataList(int column) {
 	}
 
 	return result_list;
-}
-
-void MainWindow::conductMeasurement(double * length) {
-    measurementWindow->move(size().width()*0.75,size().height()*0.25);
-    measurementWindow->startMeasurement(length);
 }
 
 /*
@@ -421,19 +410,17 @@ void MainWindow::handleUserCensorFilter(int index) {
 
 void MainWindow::widthMeasurement() {
     double width = -1;
-    conductMeasurement(&width);
     census_widget->setObjectWidth(width);
 }
 
 void MainWindow::lengthMeasurement() {
     double length = -1;
-    conductMeasurement(&length);
     census_widget->setObjectLength(length);
 }
 
 void MainWindow::handleMiscMeasurement() {
 	if (curObj == 0) return;
-    conductMeasurement(0);
+//    conductMeasurement(0);
 }
 
 void MainWindow::handleFlightInfoAction() {

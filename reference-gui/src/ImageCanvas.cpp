@@ -56,6 +56,13 @@ bool ImageCanvas::LoadObject(const QString & session, const QString & cam, const
     if (!image_layer->isValid())
     	return false;
 
+    /*
+     * No Data Values deaktivieren.
+     * Verursachen Probleme in Bezug auf georeferenzierte JPEGs oder JPEG komprimierte TIFFs
+     */
+    for ( int bandNo = 1; bandNo <= image_provider->bandCount(); bandNo++ )
+        image_provider->setUseSrcNoDataValue( bandNo, false );
+
     QgsContrastEnhancement* qgsContrastEnhRed = new QgsContrastEnhancement(image_provider->dataType(1));
 //    qgsContrastEnhRed->setMinimumValue(0);
 //    qgsContrastEnhRed->setMaximumValue(pow(2, 8*qgsImgProvider->dataTypeSize(config->getRedChannel())));

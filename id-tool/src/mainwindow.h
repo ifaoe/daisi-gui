@@ -31,7 +31,6 @@
 #include "ui_widget_objects.h"
 #include "ui_widget_graphics.h"
 #include "QCategoryCheckButton.h"
-#include "MeasurementDialog.h"
 #include "IdSelectionDialog.h"
 #include "QCollapsibleToolbox.h"
 #include "CensorSqlTableModel.h"
@@ -47,6 +46,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(ConfigHandler *cfgArg = 0, DatabaseHandler *dbArg = 0, QWidget *parent = 0);
     ~MainWindow();
+    ImgCanvas * getImageCanvas() { return imgcvs; }
+    CensusWidget * getCensusWidget() { return census_widget; }
 private:
     QgsProviderRegistry *prvRegistry = 0;
     QgsMapLayerRegistry *lyrRegistry = 0;
@@ -77,13 +78,10 @@ private:
 
     QSet<int> sortSet;
 
-    MeasurementDialog * measurementWindow = 0;
-
     void initMapView();
     void initFilters();
     void initCollapsibleMenu();
     void initSessionWidget();
-    void conductMeasurement(double * length);
     void updateTodoObjects();
     QVariant getObjectItemData(int row, int column);
     QStringList getColumnDataList(int column);

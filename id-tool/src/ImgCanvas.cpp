@@ -38,6 +38,7 @@ ImgCanvas::ImgCanvas(QWidget *parent, Ui::MainWindow *mUi, ConfigHandler *cfg, D
     qgsEmitPointTool = new QgsMapToolEmitPoint(this);
     qgsMapPanTool = new QgsMapToolPan(this);
     networkManager = new QNetworkAccessManager(this);
+    measurement_dialog = new QMessageBox;
 
     setMapTool(qgsMapPanTool);
 
@@ -54,8 +55,7 @@ ImgCanvas::~ImgCanvas() {
 }
 
 bool ImgCanvas::loadObject(census * obj) {
-    msmValue = -1.0;
-
+    endMeasurement(0);
     // check if still same image
     if (curSession == obj->session && curCam == obj->camera && curImg == obj->image) {
         centerOnWorldPosition(obj->ux, obj->uy, 1.0);
@@ -102,6 +102,14 @@ bool ImgCanvas::loadObject(census * obj) {
         return false;
     }
     imgProvider = imgLayer->dataProvider();
+
+    /*
+     * No Data Values deaktivieren.
+     * Verursachen Probleme in Bezug auf georeferenzierte JPEGs oder JPEG komprimierte TIFFs
+     */
+    for ( int bandNo = 1; bandNo <= imgProvider->bandCount(); bandNo++ )
+        imgProvider->setUseSrcNoDataValue( bandNo, false );
+
     QgsContrastEnhancement* qgsContrastEnhRed = new QgsContrastEnhancement(imgProvider->dataType(cfg->getRedChannel()));
 //    qgsContrastEnhRed->setMinimumValue(0);
 //    qgsContrastEnhRed->setMaximumValue(pow(2, 8*qgsImgProvider->dataTypeSize(config->getRedChannel())));
@@ -223,8 +231,6 @@ void ImgCanvas::calcPixelPosition(QgsPoint pos) {
  */
 void ImgCanvas::handleCanvasClicked(const QgsPoint & point) {
     msmList.push_back(point);
-
-
     MapCanvasMarker * vmarker = new MapCanvasMarker(this);
     vmarker->setIconType(MapCanvasMarker::ICON_CROSS);
     vmarker->setCenter(point);
@@ -233,33 +239,49 @@ void ImgCanvas::handleCanvasClicked(const QgsPoint & point) {
     msmMarkers.push_back( vmarker );
 
     if (msmList.size() > 1) {
-        msmValue = QgsGeometry::fromPolyline(msmList)->length();
-        msmWindow->updateInfoMessage(
-            QString::fromUtf8("Momentane Länge: ") + QString::number(msmValue));
+        measurement_dialog->setInformativeText(
+                    QString::fromUtf8("Momentane Länge: %1").arg(QgsGeometry::fromPolyline(msmList)->length()) );
     }
 }
 
 QgsRasterLayer * ImgCanvas::getImageLayer() { return imgLayer; }
 
-void ImgCanvas::beginMeasurement(MeasurementDialog * msmDialog) {
+void ImgCanvas::beginMeasurement(int type = 0) {
+    measurement_type = type;
+    if (type == 0)
+        measurement_dialog->setStandardButtons(QMessageBox::Cancel);
+    else
+        measurement_dialog->setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+    measurement_dialog->setText(QString::fromUtf8("Messung läuft."));
+    measurement_dialog->setInformativeText(QString::fromUtf8("Bitte Messpunkte setzen."));
+    measurement_dialog->setWindowModality(Qt::NonModal);
+    measurement_dialog->setModal(false);
+    measurement_dialog->show();
+
     msmList.clear();
-    msmValue = -1.0;
-    msmWindow = msmDialog;
     setMapTool(qgsEmitPointTool);
     connect(qgsEmitPointTool, SIGNAL( canvasClicked(const QgsPoint &, Qt::MouseButton) ),
             this, SLOT( handleCanvasClicked(const QgsPoint &)));
-
+    connect(measurement_dialog, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(endMeasurement(QAbstractButton*)));
 }
 
-double ImgCanvas::endMeasurement() {
+void ImgCanvas::endMeasurement(QAbstractButton * button = 0) {
     setMapTool(qgsMapPanTool);
     disconnect(qgsEmitPointTool, SIGNAL( canvasClicked(const QgsPoint &, Qt::MouseButton) ),
             this, SLOT( handleCanvasClicked(const QgsPoint &)));
+    if (button != 0) {
+        if (measurement_dialog->buttonRole(button) ==  QMessageBox::AcceptRole)
+            emit measurementDone(measurement_type, QgsGeometry::fromPolyline(msmList)->length());
+        else if (measurement_dialog->buttonRole(button) ==  QMessageBox::RejectRole)
+            emit measurementDone(measurement_type, -1.0);
+    }
     msmList.clear();
     for (uint i=0; i<msmMarkers.size(); i++)
         delete msmMarkers[i];
     msmMarkers.clear();
-    return msmValue;
+//    disconnect(measurement_dialog);
+//    delete measurement_dialog;
+    measurement_type = 0;
 }
 
 void ImgCanvas::setRasterBrightness(int value) {
@@ -277,7 +299,7 @@ void ImgCanvas::setRasterContrast(int value) {
 }
 
 double ImgCanvas::getCurrentMeasurement() {
-    return msmValue;
+    return QgsGeometry::fromPolyline(msmList)->length();
 }
 
 void ImgCanvas::handleHideObjectMarkers() {

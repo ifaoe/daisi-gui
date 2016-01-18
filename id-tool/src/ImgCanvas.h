@@ -18,6 +18,7 @@
 #include <QObject>
 #include <QWidget>
 #include <QNetworkReply>
+#include <QMessageBox>
 #include <qgis.h>
 #include <qgsmapcanvas.h>
 #include <qgsrasterlayer.h>
@@ -32,7 +33,6 @@
 #include "DatabaseHandler.h"
 #include "ui_mainwindow.h"
 #include "census.hpp"
-#include "MeasurementDialog.h"
 #include <qgslabel.h>
 #include <qgslabelattributes.h>
 #include <qgsfield.h>
@@ -53,9 +53,8 @@ public:
     QgsRasterLayer * getImageLayer();
     void setRasterBrightness(int value);
     void setRasterContrast(int value);
-    void beginMeasurement(MeasurementDialog * msmWindow);
+    void beginMeasurement(int type);
     double getCurrentMeasurement();
-    double endMeasurement();
 private:
     QgsLayerStack * layerStack = 0;
     Ui::MainWindow *ui = 0;
@@ -70,18 +69,17 @@ private:
 
     QNetworkAccessManager* networkManager = 0;
 
-    MeasurementDialog * msmWindow = 0;
-    //    std::vector<QgsPoint> msmList;
-    QgsPolyline msmList;
-    double msmValue=-1;
-    std::vector<MapCanvasMarker*> msmMarkers;
-    std::vector<MapCanvasMarker*> objMarkers;
-
     QSqlQueryModel * objModel = 0;
 
     QString curSession = "";
     QString curCam = "";
     QString curImg = "";
+
+    QMessageBox * measurement_dialog = 0;
+    QgsPolyline msmList;
+    std::vector<MapCanvasMarker*> msmMarkers;
+    std::vector<MapCanvasMarker*> objMarkers;
+    int measurement_type = 0;
 
     void populateObjectLayer(census * obj);
 private slots:
@@ -90,6 +88,9 @@ private slots:
     void HandleZoomIn() {zoomIn();}
     void HandleZoomOut() {zoomOut();}
     void HandleZoomFullExtent() {zoomToFullExtent();}
+    void endMeasurement(QAbstractButton * button);
+signals:
+    void measurementDone(int type, double size);
 };
 
 #endif /* IMGCANVAS_H_ */
