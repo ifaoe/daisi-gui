@@ -74,6 +74,7 @@ MainWindow::MainWindow(UserSettings * config, DatabaseHandler * db)
 	populateSessionBox();
 	connect(ui->combo_session, SIGNAL(currentIndexChanged(int)), this, SLOT(handleSessionSelection(int)));
 
+    column_translation["rcns_id"] = "Objekt ID";
     column_translation["session"] = "Projekt";
     column_translation["cam"] = "Kamera";
     column_translation["img"] = "Bildnummer";
