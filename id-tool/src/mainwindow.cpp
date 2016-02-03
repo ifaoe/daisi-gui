@@ -95,51 +95,6 @@ MainWindow::~MainWindow()
 	config->sync();
 }
 
-void MainWindow::updateTodoObjects() {
-	int census_index = wdgObjects->cmbFilterCensor->currentIndex();
-	int censor_index = wdgObjects->cmbFilterUserCensor->currentIndex();
-	wdgObjects->cmbFilterCensor->disconnect();
-	wdgObjects->cmbFilterUserCensor->disconnect();
-
-	int all_count = db->getCensusCount(session, "%", "TRUE");
-	int no_censor_count = db->getCensusCount(session, "%", "mc=0 OR mc IS NULL");
-	int one_censor_count = db->getCensusCount(session, "%", "mc=1 AND cnt=1");
-	int conflict_censor_count = db->getCensusCount(session, "%", "mc=1 AND cnt>1");
-	int done_censor_count = db->getCensusCount(session, "%", "mc>1");
-	wdgObjects->cmbFilterCensor->clear();
-    wdgObjects->cmbFilterCensor->addItem(trUtf8(""), QVariant("TRUE"));
-    wdgObjects->cmbFilterCensor->addItem(
-    		trUtf8("Unbestimmt \t%1\t/%2").arg(no_censor_count).arg(all_count),QVariant("(mc=0 OR mc IS NULL)"));
-//    wdgObjects->cmbFilterCensor->setItemData( 1, QColor( Qt::white ), Qt::BackgroundRole );
-    wdgObjects->cmbFilterCensor->addItem(
-    		trUtf8("Erstbestimmt \t%1\t/%2").arg(one_censor_count).arg(all_count),QVariant("(mc=1 AND cnt=1)"));
-//    wdgObjects->cmbFilterCensor->setItemData( 2, QColor( Qt::gray ), Qt::BackgroundRole );
-    wdgObjects->cmbFilterCensor->addItem(
-    		trUtf8("Unstimmigkeiten \t%1\t/%2").arg(conflict_censor_count).arg(all_count),QVariant("(mc=1 AND cnt>1)"));
-//    wdgObjects->cmbFilterCensor->setItemData( 3, QColor( Qt::red ), Qt::BackgroundRole );
-    wdgObjects->cmbFilterCensor->addItem(
-    		trUtf8("Enbestimmt \t%1\t/%2").arg(done_censor_count).arg(all_count),QVariant("mc>1"));
-//    wdgObjects->cmbFilterCensor->setItemData( 4, QColor( Qt::green ), Qt::BackgroundRole );
-
-    int todo  = db->getCensusCount(session, "%", "(mc<2 OR mc IS NULL)", QString("(usr!='%1' OR usr IS NULL)").arg(config->getUser()));
-    int finished = db->getCensusCount(session, config->getUser(), "TRUE", "tp IS NOT NULL");
-    wdgObjects->cmbFilterUserCensor->clear();
-    wdgObjects->cmbFilterUserCensor->addItem(trUtf8(""), QVariant("TRUE"));
-    wdgObjects->cmbFilterUserCensor->addItem(trUtf8("Unbearbeitet  %1\t/%2").arg(todo).arg(todo+finished),
-            QVariant("tp IS NULL AND (mc<2 OR mc IS NULL)"));
-    wdgObjects->cmbFilterUserCensor->addItem(trUtf8("Bearbeitet  %1\t/%2").arg(finished).arg(todo+finished),
-    		QVariant("tp IS NOT NULL"));
-
-	wdgObjects->cmbFilterCensor->setCurrentIndex(census_index);
-    wdgObjects->cmbFilterUserCensor->setCurrentIndex(censor_index);
-    int min_width_censor = wdgObjects->cmbFilterCensor->minimumSizeHint().width();
-    int min_width_user_censor = wdgObjects->cmbFilterUserCensor->minimumSizeHint().width();
-    wdgObjects->cmbFilterCensor->view()->setMinimumWidth(min_width_censor+15);
-    wdgObjects->cmbFilterUserCensor->view()->setMinimumWidth(min_width_user_censor+15);
-    connect(wdgObjects->cmbFilterCensor, SIGNAL(currentIndexChanged(int)), this, SLOT(handleCensorFilter(int)));
-    connect(wdgObjects->cmbFilterUserCensor, SIGNAL(currentIndexChanged(int)), this, SLOT(handlUserCensorFilter(int)));
-}
-
 void MainWindow::initFilters() {
     wdgObjects->cmbFilterCensor->clear();
     wdgObjects->cmbFilterCensor->addItem(trUtf8(""), QVariant(""));
@@ -155,8 +110,8 @@ void MainWindow::initFilters() {
     wdgObjects->cmbFilterUserCensor->clear();
     wdgObjects->cmbFilterUserCensor->addItem(trUtf8(""), QVariant(""));
     wdgObjects->cmbFilterUserCensor->addItem(trUtf8("Unbearbeitet"),
-            QVariant(QString("user_list@>ARRAY['%1']").arg(config->getUser())));
-    wdgObjects->cmbFilterUserCensor->addItem(trUtf8("Bearbeitet"), QVariant("tp IS NOT NULL"));
+            QString("NOT user_list@>ARRAY['%1']").arg(config->getUser()));
+    wdgObjects->cmbFilterUserCensor->addItem(trUtf8("Bearbeitet"), QString("user_list@>ARRAY['%1']").arg(config->getUser()));
 
     filterMap["True"] = "TRUE";
 
@@ -420,6 +375,7 @@ void MainWindow::lengthMeasurement() {
 
 void MainWindow::handleMiscMeasurement() {
 	if (curObj == 0) return;
+        imgcvs->beginMeasurement(0);
 //    conductMeasurement(0);
 }
 

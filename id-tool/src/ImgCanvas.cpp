@@ -39,6 +39,18 @@ ImgCanvas::ImgCanvas(QWidget *parent, Ui::MainWindow *mUi, ConfigHandler *cfg, D
     qgsMapPanTool = new QgsMapToolPan(this);
     networkManager = new QNetworkAccessManager(this);
     measurement_dialog = new QMessageBox;
+    measurement_dialog->setText(QString::fromUtf8("Messung läuft."));
+    measurement_dialog->setWindowModality(Qt::NonModal);
+    measurement_dialog->setModal(false);
+    measurement_dialog->setWindowFlags( measurement_dialog->windowFlags() | Qt::WindowStaysOnTopHint );
+    /*
+     * TODO: Hack to fix the stupid messagebox size
+     */
+    QSpacerItem* horizontalSpacer = new QSpacerItem(400, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    QGridLayout* layout = (QGridLayout*)measurement_dialog->layout();
+    layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
+
+
 
     setMapTool(qgsMapPanTool);
 
@@ -246,16 +258,13 @@ void ImgCanvas::handleCanvasClicked(const QgsPoint & point) {
 
 QgsRasterLayer * ImgCanvas::getImageLayer() { return imgLayer; }
 
-void ImgCanvas::beginMeasurement(int type = 0) {
+void ImgCanvas::beginMeasurement(int type) {
     measurement_type = type;
     if (type == 0)
         measurement_dialog->setStandardButtons(QMessageBox::Cancel);
     else
         measurement_dialog->setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-    measurement_dialog->setText(QString::fromUtf8("Messung läuft."));
     measurement_dialog->setInformativeText(QString::fromUtf8("Bitte Messpunkte setzen."));
-    measurement_dialog->setWindowModality(Qt::NonModal);
-    measurement_dialog->setModal(false);
     measurement_dialog->show();
 
     msmList.clear();

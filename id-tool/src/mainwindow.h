@@ -82,7 +82,6 @@ private:
     void initFilters();
     void initCollapsibleMenu();
     void initSessionWidget();
-    void updateTodoObjects();
     QVariant getObjectItemData(int row, int column);
     QStringList getColumnDataList(int column);
 public slots:

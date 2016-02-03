@@ -47,18 +47,6 @@ MainWindow::MainWindow(ConfigHandler *aConfig, Db * aDb)
 //    ui->tbwObjects->setAutoFillBackground( true );
     ui->tbwObjects->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
 
-/*
- * ModelView referenziert Datenbank-View daisi_bird_census_images
- * session und rdy Spalte werden ausgeblendet
- */
-    image_table_model = db->getImageView();
-    ui->image_table->setModel(image_table_model);
-    ui->image_table->hideColumn(image_table_model->fieldIndex("session"));
-    ui->image_table->hideColumn(image_table_model->fieldIndex("project"));
-    ui->image_table->hideColumn(image_table_model->fieldIndex("project_list"));
-    ui->image_table->hideColumn(image_table_model->fieldIndex("examined"));
-    ui->image_table->hideColumn(image_table_model->fieldIndex("analysed"));
-    ui->image_table->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
 
     if (config->getAdmin()) {
         ui->option_admin->setEnabled(false);
@@ -70,15 +58,11 @@ MainWindow::MainWindow(ConfigHandler *aConfig, Db * aDb)
  * werden die beiden tableview selectionModels wirklich gebraucht?
  */
 
-    imgSelector = ui->image_table->selectionModel();
-
     objSelector = ui->tbwObjects->selectionModel();
 
     connect( ui->btnMapSelect, SIGNAL(clicked()), this, SLOT(clearSelection()));
 
     connect( ui->btnMapRmObj, SIGNAL(clicked()), this, SLOT(deleteSelection()));
-
-    connect( imgSelector, SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(handleImageSelection()));
 
     connect( objSelector, SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this, SLOT(objUpdateSelection(QModelIndex,QModelIndex)));
 
@@ -373,10 +357,25 @@ void MainWindow::handleSessionSelection() {
     filter_map.clear();
     filter_map["session"] = QString("session='%1' AND project='%2'").arg(config->getFlightId()).arg(ui->cmbSession->currentText());
     ui->chbNotReady->setChecked(false);
+    /*
+     * ModelView referenziert Datenbank-View daisi_bird_census_images
+     * session und rdy Spalte werden ausgeblendet
+     */
+    image_table_model = db->getImageView();
+    ui->image_table->setModel(image_table_model);
+    ui->image_table->hideColumn(image_table_model->fieldIndex("session"));
+    ui->image_table->hideColumn(image_table_model->fieldIndex("project"));
+    ui->image_table->hideColumn(image_table_model->fieldIndex("project_list"));
+    ui->image_table->hideColumn(image_table_model->fieldIndex("examined"));
+    ui->image_table->hideColumn(image_table_model->fieldIndex("analysed"));
+    ui->image_table->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
     image_table_model->setFilter(getFilterString());
     image_table_model->select();
     qDebug() << image_table_model->query().executedQuery();
     qDebug() << image_table_model->filter();
+
+    imgSelector = ui->image_table->selectionModel();
+    connect( imgSelector, SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(handleImageSelection()));
 }
 
 QString MainWindow::getFilterString() {
