@@ -77,7 +77,7 @@ QStringList DatabaseHandler::getSessionList() {
 bool DatabaseHandler::getSpeciesList(QString type, QComboBox * cmb_box) {
 	qDebug() << "Populating species list for " << type;
     QString qstr = "SELECT name_de, name_lat, euring_id, length FROM taxa LEFT JOIN "
-    		"(SELECT id_code, to_char(avg(length), 'FM99.99') as length FROM census WHERE tp='%1' GROUP BY id_code) as lt ON taxa.euring_id = lt.id_code "
+            "(SELECT id_code, to_char(avg(length), 'FM99.99') as length FROM census WHERE tp='%1' AND censor=2 GROUP BY id_code) as lt ON taxa.euring_id = lt.id_code "
     		"WHERE type='%1' ORDER BY seaflag DESC, name_de";
 	QSqlQueryModel * model = new QSqlQueryModel;
 	model->setQuery(qstr.arg(type));

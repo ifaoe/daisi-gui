@@ -195,6 +195,7 @@ bool CensusWidget::sanityCheck() {
 
 void CensusWidget::setDirectionData(int angle) {
     qDebug() << angle;
+    angle = (angle + 180) % 360;
     if (current_object == 0) return;
     if (angle > 0)
         current_object->direction = angle;

@@ -165,7 +165,7 @@ void MainWindow::initCollapsibleMenu(){
     connect(census_widget, SIGNAL(directionChanged(int)), dirDial, SLOT(setValue(int)));
     connect(census_widget, SIGNAL(dataChanged()), this, SLOT(handleSessionSelection()));
     connect(census_widget, SIGNAL(nextObject()), this, SLOT(selectNextObject()));
-    connect(census_widget, SIGNAL(directionChanged(int)), dirDial, SLOT(setValue(int)));
+//    connect(census_widget, SIGNAL(directionChanged(int)), dirDial, SLOT(setValue(int)));
 
     widget = new QFrame;
     wdgGraphics = new Ui::wdgGraphics;
@@ -232,7 +232,8 @@ void MainWindow::selectNextObject() {
  * Set the direction value only when dial is touched
  */
 void MainWindow::handleDirDial() {
-    census_widget->setDirectionData(dirDial->value());
+    int angle = (dirDial->value() + 180) % 360;
+    census_widget->setDirectionData(angle);
 }
 
 /*

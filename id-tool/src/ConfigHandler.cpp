@@ -18,7 +18,7 @@
 #include <QStringList>
 
 void ConfigHandler::InitSettings() {
-	user = QString(getenv("USER"));
+    user = QString(getenv("USER"));
 	if (!QFile::exists(fileName())) {
 		AddDatabase("Rostock", "192.168.118.35", 5432, "daisi", "daisi","18ifaoe184");
 		AddDatabase("Hamburg", "192.168.200.35", 5432, "daisi", "daisi","18ifaoe184");
