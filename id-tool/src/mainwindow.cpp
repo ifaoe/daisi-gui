@@ -232,6 +232,7 @@ void MainWindow::selectNextObject() {
  * Set the direction value only when dial is touched
  */
 void MainWindow::handleDirDial() {
+    qDebug() << dirDial->value();
     int angle = (dirDial->value() + 180) % 360;
     census_widget->setDirectionData(angle);
 }

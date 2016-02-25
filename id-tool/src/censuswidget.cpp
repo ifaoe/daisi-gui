@@ -195,7 +195,7 @@ bool CensusWidget::sanityCheck() {
 
 void CensusWidget::setDirectionData(int angle) {
     qDebug() << angle;
-    angle = (angle + 180) % 360;
+//    angle = (angle + 180) % 360;
     if (current_object == 0) return;
     if (angle > 0)
         current_object->direction = angle;
@@ -280,7 +280,7 @@ void CensusWidget::uiPreselection(census * cobj) {
      * die Eigentliche Richtungsangabe muss zusätzlich getan werden,
      * weil setValue nicht das Signal SliderReleased triggered
      */
-    emit directionChanged(cobj->direction);
+    emit directionChanged((cobj->direction+180) % 360);
     current_object->direction = cobj->direction;
 
     association_dialog->set_id_list(cobj->stuk4_ass);
