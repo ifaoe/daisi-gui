@@ -194,7 +194,7 @@ bool CensusWidget::sanityCheck() {
 }
 
 void CensusWidget::setDirectionData(int angle) {
-    qDebug() << angle;
+    qDebug() << QString("Set database direction: %1").arg(angle);
 //    angle = (angle + 180) % 360;
     if (current_object == 0) return;
     if (angle > 0)

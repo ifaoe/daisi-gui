@@ -138,7 +138,7 @@ void MainWindow::initMapView() {
     dirDial->setWrapping(true);
     dirDial->setNotchesVisible(false);
     dirDial->setStyle(new QMotifStyle);
-    dirDial->setInvertedAppearance(true);
+//    dirDial->setInvertedAppearance(true);
     dirDial->setTracking(false);
     connect(dirDial, SIGNAL(sliderReleased()), this, SLOT(handleDirDial()));
 }
@@ -232,7 +232,7 @@ void MainWindow::selectNextObject() {
  * Set the direction value only when dial is touched
  */
 void MainWindow::handleDirDial() {
-    qDebug() << dirDial->value();
+    qDebug() << QString("Raw dial value %1").arg( dirDial->value() );
     int angle = (dirDial->value() + 180) % 360;
     census_widget->setDirectionData(angle);
 }
