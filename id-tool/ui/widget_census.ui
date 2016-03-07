@@ -822,7 +822,7 @@
              <bool>true</bool>
             </property>
             <property name="dbvalue" stdset="0">
-             <string/>
+             <string>3</string>
             </property>
             <attribute name="buttonGroup">
              <string notr="true">buttongroup_mammal_confidence</string>
@@ -1910,15 +1910,15 @@ Wasseroberfl&amp;äche</string>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttongroup_bird_behaviour"/>
-  <buttongroup name="buttongroup_bird_age"/>
   <buttongroup name="buttongroup_bird_sex"/>
-  <buttongroup name="buttongroup_bird_confidence"/>
-  <buttongroup name="buttongroup_mammal_behaviour"/>
-  <buttongroup name="buttongroup_mammal_age"/>
   <buttongroup name="buttongroup_mammal_confidence"/>
-  <buttongroup name="buttongroup_misc_confidence"/>
-  <buttongroup name="buttongroup_anthro_confidence"/>
   <buttongroup name="buttongroup_nosight_confidence"/>
+  <buttongroup name="buttongroup_anthro_confidence"/>
+  <buttongroup name="buttongroup_bird_behaviour"/>
+  <buttongroup name="buttongroup_mammal_behaviour"/>
+  <buttongroup name="buttongroup_misc_confidence"/>
+  <buttongroup name="buttongroup_mammal_age"/>
+  <buttongroup name="buttongroup_bird_confidence"/>
+  <buttongroup name="buttongroup_bird_age"/>
  </buttongroups>
 </ui>
