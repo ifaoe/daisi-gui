@@ -131,6 +131,6 @@ const QString ACFG_SQL_QRY_READ_IMAGES_NOT_READY =
 		"ON i.cam=r.cam AND i.img=r.img "
 		"WHERE r.rdy IS NULL ORDER BY i.trc, i.cam, i.img";
 const QString ACFG_SQL_QRY_READ_VALIDPOLY =
-		"SELECT ST_AsText(cut_env) FROM image_properties WHERE cam='%1' AND img='%2' AND session = '$(flight)'";
+        "SELECT ST_AsText(ST_Transform(cut_envelope,326$(utmSector))) FROM image_properties WHERE cam='%1' AND img='%2' AND session = '$(flight)'";
 
 #endif /* CONFIGHANDLER_H_ */
