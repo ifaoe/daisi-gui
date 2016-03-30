@@ -42,14 +42,14 @@ QSqlSortModel * DatabaseHandler::getPropertyTable() {
     qDebug() << "Calling  DatabaseHandler::getPropertyTable()";
     QSqlSortModel * model = new QSqlSortModel;
     model->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    model->setTable("image_properties");
+    model->setTable("images");
     return model;
 }
 
 QStringList DatabaseHandler::GetProjectList() {
 	QStringList return_list;
 	qDebug() << "Calling DatabaseHandler::GetProjectList()";
-	QString query_string = "SELECT distinct session FROM image_properties ORDER BY session";
+    QString query_string = "SELECT distinct session FROM images ORDER BY session";
 	qDebug() << query_string;
 	QSqlQuery query(query_string);
 	while (query.next())
@@ -61,7 +61,7 @@ QStringList DatabaseHandler::GetProjectCams() {
 	QStringList return_list;
 	return_list.append("");
 	qDebug() << "Calling DatabaseHandler::GetProjectCams";
-	QString query_string = "SELECT distinct cam FROM image_properties WHERE session='%1' ORDER BY cam";
+    QString query_string = "SELECT distinct camera FROM images WHERE session='%1' ORDER BY camera";
 	qDebug() << query_string;
 	QSqlQuery query(query_string.arg(cfg->project()));
 	while (query.next())
@@ -73,7 +73,7 @@ QStringList DatabaseHandler::GetProjectTracs() {
 	QStringList return_list;
 	return_list.append("");
 	qDebug() << "Calling DatabaseHandler::GetProjectTracs";
-	QString query_string = "SELECT distinct trc FROM image_properties WHERE session='%1' ORDER BY trc";
+    QString query_string = "SELECT distinct transect FROM images WHERE session='%1' ORDER BY transect";
 	qDebug() << query_string;
 	QSqlQuery query(query_string.arg(cfg->project()));
 	while (query.next())
@@ -105,9 +105,9 @@ QString DatabaseHandler::GetPropertyProgress(QString type) {
 	QString current = "";
 	qDebug() << "Calling DatabaseHandler::GetPropertyProgress";
 	QString query_string = "SELECT t1.current,t2.total FROM "
-			"(SELECT count(%1) as current FROM image_properties WHERE session='%2' AND (%1 IS NOT NULL OR cast(%1 as text)='')) as t1 "
+            "(SELECT count(%1) as current FROM images WHERE session='%2' AND (%1 IS NOT NULL OR cast(%1 as text)='')) as t1 "
 			"JOIN "
-			"(SELECT count(1) as total FROM image_properties WHERE session='%2') as t2 "
+            "(SELECT count(1) as total FROM images WHERE session='%2') as t2 "
 			" ON TRUE";
 	qDebug() << query_string.arg(type).arg(cfg->project());
 	cout <<  query_string.arg(type).arg(cfg->project()).toStdString() << endl;

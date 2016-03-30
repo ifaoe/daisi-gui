@@ -39,6 +39,8 @@ void MainWindow::ApplyFilters() {
     SetTableQuery(static_cast<QStringList>(filter_map.values()).join(" AND "));
 	ui->tableView_image_properties->resizeColumnsToContents();
 	ui->tableView_image_properties->horizontalHeader()->setStretchLastSection(true);
+//    ui->tableView_image_properties->setModel(property_table);
+//    property_table->select();
 }
 
 void MainWindow::SetTableQuery(QString where) {
@@ -101,20 +103,20 @@ void MainWindow::HandleServerSelection(const QString & server) {
 	index_list["clarity"] = property_table->fieldIndex("clarity");
 	index_list["ice"] = property_table->fieldIndex("ice");
 	index_list["remarks"] = property_table->fieldIndex("remarks");
-	index_list["trc"] = property_table->fieldIndex("trc");
-	index_list["cam"] = property_table->fieldIndex("cam");
-	index_list["img"] = property_table->fieldIndex("img");
+    index_list["transect"] = property_table->fieldIndex("transect");
+    index_list["camera"] = property_table->fieldIndex("camera");
+    index_list["image"] = property_table->fieldIndex("image");
 
  	for (int i=0; i<property_table->columnCount(); i++) {
 		if (!index_list.values().contains(i))
 			ui->tableView_image_properties->hideColumn(i);
 	}
 
- 	ui->tableView_image_properties->horizontalHeader()->moveSection(index_list["trc"],0);
+    ui->tableView_image_properties->horizontalHeader()->moveSection(index_list["transect"],0);
  	ui->tableView_image_properties->verticalHeader()->setResizeMode(QHeaderView::Fixed);
 
 //	property_table->setFilter("FALSE");
-    property_table->setOrderClause("ORDER BY trc, cam, img");
+    property_table->setOrderClause("ORDER BY transect, camera, image");
 }
 
 void MainWindow::SetTableData(QString column_name, QVariant data) {
