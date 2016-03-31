@@ -13,6 +13,10 @@
 #include "qfusionstyle.h"
 
 int main(int argc, char * argv[]) {
+    QCoreApplication::setOrganizationName("ifaoe");
+    QCoreApplication::setOrganizationDomain("ifaoe.de");
+    QCoreApplication::setApplicationName("daisi-images-gui");
+
     QIcon::setThemeName("breeze-dark");
     QStringList theme_paths;
     theme_paths << "/usr/share/icons/";
@@ -46,10 +50,16 @@ int main(int argc, char * argv[]) {
 //     app.setStyleSheet(file.readAll());
 //     file.close();
 //    }
-	ConfigHandler * cfg = new ConfigHandler(argc, argv);
-	DatabaseHandler * db = new DatabaseHandler(cfg);
-	MainWindow window(cfg,db);
-	window.showMaximized();
+    ConfigHandler *config = new ConfigHandler;
+    config->InitSettings();
+
+    DatabaseHandler * db = new DatabaseHandler(config);
+
+    MainWindow main_window(config, db);
+    if (config->getAppMaximized())
+        main_window.showMaximized();
+    else
+        main_window.show();
 
 	return app.exec();
 }

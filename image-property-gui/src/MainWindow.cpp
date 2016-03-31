@@ -8,15 +8,17 @@
 #include "MainWindow.h"
 #include <QInputDialog>
 #include <QSqlError>
+#include <QSqlQuery>
 #include "QSearchDialog.h"
+#include <QSqlRecord>
 
-MainWindow::MainWindow(ConfigHandler * cfg, DatabaseHandler * db)
-	: cfg(cfg), db(db), ui(new Ui::MainWindow) {
+MainWindow::MainWindow(ConfigHandler * config, DatabaseHandler * db)
+    : config(config), db(db), ui(new Ui::MainWindow) {
 	// TODO Auto-generated constructor stub
 	ui->setupUi(this);
 
     ui->combo_server->addItem("");
-    ui->combo_server->addItems(cfg->database_list());
+    ui->combo_server->addItems(config->getDatabaseList());
 
     connect(ui->combo_server, SIGNAL(currentIndexChanged(QString)),this, SLOT(HandleServerSelection(QString)));
     connect(ui->combo_session, SIGNAL(currentIndexChanged(QString)),this, SLOT(HandleSessionSelection(QString)));
@@ -27,7 +29,10 @@ MainWindow::MainWindow(ConfigHandler * cfg, DatabaseHandler * db)
 }
 
 MainWindow::~MainWindow() {
-	// TODO Auto-generated destructor stub
+    config->setAppPosition(pos());
+    config->setAppSize(size());
+    config->setAppMaximized(isMaximized());
+    config->sync();
 }
 
 void MainWindow::LoadSession() {
@@ -40,7 +45,10 @@ void MainWindow::ApplyFilters() {
 	ui->tableView_image_properties->resizeColumnsToContents();
 	ui->tableView_image_properties->horizontalHeader()->setStretchLastSection(true);
 //    ui->tableView_image_properties->setModel(property_table);
-//    property_table->select();
+    property_table->select();
+    qDebug() << "Filter: " << property_table->filter();
+    qDebug() << "Error: " << property_table->lastError().text();
+    qDebug() << "Query: " << property_table->query().lastQuery();
 }
 
 void MainWindow::SetTableQuery(QString where) {
@@ -80,7 +88,7 @@ void MainWindow::HandleServerSelection(const QString & server) {
     ui->combo_session->addItem("");
     if (server.isEmpty())
         return;
-    cfg->parse_database_info(ui->combo_server->currentText());
+    config->setPreferredDatabase(ui->combo_server->currentText());
 	db->OpenDatabase();
 
 	db->GetStuk4Codes("CLARITY",ui->comboBox_clarity);
@@ -152,9 +160,10 @@ void MainWindow::SetTableData(QString column_name, QVariant data) {
 	progress_dialog_->setLabelText(tr("Stelle Auswahl wieder her..."));
 	progress_dialog_->setRange(0, top_left_row.size());
 	QModelIndex top_left, bottom_right;
-	QItemSelection selection ;
+    QItemSelection selection;
+    connect(this, SIGNAL(updateProgress(int)), progress_dialog_, SLOT(setValue(int)));
 	for (int i=0; i<top_left_row.size(); i++) {
-		progress_dialog_->setValue(i);
+        emit updateProgress(i);
 		if (progress_dialog_->wasCanceled())
 			break;
 		top_left = property_table->index(top_left_row[i],top_left_column[i],QModelIndex());
@@ -170,7 +179,7 @@ void MainWindow::HandleSessionSelection(const QString & session) {
     if (session.isEmpty())
         return;
     filter_map["session"] = QString("session='%1'").arg(session);
-    cfg->set_project(session);
+    config->setSessionName(session);
     UpdateProgress();
     ApplyFilters();
 }
@@ -201,4 +210,14 @@ void MainWindow::UpdateDatabaseProgress() {
 void MainWindow::handleHeaderFilter(int index) {
     QSearchDialog dialog;
     dialog.updateItemList(getColumnDataList(index));
+    if (dialog.exec()) {
+        if (dialog.isSorted())
+            ui->tableView_image_properties->sortByColumn(index, dialog.getSortingOrder());
+        if (dialog.getFilterString().isEmpty())
+            filter_map.remove(property_table->headerData(index, Qt::Horizontal).toString());
+        else
+            filter_map[property_table->headerData(index, Qt::Horizontal).toString()] = QString("cast(%1 as text) like '%%2%'")
+                .arg(property_table->record(0).fieldName(index)).arg(dialog.getFilterString());
+        property_table->setFilter(static_cast<QStringList>(filter_map.values()).join(" AND "));
+    }
 }

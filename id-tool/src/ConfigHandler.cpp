@@ -25,19 +25,18 @@ void ConfigHandler::InitSettings() {
 	}
 }
 
-void ConfigHandler::AddDatabase(const QString & id, const QString & host, int port, const QString & name,const QString & user,
-		const QString & password) {
-beginGroup("Database");
-{
-	beginGroup(id);
-	setValue("host",QString(host));
-	setValue("port", port);
-	setValue("name", name);
-	setValue("password", password);
-	setValue("user",user);
-	endGroup();
-}
-endGroup();
+void ConfigHandler::AddDatabase(const QString & id, const QString & host, int port, const QString & name,const QString & user, const QString & password) {
+    beginGroup("Database");
+    {
+        beginGroup(id);
+        setValue("host",QString(host));
+        setValue("port", port);
+        setValue("name", name);
+        setValue("password", password);
+        setValue("user",user);
+        endGroup();
+    }
+    endGroup();
 }
 
 QString ConfigHandler::getSystemUser() {

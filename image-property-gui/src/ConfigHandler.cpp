@@ -1,67 +1,110 @@
-/*
- * ConfigHandler.cpp
- *
- *  Created on: Jul 22, 2015
- *      Author: awg
- */
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include <iostream>
-#include <QDebug>
-#include <boost/property_tree/ini_parser.hpp>
-#include <boost/program_options.hpp>
 #include "ConfigHandler.h"
+#include <QFile>
+#include <QSize>
+#include <QPoint>
+#include <QStringList>
 
-namespace po = boost::program_options;
-namespace pt = boost::property_tree;
-using namespace std;
-
-ConfigHandler::ConfigHandler(int argc, char * argv[]) {
-	db_info_ = new DatabaseInfo;
-
-    po::options_description desc("Options");
-    desc.add_options()
-            ("help,h", "Show this help message.")
-            ("config,c", po::value<string>(), "Path to config-file.");
-    po::variables_map vm;
-    po::store(po::parse_command_line(argc, argv, desc), vm);
-    po::notify(vm);
-
-    if (vm.count("help")) {
-        cout << desc << "\n";
-        exit(0);
+void ConfigHandler::InitSettings() {
+    user = QString(getenv("USER"));
+    if (!QFile::exists(fileName())) {
+        AddDatabase("Rostock", "192.168.118.35", 5432, "daisi", "daisi","18ifaoe184");
+        AddDatabase("Hamburg", "192.168.200.35", 5432, "daisi", "daisi","18ifaoe184");
     }
-    if (vm.count("config")) {
-        string tmp = vm["config"].as<string>();
-        cfg_file_ = new QFile(tmp.data());
-    } else {
-        cfg_file_ = new QFile("/usr/local/ifaoe/settings/daisi/property-editor/main.cfg");
-    }
-    if (cfg_file_->exists()) {
-        qDebug() << "Using config-file: " << cfg_file_->fileName();
-    } else {
-        qFatal( "Fatal: Config file %s does not exist or is not readable. Aborting.", cfg_file_->fileName().toStdString().c_str() );
-    }
-    boost::property_tree::ini_parser::read_ini(cfg_file_->fileName().toStdString(), cfg_tree);
-	database_list_ = QString().fromStdString( cfg_tree.get<std::string>("main.dblist")).split(",");
 }
 
-ConfigHandler::~ConfigHandler() {
-	delete db_info_;
-	delete cfg_file_;
+void ConfigHandler::AddDatabase(const QString & id, const QString & host, int port, const QString & name,const QString & user, const QString & password) {
+    beginGroup("Database");
+    {
+        beginGroup(id);
+        setValue("host",QString(host));
+        setValue("port", port);
+        setValue("name", name);
+        setValue("password", password);
+        setValue("user",user);
+        endGroup();
+    }
+    endGroup();
 }
 
-bool ConfigHandler::parse_database_info(QString db_name) {
-	delete db_info_;
-	db_info_ = new DatabaseInfo;
-	if (cfg_tree.count(db_name.toStdString()) == 0) {
-		qDebug() << "Warning in ConfigHandler::parse_database_info: Server " << db_name << " does not exist.";
-		return false;
-	}
-	db_info_->name = db_name;
-    db_info_->host = QString::fromStdString( cfg_tree.get<std::string>(db_name.toStdString() + ".host") );
-    db_info_->db = QString::fromStdString( cfg_tree.get<std::string>(db_name.toStdString() + ".name") );
-    db_info_->user = QString::fromStdString( cfg_tree.get<std::string>(db_name.toStdString() + ".user") );
-    db_info_->password = QString::fromStdString( cfg_tree.get<std::string>(db_name.toStdString() + ".pass") );
-    db_info_->port =  cfg_tree.get<int>(db_name.toStdString() + ".port");
-    return true;
+QString ConfigHandler::getSystemUser() {
+    return QString(getenv("USER"));
+}
+
+void ConfigHandler::setPreferredDatabase(const QString & database) {
+    setValue("Database/preferred", database);
+}
+
+QString ConfigHandler::getPreferredDatabase() {
+    return value("Database/preferred","").toString();
+}
+
+void ConfigHandler::setSessionName(const QString & session) {
+    setValue("session", session);
+}
+
+QString ConfigHandler::getPreferredSession() {
+    return value("session","").toString();
+}
+
+void ConfigHandler::setAppSize(QSize size) {
+    setValue("MainWindow/size",size);
+}
+
+QSize ConfigHandler::getAppSize() {
+    return value("MainWindow/size",QSize(800,600)).toSize();
+}
+
+void ConfigHandler::setAppPosition(QPoint pos) {
+    setValue("MainWindow/position",pos);
+}
+
+QPoint ConfigHandler::getAppPosition() {
+    return value("MainWindow/position",QPoint(50,50)).toPoint();
+}
+
+void ConfigHandler::setAppMaximized(bool max) {
+    setValue("MainWindow/maximized",max);
+}
+
+bool ConfigHandler::getAppMaximized() {
+    return value("MainWindow/maximized",false).toBool();
+}
+
+QStringList ConfigHandler::getDatabaseList() {
+    beginGroup("Database");
+    QStringList children = childGroups();
+    endGroup();
+    return children;
+}
+
+DatabaseInfo ConfigHandler::getDatabaseInfo(const QString & id) {
+    DatabaseInfo info;
+    beginGroup("Database");
+    if (!childGroups().contains(id)) {
+        return info;
+        endGroup();
+    }
+        beginGroup(id);
+        info.id = id;
+        info.host = value("host",QString("localhost")).toString();
+        info.port = value("port", 5432).toInt();
+        info.name = value("name", "daisi").toString();
+        info.password = value("password", "18ifaoe184").toString();
+        info.user = value("user","daisi").toString();
+        endGroup();
+    endGroup();
+    return info;
 }

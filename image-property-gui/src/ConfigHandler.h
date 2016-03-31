@@ -1,48 +1,54 @@
-/*
- * ConfigHandler.h
- *
- *  Created on: Jul 22, 2015
- *      Author: awg
- */
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef CONFIGHANDLER_H_
 #define CONFIGHANDLER_H_
 
-#include <QFile>
-#include <QStringList>
-#include <boost/property_tree/ptree.hpp>
+#include <QSettings>
+#include <QDebug>
 
 struct DatabaseInfo {
-	QString name = "";
-	QString host = "127.0.0.1";
-	int port = 5432;
-	QString user = "daisi";
-	QString db = "daisi";
-	QString password = "18ifaoe184";
+    QString id = "local";
+    QString host = "localhost";
+    int port = 5432;
+    QString name = "daisi";
+    QString password = "18ifaoe184";
+    QString user = "daisi";
 };
 
-class ConfigHandler {
+class ConfigHandler : public QSettings{
 public:
-	ConfigHandler(int argc, char * argv[]);
-	virtual ~ConfigHandler();
-	bool parse_database_info(QString db_name);
-	QString db_location() {return db_info_->name; }
-	QString db_host() {return db_info_->host;}
-	int db_port() {return db_info_->port;}
-	QString db_name() {return db_info_->db;}
-	QString db_password() {return db_info_->password;}
-	QString db_user() {return  db_info_->user;}
-	void set_project(QString project) {project_ = project;}
-	QString project() {return project_;}
-	QStringList database_list() {return database_list_;}
+    void InitSettings();
+    void AddDatabase(const QString & id, const QString & host, int port, const QString & name,const QString & user,
+            const QString & password);
+    void setUser(const QString & user_name) { user = user_name; }
+    QString getUser() {return user;}
+    void setAppPosition(QPoint pos);
+    QPoint getAppPosition();
+    void setAppSize(QSize size);
+    QSize getAppSize();
+    void setAppMaximized(bool max);
+    bool getAppMaximized();
+    void setPreferredDatabase(const QString & database);
+    QString getPreferredDatabase();
+    void setSessionName(const QString & session);
+    QString getPreferredSession();
+    QStringList getDatabaseList();
+    DatabaseInfo getDatabaseInfo(const QString & id);
+    QString getSystemUser();
+
 private:
-	QFile * cfg_file_ = 0;
-	boost::property_tree::ptree cfg_tree;
-	QStringList database_list_;
-	DatabaseInfo * db_info_=0;
-	QString project_;
+    QString user;
 };
-
-
 
 #endif /* CONFIGHANDLER_H_ */

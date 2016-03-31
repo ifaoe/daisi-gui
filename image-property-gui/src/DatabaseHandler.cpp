@@ -11,7 +11,7 @@
 #include <iostream>
 using namespace std;
 
-DatabaseHandler::DatabaseHandler(ConfigHandler * cfg) : cfg(cfg){
+DatabaseHandler::DatabaseHandler(ConfigHandler * config) : config(config){
 	// TODO Auto-generated constructor stub
     db = new QSqlDatabase();
 	*db = QSqlDatabase::addDatabase("QPSQL");
@@ -22,11 +22,12 @@ DatabaseHandler::DatabaseHandler(ConfigHandler * cfg) : cfg(cfg){
 }
 
 void DatabaseHandler::OpenDatabase() {
-    db->setHostName(cfg->db_host());
-    db->setDatabaseName(cfg->db_name());
-    db->setPort(cfg->db_port());
-    db->setUserName(cfg->db_user());
-    db->setPassword(cfg->db_password());
+    DatabaseInfo db_info = config->getDatabaseInfo(config->getPreferredDatabase());
+    db->setHostName(db_info.host);
+    db->setDatabaseName(db_info.name);
+    db->setPort(db_info.port);
+    db->setUserName(db_info.user);
+    db->setPassword(db_info.password);
     qDebug() << "Opening Database " + db->databaseName()+ " on Host " + db->hostName() + ".";
     if (!db->open()) {
         qFatal("Could not open Database");
@@ -63,7 +64,7 @@ QStringList DatabaseHandler::GetProjectCams() {
 	qDebug() << "Calling DatabaseHandler::GetProjectCams";
     QString query_string = "SELECT distinct camera FROM images WHERE session='%1' ORDER BY camera";
 	qDebug() << query_string;
-	QSqlQuery query(query_string.arg(cfg->project()));
+    QSqlQuery query(query_string.arg(config->getPreferredSession()));
 	while (query.next())
 		return_list.append(query.value(0).toString());
 	return return_list;
@@ -75,7 +76,7 @@ QStringList DatabaseHandler::GetProjectTracs() {
 	qDebug() << "Calling DatabaseHandler::GetProjectTracs";
     QString query_string = "SELECT distinct transect FROM images WHERE session='%1' ORDER BY transect";
 	qDebug() << query_string;
-	QSqlQuery query(query_string.arg(cfg->project()));
+    QSqlQuery query(query_string.arg(config->getPreferredSession()));
 	while (query.next())
 		return_list.append(query.value(0).toString());
 	return return_list;
@@ -109,9 +110,9 @@ QString DatabaseHandler::GetPropertyProgress(QString type) {
 			"JOIN "
             "(SELECT count(1) as total FROM images WHERE session='%2') as t2 "
 			" ON TRUE";
-	qDebug() << query_string.arg(type).arg(cfg->project());
-	cout <<  query_string.arg(type).arg(cfg->project()).toStdString() << endl;
-	QSqlQuery query(query_string.arg(type).arg(cfg->project()));
+    qDebug() << query_string.arg(type).arg(config->getPreferredSession());
+    cout <<  query_string.arg(type).arg(config->getPreferredSession()).toStdString() << endl;
+    QSqlQuery query(query_string.arg(type).arg(config->getPreferredSession()));
 	if (query.next()) {
 		current = query.value(0).toString();
 		total = query.value(1).toString();

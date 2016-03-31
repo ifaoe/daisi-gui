@@ -23,12 +23,12 @@ class MainWindow;
 class MainWindow : public QMainWindow {
 	Q_OBJECT
 public:
-	MainWindow(ConfigHandler * cfg, DatabaseHandler * db);
+    MainWindow(ConfigHandler * config, DatabaseHandler * db);
 	virtual ~MainWindow();
 private:
 	QProgressDialog * progress_dialog_ = 0;
 	int database_progess_ = 0;
-	ConfigHandler * cfg = 0;
+    ConfigHandler * config = 0;
 	DatabaseHandler * db = 0;
 	Ui::MainWindow * ui = 0;
 	QMap<QString, QString> filter_map;
@@ -47,6 +47,8 @@ private slots:
 	void HandleSaveData(QAbstractButton * button);
 	void UpdateDatabaseProgress();
     void handleHeaderFilter(int index);
+signals:
+    void updateProgress(int);
 };
 
 #endif /* MAINWINDOW_H_ */

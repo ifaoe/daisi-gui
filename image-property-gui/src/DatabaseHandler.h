@@ -16,7 +16,7 @@
 
 class DatabaseHandler {
 public:
-	DatabaseHandler(ConfigHandler * cfg);
+    DatabaseHandler(ConfigHandler * config);
 	virtual ~DatabaseHandler();
 	void OpenDatabase();
 	QStringList GetProjectList();
@@ -28,7 +28,7 @@ public:
     QSqlSortModel * getPropertyTable();
 	QString GetPropertyProgress(QString type);
 private:
-	ConfigHandler * cfg = 0;
+    ConfigHandler * config = 0;
 	QSqlDatabase * db = 0;
 };
 
