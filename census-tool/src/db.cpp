@@ -220,7 +220,7 @@ bool Db::writeRawCensus(const QString type,
 // -------------------------------------------------------
 bool Db::deleteRawCensus(int id, const QString & cam, const QString & img, const QString & user) {
     QString query = config->replaceProjectSettings(ACFG_SQL_QRY_DEL_RCENSUS
-            .arg(id).arg(cam).arg(img));
+            .arg(id).arg(cam).arg(img).arg(user));
     qDebug() << query;
     QSqlQuery req;
     if ( ! req.exec(query) ) {
