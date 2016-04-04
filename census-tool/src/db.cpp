@@ -263,9 +263,9 @@ QStringList Db::getSessionList() {
     QStringList sessionlist;
     QString query;
     if (config->getAdmin())
-        query = config->replaceProjectSettings("SELECT project_id FROM projects where active>0 ORDER BY project_id");
+        query = config->replaceProjectSettings("SELECT project_id FROM projects where census_status>0 ORDER BY project_id");
     else
-        query = config->replaceProjectSettings("SELECT project_id FROM projects where active=1 ORDER BY project_id");
+        query = config->replaceProjectSettings("SELECT project_id FROM projects where census_status=1 ORDER BY project_id");
     qDebug() << query;
     QSqlQuery req;
     if ( ! req.exec(query) ) {
@@ -309,7 +309,7 @@ SqlReadyTableModel * Db::getImageView() {
 
 QSqlExtendedTableModel * Db::getObjectView() {
     QSqlExtendedTableModel * model = new QSqlExtendedTableModel;
-    model->setTable("daisi_bird_census_objects");
+    model->setTable("daisi_dev.bird_census_objects");
     model->setHeaderData(model->fieldIndex("tp"), Qt::Horizontal, "Typ", Qt::DisplayRole);
     model->setHeaderData(model->fieldIndex("usr"), Qt::Horizontal, "Nutzer", Qt::DisplayRole);
     model->setHeaderData(model->fieldIndex("rcns_id"), Qt::Horizontal, "Objekt ID", Qt::DisplayRole);

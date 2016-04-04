@@ -62,7 +62,7 @@ bool DatabaseHandler::OpenDatabase() {
 QStringList DatabaseHandler::getSessionList() {
     qDebug() << "Getting session list from database.";
     QStringList sessionList;
-    QString qstr = "SELECT project_id FROM projects WHERE active>0 ORDER BY project_id";
+    QString qstr = "SELECT project_id FROM projects WHERE id_status>0 ORDER BY project_id";
     qDebug() << qstr;
     QSqlQuery query(qstr);
     while(query.next()) {
@@ -103,7 +103,7 @@ CensorSqlTableModel * DatabaseHandler::getObjectModel() {
 	CensorSqlTableModel * model = new CensorSqlTableModel;
 	model->setCensorCountColumn(6);
 	model->setCensorMax(7);
-	model->setTable("daisi_bird_view_objects");
+    model->setTable("daisi_dev.bird_view_objects");
 	model->setHeaderData(0, Qt::Horizontal, QString("Projekt"));
 	model->setHeaderData(0, Qt::Horizontal, QString("session"), 101);
 	model->setHeaderData(1, Qt::Horizontal, QString("Objekt ID"));
