@@ -28,7 +28,7 @@ public:
     DatabaseHandler(ConfigHandler *cfg);
     virtual ~DatabaseHandler();
     bool OpenDatabase();
-    QStringList getSessionList();
+    QStringList getSessionList(const QString & location);
     QSqlQuery * getObjectResult(QString session, QString user, QString filter="", QString order="");
     census * getRawObjectData(QString objId, QString usr);
     bool getSpeciesList(QString type, QComboBox * combo_box);
@@ -59,6 +59,7 @@ public:
     int getCensusCount(const QString & session, const QString & user,
     		const QString & having_filter = "TRUE", const QString & where_filter = "TRUE");
     CensorSqlTableModel * getObjectModel();
+    QStringList getLocationList();
 private:
     QSqlDatabase *db;
     ConfigHandler *config;

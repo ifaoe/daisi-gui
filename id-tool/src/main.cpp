@@ -68,6 +68,7 @@ int main(int argc, char *argv[])
     QgsApplication::initQgis();
 
     DatabaseHandler *db = new DatabaseHandler(config);
+    db->OpenDatabase();
 
     MainWindow main_window(config, db);
     if (config->getAppMaximized())

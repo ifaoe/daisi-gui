@@ -101,7 +101,7 @@ private slots:
     void lengthMeasurement();
 	void handleMiscMeasurement();
 	void handleFlightInfoAction();
-	void HandleServerSelection();
+	void HandleLocationSelection();
 	void showFilterDialog(int index);
     void selectNextObject();
 };

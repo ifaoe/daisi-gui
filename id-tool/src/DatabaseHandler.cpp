@@ -37,21 +37,15 @@ DatabaseHandler::~DatabaseHandler() {
 }
 
 bool DatabaseHandler::OpenDatabase() {
-	if (config->getPreferredDatabase().isEmpty())
-		return false;
-
 	if (db->isOpen()) {
 		db->close();
 	}
 
-	DatabaseInfo info = config->getDatabaseInfo(config->getPreferredDatabase());
-	if (info.id.isEmpty())
-		return false;
-    db->setHostName(info.host);
-    db->setDatabaseName(info.name);
-    db->setPort(info.port);
-    db->setUserName(info.user);
-    db->setPassword(info.password);
+    db->setHostName(config->dbHost());
+    db->setDatabaseName(config->dbName());
+    db->setPort(config->dbPort());
+    db->setUserName(config->dbUser());
+    db->setPassword(config->dbPassword());
     qDebug() << "Opening Database " + db->databaseName()+ " on Host " + db->hostName() + ".";
     if (!db->open()) {
         qFatal("Could not open Database");
@@ -59,12 +53,23 @@ bool DatabaseHandler::OpenDatabase() {
     return true;
 }
 
-QStringList DatabaseHandler::getSessionList() {
+QStringList DatabaseHandler::getLocationList() {
+    qDebug() << "Getting location list from database";
+    QStringList location_list;
+    QString query_string = "SELECT distinct location FROM projects ORDER BY location";
+    qDebug() << query_string;
+    QSqlQuery query(query_string);
+    while(query.next())
+        location_list.append(query.value(0).toString());
+    return location_list;
+}
+
+QStringList DatabaseHandler::getSessionList(const QString & location) {
     qDebug() << "Getting session list from database.";
     QStringList sessionList;
-    QString qstr = "SELECT project_id FROM projects WHERE id_status>0 ORDER BY project_id";
+    QString qstr = "SELECT project_id FROM projects WHERE location='%1' AND id_status>0 ORDER BY project_id";
     qDebug() << qstr;
-    QSqlQuery query(qstr);
+    QSqlQuery query(qstr.arg(location));
     while(query.next()) {
         sessionList.append(query.value(0).toString());
     }
