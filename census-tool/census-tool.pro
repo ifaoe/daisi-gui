@@ -18,8 +18,6 @@ SOURCES += main.cpp\
     ovrmapcanvas.cpp \
     QgsMapMarker.cpp \
     ConfigHandler.cpp \
-    ServerSettings.cpp \
-    ServerSelection.cpp \
     sqlreadytablemodel.cpp
 
 HEADERS  += mainwindow.h \
@@ -28,8 +26,6 @@ HEADERS  += mainwindow.h \
     ovrmapcanvas.h \
     QgsMapMarker.h \
     ConfigHandler.h \
-    ServerSettings.h \
-    ServerSelection.h \
     sqlreadytablemodel.h
 
 FORMS    += mainwindow.ui \

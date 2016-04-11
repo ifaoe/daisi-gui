@@ -146,7 +146,7 @@ QToolBox::tab:selected {
 }*/</string>
             </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>2</number>
             </property>
             <widget class="QWidget" name="tbxTasksPage1">
              <attribute name="title">
@@ -330,7 +330,8 @@ QToolBox::tab:selected {
                        <string>...</string>
                       </property>
                       <property name="icon">
-                       <iconset theme="arrow-left"/>
+                       <iconset theme="arrow-left">
+                        <normaloff>.</normaloff>.</iconset>
                       </property>
                      </widget>
                     </item>
@@ -352,7 +353,8 @@ QToolBox::tab:selected {
                        <string/>
                       </property>
                       <property name="icon">
-                       <iconset theme="arrow-right"/>
+                       <iconset theme="arrow-right">
+                        <normaloff>.</normaloff>.</iconset>
                       </property>
                      </widget>
                     </item>
@@ -377,7 +379,8 @@ QToolBox::tab:selected {
                        <string/>
                       </property>
                       <property name="icon">
-                       <iconset theme="zoom-fit-best"/>
+                       <iconset theme="zoom-fit-best">
+                        <normaloff>.</normaloff>.</iconset>
                       </property>
                      </widget>
                     </item>
@@ -402,7 +405,8 @@ QToolBox::tab:selected {
                        <string>...</string>
                       </property>
                       <property name="icon">
-                       <iconset theme="zoom-original"/>
+                       <iconset theme="zoom-original">
+                        <normaloff>.</normaloff>.</iconset>
                       </property>
                      </widget>
                     </item>
@@ -427,7 +431,8 @@ QToolBox::tab:selected {
                        <string/>
                       </property>
                       <property name="icon">
-                       <iconset theme="transform-move"/>
+                       <iconset theme="transform-move">
+                        <normaloff>.</normaloff>.</iconset>
                       </property>
                       <property name="checkable">
                        <bool>true</bool>
@@ -458,7 +463,8 @@ QToolBox::tab:selected {
                        <string/>
                       </property>
                       <property name="icon">
-                       <iconset theme="format-add-node"/>
+                       <iconset theme="format-add-node">
+                        <normaloff>.</normaloff>.</iconset>
                       </property>
                       <property name="checkable">
                        <bool>true</bool>
@@ -489,7 +495,8 @@ QToolBox::tab:selected {
                        <string/>
                       </property>
                       <property name="icon">
-                       <iconset theme="edit-node"/>
+                       <iconset theme="edit-node">
+                        <normaloff>.</normaloff>.</iconset>
                       </property>
                       <property name="checkable">
                        <bool>true</bool>
@@ -523,7 +530,8 @@ QToolBox::tab:selected {
                        <string/>
                       </property>
                       <property name="icon">
-                       <iconset theme="format-remove-node"/>
+                       <iconset theme="format-remove-node">
+                        <normaloff>.</normaloff>.</iconset>
                       </property>
                      </widget>
                     </item>
@@ -802,7 +810,7 @@ QToolBox::tab:selected {
              </attribute>
              <layout class="QGridLayout" name="gridLayout_3">
               <item row="0" column="0">
-               <widget class="QToolButton" name="option_server">
+               <widget class="QToolButton" name="option_location">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -810,12 +818,11 @@ QToolBox::tab:selected {
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>Server wählen</string>
+                 <string>Standort wählen </string>
                 </property>
                 <property name="icon">
                  <iconset theme="server-database">
-                  <normaloff/>
-                 </iconset>
+                  <normaloff>.</normaloff>.</iconset>
                 </property>
                 <property name="toolButtonStyle">
                  <enum>Qt::ToolButtonTextBesideIcon</enum>
@@ -848,8 +855,7 @@ QToolBox::tab:selected {
                 </property>
                 <property name="icon">
                  <iconset theme="object-locked">
-                  <normaloff/>
-                 </iconset>
+                  <normaloff>.</normaloff>.</iconset>
                 </property>
                 <property name="toolButtonStyle">
                  <enum>Qt::ToolButtonTextBesideIcon</enum>
@@ -935,7 +941,7 @@ QToolBox::tab:selected {
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="button_group_types"/>
   <buttongroup name="btgMapMode"/>
+  <buttongroup name="button_group_types"/>
  </buttongroups>
 </ui>

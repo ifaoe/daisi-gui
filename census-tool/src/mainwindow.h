@@ -29,13 +29,13 @@ class MainWindow : public QMainWindow
     Q_OBJECT
     
 public:
-    explicit MainWindow(ConfigHandler *aConfig, Db * aDb);
+    explicit MainWindow(ConfigHandler *aConfig, Database * aDb);
     ~MainWindow();
     
 private:
     ConfigHandler *config;
     Ui::MainWindow *ui = 0;
-    Db *db = 0;
+    Database *db = 0;
     QgsProviderRegistry *qgsPvrRegistry = 0;
     QgsMapLayerRegistry *qgsLyrRegistry = 0;
 
@@ -80,7 +80,7 @@ public slots:
     void handleMissingCheckBox(int state);
 private slots:
 	void handleAdminPass();
-	void handleServerSelection();
+    void handleLocationSelection();
     void handleHeaderFilter(int index);
 };
 

@@ -19,44 +19,34 @@
 
 void ConfigHandler::InitSettings() {
 	user = QString(getenv("USER"));
-	if (!QFile::exists(fileName())) {
-		AddDatabase("Rostock", "192.168.118.35", 5432, "daisi", "daisi","18ifaoe184");
-		AddDatabase("Hamburg", "192.168.200.35", 5432, "daisi", "daisi","18ifaoe184");
-	}
 }
 
-void ConfigHandler::AddDatabase(const QString & id, const QString & host, int port, const QString & name,const QString & user,
-		const QString & password) {
-	beginGroup("Database");
-	{
-		beginGroup(id);
-		setValue("host",QString(host));
-		setValue("port", port);
-		setValue("name", name);
-		setValue("password", password);
-		setValue("user",user);
-		endGroup();
-	}
-	endGroup();
+void ConfigHandler::setLocation(const QString &location) {
+    setValue("location", location);
 }
 
-bool ConfigHandler::removeDatabase(const QString & id) {
-	beginGroup("Database");
-	if (!childGroups().contains(id)) {
-		endGroup();
-		return false;
-	}
-	remove(id);
-	endGroup();
-	return true;
+QString ConfigHandler::location() {
+    return value("location", "rostock").toString();
 }
 
-void ConfigHandler::setPreferredDatabase(const QString & database) {
-	setValue("Database/preferred", database);
+QString ConfigHandler::dbHost() {
+    return value("database/host", "192.168.118.35").toString();
 }
 
-QString ConfigHandler::getPreferredDatabase() {
-	return value("Database/preferred","").toString();
+int ConfigHandler::dbPort() {
+    return value("database/port", 5432).toInt();
+}
+
+QString ConfigHandler::dbName() {
+    return value("database/name", "daisi").toString();
+}
+
+QString ConfigHandler::dbUser() {
+    return value("database/user", "daisi").toString();
+}
+
+QString ConfigHandler::dbPassword() {
+    return value("database/password", "18ifaoe184").toString();
 }
 
 void ConfigHandler::setPreferredSession(const QString & session) {
@@ -99,13 +89,6 @@ bool ConfigHandler::getAppMaximized() {
 	return value("MainWindow/maximized",false).toBool();
 }
 
-QStringList ConfigHandler::getDatabaseList() {
-	beginGroup("Database");
-	QStringList children = childGroups();
-	endGroup();
-	return children;
-}
-
 void ConfigHandler::setQGisPrefixPath(const QString & path) {
 	setValue("QGis/prefix_path", path);
 }
@@ -136,25 +119,6 @@ int ConfigHandler::getTileHeight() {
 
 double ConfigHandler::getSelectDistance() {
 	return value("QGis/select_distance",0.1).toDouble();
-}
-
-DatabaseInfo ConfigHandler::getDatabaseInfo(const QString & id) {
-	DatabaseInfo info;
-	beginGroup("Database");
-	if (!childGroups().contains(id)) {
-		return info;
-		endGroup();
-	}
-		beginGroup(id);
-		info.id = id;
-		info.host = value("host",QString("localhost")).toString();
-		info.port = value("port", 5432).toInt();
-		info.name = value("name", "daisi").toString();
-		info.password = value("password", "18ifaoe184").toString();
-		info.user = value("user","daisi").toString();
-		endGroup();
-	endGroup();
-	return info;
 }
 
 QString ConfigHandler::replaceProjectSettings(const QString & query) {

@@ -18,7 +18,7 @@ void qCritical(QString text) {
 CnsMapCanvas::CnsMapCanvas(QWidget *parent,
                            Ui::MainWindow *aUI,
                            ConfigHandler *aConfig,
-                           Db* aDB,
+                           Database* aDB,
                            QgsMapLayerRegistry *lyrRegistry) :
     QgsMapCanvas(parent),
     ui(aUI), config(aConfig), db(aDB), qgsLyrRegistry(lyrRegistry)

@@ -25,7 +25,7 @@ class OvrMapCanvas : public QgsMapCanvas
         explicit OvrMapCanvas(QWidget *parent,
                               Ui::MainWindow* aUI,
                               ConfigHandler* aConfig,
-                              Db* aDB, CnsMapCanvas *aImgCanvas,
+                              Database* aDB, CnsMapCanvas *aImgCanvas,
                               QgsMapLayerRegistry* lyrRegistry);
 
         void refreshLayerPaintList();
@@ -46,7 +46,7 @@ class OvrMapCanvas : public QgsMapCanvas
     private:
         Ui::MainWindow* ui = 0;
         ConfigHandler* config;
-        Db* db = 0;
+        Database* db = 0;
         CnsMapCanvas* imgCanvas;
 
         int rawImgTileID = -1;

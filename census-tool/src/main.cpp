@@ -2,7 +2,6 @@
 #include <qgsapplication.h>
 #include "mainwindow.h"
 #include "ConfigHandler.h"
-#include "ServerSelection.h"
 #include <QInputDialog>
 #include "qfusionstyle.h"
 
@@ -48,18 +47,12 @@ int main(int argc, char *argv[])
     config->InitSettings();
 
     // Einlesen der Datenbankparameter
-    Db * db = new Db(config);
+    Database * db = new Database(config);
 
     // Qgis Pfad setzen und Provider laden
     QgsApplication::setPrefixPath(config->getQGisPrefixPath(), true);
     QgsApplication::initQgis();
 
-    if (config->getPreferredDatabase().isEmpty() || !config->getDatabaseList().contains(config->getPreferredDatabase())) {
-		ServerSelection server_selection(config);
-		server_selection.exec();
-		if (server_selection.result() == QDialog::Rejected)
-			return 1;
-    }
     db->OpenDatabase();
 
     // Applikation starten

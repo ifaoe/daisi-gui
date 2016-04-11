@@ -52,7 +52,7 @@ public:
     explicit CnsMapCanvas(QWidget* parent,
                           Ui::MainWindow* aUI,
                     ConfigHandler* aConfig,
-                    Db* aDB,
+                    Database* aDB,
                     QgsMapLayerRegistry* lyrRegistry
              );
     bool doCalcPixPos(const QgsPoint& point , int& pixX, int& pixY);
@@ -93,7 +93,7 @@ public slots:
 private:
     Ui::MainWindow* ui = 0;
     ConfigHandler* config;
-    Db* db;
+    Database* db;
     QgsMapLayerRegistry* qgsLyrRegistry = 0;
     OvrMapCanvas* ovrCanvas;
 
