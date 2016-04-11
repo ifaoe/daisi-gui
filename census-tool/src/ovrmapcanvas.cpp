@@ -4,7 +4,7 @@
 OvrMapCanvas::OvrMapCanvas(QWidget *parent,
                            Ui::MainWindow* aUI,
                            ConfigHandler* aConfig,
-                           Db* aDB,
+                           Database* aDB,
                            CnsMapCanvas* aImgCanvas,
                            QgsMapLayerRegistry* lyrRegistry) :
   QgsMapCanvas(parent),

@@ -4,10 +4,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "db.h"
-#include "ServerSelection.h"
 #include "QSearchDialog.h"
 
-MainWindow::MainWindow(ConfigHandler *aConfig, Db * aDb)
+MainWindow::MainWindow(ConfigHandler *aConfig, Database * aDb)
     : QMainWindow(0), config(aConfig), ui(new Ui::MainWindow), db(aDb)
 {
 	qDebug() << "Main Window Construct";
@@ -72,11 +71,11 @@ MainWindow::MainWindow(ConfigHandler *aConfig, Db * aDb)
 
     connect( ui->option_admin, SIGNAL(clicked()), this, SLOT(handleAdminPass()));
 
-    connect( ui->option_server, SIGNAL(clicked()),this, SLOT(handleServerSelection()));
-
     connect( ui->chbNotReady, SIGNAL(stateChanged(int)), this, SLOT(handleMissingCheckBox(int)));
 
     connect( ui->image_table->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(handleHeaderFilter(int)));
+
+    connect( ui->option_location, SIGNAL(clicked()), this, SLOT(handleLocationSelection()));
 }
 
 // ------------------------------------------------------------------------
@@ -435,20 +434,6 @@ void MainWindow::handleAdminPass() {
 	}
 }
 
-void MainWindow::handleServerSelection() {
-	ServerSelection server_selection(config);
-	server_selection.exec();
-	db->OpenDatabase();
-	mapCanvas->setEnabled(false);
-	ovrCanvas->setEnabled(false);
-    ui->image_table->clearSelection();
-    ui->tbwObjects->clearSelection();
-    image_table_model->clear();
-    object_table_model->clear();
-	initSessionFrame();
-}
-
-
 void MainWindow::handleHeaderFilter(int index) {
     QSearchDialog dialog;
     dialog.updateItemList(getColumnDataList(index));
@@ -463,4 +448,15 @@ void MainWindow::handleHeaderFilter(int index) {
         image_table_model->setFilter(getFilterString());
     }
 
+}
+
+void MainWindow::handleLocationSelection() {
+    bool ok;
+    QString location = QInputDialog::getItem(this, tr("Standortwahl"), tr("Bitte den Standort wählen"), db->getLocationList(), 0, false, &ok);
+    if (location.isEmpty() || !ok)
+        return;
+    config->setLocation(location);
+    ui->cmbSession->clear();
+    ui->cmbSession->addItem("");
+    ui->cmbSession->addItems(db->getSessionList());
 }

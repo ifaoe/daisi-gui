@@ -63,6 +63,12 @@ MainWindow::MainWindow( ConfigHandler *cfgArg, DatabaseHandler *dbArg, QWidget *
 
     initSessionWidget();
 
+    object_model = db->getObjectModel();
+    wdgObjects->tblObjects->setModel(object_model);
+    wdgObjects->tblObjects->hideColumn(0);
+    wdgObjects->tblObjects->hideColumn(6);
+    wdgObjects->tblObjects->hideColumn(7);
+    wdgObjects->tblObjects->hideColumn(8);
     objSelector = wdgObjects->tblObjects->selectionModel();
     wdgObjects->tblObjects->setSelectionMode(QAbstractItemView::SingleSelection);
     wdgObjects->tblObjects->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -181,11 +187,9 @@ void MainWindow::initSessionWidget() {
     /*
      * Populate session widget and select preselected server and session
      */
-    wdgSession->combo_server->addItem(QString());
-    wdgSession->combo_server->addItems(config->getDatabaseList());
-    connect(wdgSession->combo_server, SIGNAL(currentIndexChanged(int)), this, SLOT(HandleServerSelection()));
-    if (!config->getPreferredDatabase().isEmpty())
-        wdgSession->combo_server->setCurrentIndex(wdgSession->combo_server->findText(config->getPreferredDatabase()));
+    wdgSession->combo_location->addItem(QString());
+    wdgSession->combo_location->addItems(db->getLocationList());
+    connect(wdgSession->combo_location, SIGNAL(currentIndexChanged(int)), this, SLOT(HandleLocationSelection()));
 
     connect(wdgSession->cmbSession, SIGNAL(currentIndexChanged(int)), this, SLOT(handleSessionSelection()));
     if (!config->getPreferredSession().isEmpty())
@@ -300,11 +304,7 @@ void MainWindow::handleSessionSelection() {
     filterMap["session"] = QString("session='%1'").arg(session);
     object_model->setFilter(QStringList(filterMap.values()).join(" AND "));
     currentRow = -1;
-	wdgObjects->tblObjects->setModel(object_model);
-	wdgObjects->tblObjects->hideColumn(0);
-	wdgObjects->tblObjects->hideColumn(6);
-	wdgObjects->tblObjects->hideColumn(7);
-	wdgObjects->tblObjects->hideColumn(8);
+
 	object_model->select();
 
     if (!ui->toolbox_widget->getCategoryButton("Projektauswahl")->isChecked())
@@ -384,23 +384,20 @@ void MainWindow::handleMiscMeasurement() {
 void MainWindow::handleFlightInfoAction() {
 }
 
-void MainWindow::HandleServerSelection() {
-	if (wdgSession->combo_server->currentText().isEmpty()) {
+void MainWindow::HandleLocationSelection() {
+    if (wdgSession->combo_location->currentText().isEmpty()) {
 		wdgSession->cmbSession->setEnabled(false);
 		return;
 	}
 
-    config->setPreferredDatabase(wdgSession->combo_server->currentText());
-    if (!db->OpenDatabase())
-        return;
+    config->setLocation(wdgSession->combo_location->currentText());
+
 
 	wdgSession->cmbSession->clear();
 
-    object_model = db->getObjectModel();
-
 	wdgSession->cmbSession->addItem(QString());
 	wdgSession->cmbSession->setCurrentIndex(0);
-	wdgSession->cmbSession->addItems(db->getSessionList());
+    wdgSession->cmbSession->addItems(db->getSessionList(config->location()));
 	wdgSession->cmbSession->setEnabled(true);
 
     census_widget->setupMetaData();

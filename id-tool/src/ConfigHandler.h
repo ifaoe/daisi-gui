@@ -29,8 +29,7 @@ struct DatabaseInfo {
 class ConfigHandler : public QSettings{
 public:
 	void InitSettings();
-	void AddDatabase(const QString & id, const QString & host, int port, const QString & name,const QString & user,
-			const QString & password);
+    void AddDatabase(const QString & host, int port, const QString & name,const QString & user, const QString & password);
 	void setUser(const QString & user_name) { user = user_name; }
 	QString getUser() {return user;}
 	void setAppPosition(QPoint pos);
@@ -41,12 +40,15 @@ public:
     bool getAdmin();
 	void setAppMaximized(bool max);
 	bool getAppMaximized();
-	void setPreferredDatabase(const QString & database);
-	QString getPreferredDatabase();
+    QString dbHost();
+    QString dbName();
+    int dbPort();
+    QString dbUser();
+    QString dbPassword();
 	void setSessionName(const QString & session);
 	QString getPreferredSession();
-	QStringList getDatabaseList();
-	DatabaseInfo getDatabaseInfo(const QString & id);
+    void setLocation(const QString & location);
+    QString location();
     QString getSystemUser();
     int getRedChannel();
     int getGreenChannel();

@@ -3,7 +3,7 @@
 #include <iostream>
 #include <QHeaderView>
 
-Db::Db(ConfigHandler *aConfig) : config(aConfig)
+Database::Database(ConfigHandler *aConfig) : config(aConfig)
 {
     db = new QSqlDatabase();
     *db = QSqlDatabase::addDatabase("QPSQL");
@@ -13,22 +13,17 @@ Db::Db(ConfigHandler *aConfig) : config(aConfig)
     }
 }
 
-bool Db::OpenDatabase() {
-	if (config->getPreferredDatabase().isEmpty())
-		return false;
+bool Database::OpenDatabase() {
 
 	if (db->isOpen()) {
 		db->close();
 	}
 
-	DatabaseInfo info = config->getDatabaseInfo(config->getPreferredDatabase());
-	if (info.id.isEmpty())
-		return false;
-    db->setHostName(info.host);
-    db->setDatabaseName(info.name);
-    db->setPort(info.port);
-    db->setUserName(info.user);
-    db->setPassword(info.password);
+    db->setHostName(config->dbHost());
+    db->setDatabaseName(config->dbName());
+    db->setPort(config->dbPort());
+    db->setUserName(config->dbUser());
+    db->setPassword(config->dbPassword());
     qDebug() << "Opening Database " + db->databaseName()+ " on Host " + db->hostName() + ".";
     if (!db->open()) {
         qFatal("Could not open Database");
@@ -36,8 +31,19 @@ bool Db::OpenDatabase() {
     return true;
 }
 
+QStringList Database::getLocationList() {
+    qDebug() << "Getting location list from database";
+    QStringList location_list;
+    QString query_string = "SELECT distinct location FROM projects ORDER BY location";
+    qDebug() << query_string;
+    QSqlQuery query(query_string);
+    while(query.next())
+        location_list.append(query.value(0).toString());
+    return location_list;
+}
+
 // -------------------------------------------------------
-QgsGeometry* Db::readImageEnvelope(const QString cam,
+QgsGeometry* Database::readImageEnvelope(const QString cam,
                                   const QString image) {
 
     QgsGeometry* geom = 0;
@@ -63,7 +69,7 @@ QgsGeometry* Db::readImageEnvelope(const QString cam,
 }
 
 // -------------------------------------------------------
-QgsGeometry* Db::readValidPolygon(const QString cam, const QString image) {
+QgsGeometry* Database::readValidPolygon(const QString cam, const QString image) {
 
     QgsGeometry* geom = 0;
     QString query = config->replaceProjectSettings(ACFG_SQL_QRY_READ_VALIDPOLY).arg(cam).arg(image);
@@ -81,7 +87,7 @@ QgsGeometry* Db::readValidPolygon(const QString cam, const QString image) {
 }
 
 // -------------------------------------------------------
-bool Db::readRawImageTile(const QString &cam, const QString &file, const QString &usr, int &id, QString &ux, QString &uy,
+bool Database::readRawImageTile(const QString &cam, const QString &file, const QString &usr, int &id, QString &ux, QString &uy,
 		QString &w, QString &h, QString &tmWhen, QString &tmSeen) {
     QString query =
     		config->replaceProjectSettings(ACFG_SQL_QRY_READ_RIMAGE_TILE.arg(cam).arg(file).arg(usr));
@@ -105,7 +111,7 @@ bool Db::readRawImageTile(const QString &cam, const QString &file, const QString
 }
 
 // -------------------------------------------------------
-bool Db::readRawImage(const QString &cam, const QString &file, const QString &usr,  int &id, QString &tmWhen, QString &tmSeen) {
+bool Database::readRawImage(const QString &cam, const QString &file, const QString &usr,  int &id, QString &tmWhen, QString &tmSeen) {
     QString query =
     		config->replaceProjectSettings(ACFG_SQL_QRY_READ_RIMAGE.arg(cam).arg(file).arg(usr));
     qDebug() << query;
@@ -124,7 +130,7 @@ bool Db::readRawImage(const QString &cam, const QString &file, const QString &us
 
 
 // -------------------------------------------------------
-bool Db::writeRawImageTile(const bool insert, const int id,
+bool Database::writeRawImageTile(const bool insert, const int id,
                            const quint8 epsg, const QString cam, const QString file,
                            const QString usr, const QString session,
                            const QString x, const QString y,
@@ -159,7 +165,7 @@ bool Db::writeRawImageTile(const bool insert, const int id,
 
 
 // -------------------------------------------------------
-bool Db::writeRawImage(const bool insert, const int id,
+bool Database::writeRawImage(const bool insert, const int id,
                        const quint8 epsg, const QString cam, const QString file,
                        const QString usr, const QString session,
                        const QString tmWhen, const QString tmSeen) {
@@ -189,7 +195,7 @@ bool Db::writeRawImage(const bool insert, const int id,
 }
 
 // -------------------------------------------------------
-bool Db::writeRawCensus(const QString type,
+bool Database::writeRawCensus(const QString type,
                       const int epsg,
                       const QString cam,
                       const QString img,
@@ -218,7 +224,7 @@ bool Db::writeRawCensus(const QString type,
 }
 
 // -------------------------------------------------------
-bool Db::deleteRawCensus(int id, const QString & cam, const QString & img, const QString & user) {
+bool Database::deleteRawCensus(int id, const QString & cam, const QString & img, const QString & user) {
     QString query = config->replaceProjectSettings(ACFG_SQL_QRY_DEL_RCENSUS
             .arg(id).arg(cam).arg(img).arg(user));
     qDebug() << query;
@@ -233,7 +239,7 @@ bool Db::deleteRawCensus(int id, const QString & cam, const QString & img, const
 }
 
 // -------------------------------------------------------
-bool Db::writeImageDone(const int imgRdy, const int id) {
+bool Database::writeImageDone(const int imgRdy, const int id) {
   QString lstr;
 
   lstr = "UPDATE raw_images SET rdy = %1 WHERE rimg_id = %2;";
@@ -248,7 +254,7 @@ bool Db::writeImageDone(const int imgRdy, const int id) {
 }
 
 // -------------------------------------------------------
-void Db::UpdateObjectQuery(const QString cam, const QString img, QSqlQueryModel * model) {
+void Database::UpdateObjectQuery(const QString cam, const QString img, QSqlQueryModel * model) {
     QString query;
     if (!config->getProjectId().startsWith("Testdatensatz") || config->getAdmin())
     	query = config->replaceProjectSettings(ACFG_SQL_QRY_READ_RCENSUS_ADMIN.arg(cam).arg(img));
@@ -259,13 +265,15 @@ void Db::UpdateObjectQuery(const QString cam, const QString img, QSqlQueryModel 
     return;
 }
 
-QStringList Db::getSessionList() {
+QStringList Database::getSessionList() {
     QStringList sessionlist;
     QString query;
     if (config->getAdmin())
-        query = config->replaceProjectSettings("SELECT project_id FROM projects where census_status>0 ORDER BY project_id");
+        query = config->replaceProjectSettings(QString("SELECT project_id FROM projects where census_status>0 AND location='%1' ORDER BY project_id")
+                                               .arg(config->location()));
     else
-        query = config->replaceProjectSettings("SELECT project_id FROM projects where census_status=1 ORDER BY project_id");
+        query = config->replaceProjectSettings(QString("SELECT project_id FROM projects where census_status=1 AND location='%1' ORDER BY project_id")
+                                               .arg(config->location()));
     qDebug() << query;
     QSqlQuery req;
     if ( ! req.exec(query) ) {
@@ -278,7 +286,7 @@ QStringList Db::getSessionList() {
     return sessionlist;
 }
 
-QStringList Db::getSessionParameters(const QString & session) {
+QStringList Database::getSessionParameters(const QString & session) {
     QStringList return_list;
     QString query =
             "SELECT flight_id, utm_sector, path FROM "
@@ -295,7 +303,7 @@ QStringList Db::getSessionParameters(const QString & session) {
     return return_list;
 }
 
-SqlReadyTableModel * Db::getImageView() {
+SqlReadyTableModel * Database::getImageView() {
     SqlReadyTableModel * model = new SqlReadyTableModel;
     model->setTable("daisi_dev.bird_census_images");
     model->setHeaderData(model->fieldIndex("session"), Qt::Horizontal,"Flug", Qt::DisplayRole);
@@ -307,7 +315,7 @@ SqlReadyTableModel * Db::getImageView() {
     return model;
 }
 
-QSqlExtendedTableModel * Db::getObjectView() {
+QSqlExtendedTableModel * Database::getObjectView() {
     QSqlExtendedTableModel * model = new QSqlExtendedTableModel;
     model->setTable("daisi_dev.bird_census_objects");
     model->setHeaderData(model->fieldIndex("tp"), Qt::Horizontal, "Typ", Qt::DisplayRole);

@@ -17,15 +17,6 @@
 #include <QSettings>
 #include <QDebug>
 
-struct DatabaseInfo {
-	QString id = "local";
-	QString host = "localhost";
-	int port = 5432;
-	QString name = "daisi";
-	QString password = "18ifaoe184";
-	QString user = "daisi";
-};
-
 class ConfigHandler : public QSettings{
 public:
 	/*
@@ -34,21 +25,14 @@ public:
 	QString current_cam;
 	QString current_image;
 	void InitSettings();
-	void AddDatabase(const QString & id, const QString & host, int port, const QString & name,const QString & user,
-			const QString & password);
-	bool removeDatabase(const QString & id);
 	void setAppPosition(QPoint pos);
 	QPoint getAppPosition();
 	void setAppSize(QSize size);
 	QSize getAppSize();
 	void setAppMaximized(bool max);
 	bool getAppMaximized();
-	void setPreferredDatabase(const QString & database);
-	QString getPreferredDatabase();
 	void setPreferredSession(const QString & session);
 	QString getPreferredSession();
-	QStringList getDatabaseList();
-	DatabaseInfo getDatabaseInfo(const QString & id);
 	QString getUser() { return user; }
 	QString replaceProjectSettings(const QString & query);
 	void setAdmin(bool admin);
@@ -67,6 +51,13 @@ public:
 	QString getCurrentImage() { return current_image; }
 	void setQGisPrefixPath(const QString & path);
 	QString getQGisPrefixPath();
+    void setLocation(const QString & location);
+    QString location();
+    QString dbHost();
+    QString dbName();
+    int dbPort();
+    QString dbUser();
+    QString dbPassword();
 	int getRedChannel();
 	double getRedMinValue();
 	double getRedMaxValue();

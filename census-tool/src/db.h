@@ -33,11 +33,13 @@ struct project {
 	QString path = "";
 };
 
-class Db {
+class Database {
 public:
-    explicit Db(ConfigHandler *config);
+    explicit Database(ConfigHandler *config);
 
     bool OpenDatabase();
+
+    QStringList getLocationList();
 
     void UpdateObjectQuery(const QString cam, const QString img, QSqlQueryModel * model);
 
