@@ -152,7 +152,7 @@ QStringList DatabaseHandler::getUserList(int objId) {
 
 QString DatabaseHandler::getProjectPath(QString session) {
     qDebug() << "Getting session path list from database.";
-    QSqlQuery query("SELECT path FROM projects WHERE project_id='" + session + "'");
+    QSqlQuery query("SELECT path FROM projects WHERE project_id='" + session + "' AND location='" + config->location() + "'");
     if (query.size() == -1) return "/net";
     while(query.next()) {
         return query.value(0).toString();
