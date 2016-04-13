@@ -4,3 +4,4 @@ Makefile
 ui_*.h
 moc_*.cpp
 daisi-gui.pro.user
+*/Makefile
