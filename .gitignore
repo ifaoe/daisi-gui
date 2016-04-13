@@ -1,13 +1,6 @@
-<<<<<<< HEAD
 build/
 Makefile
 *.o
 ui_*.h
 moc_*.cpp
-=======
-*.o
-ui_*.h
-moc_*.cpp
-Makefile
-build/
->>>>>>> hro_master
+daisi-gui.pro.user
