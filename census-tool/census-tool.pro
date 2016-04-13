@@ -28,9 +28,7 @@ HEADERS  += mainwindow.h \
     ConfigHandler.h \
     sqlreadytablemodel.h
 
-FORMS    += mainwindow.ui \
-            server_settings.ui\
-            server_selection.ui
+FORMS    += mainwindow.ui
 
 LIBS += -L ../libs -llibs
 
