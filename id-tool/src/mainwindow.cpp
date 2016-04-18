@@ -69,18 +69,14 @@ MainWindow::MainWindow( ConfigHandler *cfgArg, DatabaseHandler *dbArg, QWidget *
     wdgObjects->tblObjects->hideColumn(6);
     wdgObjects->tblObjects->hideColumn(7);
     wdgObjects->tblObjects->hideColumn(8);
-    objSelector = wdgObjects->tblObjects->selectionModel();
     wdgObjects->tblObjects->setSelectionMode(QAbstractItemView::SingleSelection);
     wdgObjects->tblObjects->setSelectionBehavior(QAbstractItemView::SelectRows);
 
-    connect( objSelector, SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(handleObjectSelection()));
+    connect( wdgObjects->tblObjects->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(handleObjectSelection()));
 
-    connect(wdgGraphics->sldBrightness, SIGNAL(sliderReleased()),
-            this, SLOT(handleBrightnessSlider()));
-    connect(wdgGraphics->sldContrast, SIGNAL(sliderReleased()),
-            this, SLOT(handleContrastSlider()));
-    connect(wdgGraphics->btnBrightnessReset, SIGNAL(clicked()),
-            this, SLOT(handleBrightnessReset()));
+    connect(wdgGraphics->sldBrightness, SIGNAL(sliderReleased()), this, SLOT(handleBrightnessSlider()));
+    connect(wdgGraphics->sldContrast, SIGNAL(sliderReleased()), this, SLOT(handleContrastSlider()));
+    connect(wdgGraphics->btnBrightnessReset, SIGNAL(clicked()), this, SLOT(handleBrightnessReset()));
     connect(wdgGraphics->btnContrastReset, SIGNAL(clicked()), this, SLOT(handleContrastReset()));
 
     connect(ui->toolbutton_map_view, SIGNAL(clicked()), this, SLOT(handleMapToolButton()));
@@ -225,9 +221,9 @@ QStringList MainWindow::getColumnDataList(int column) {
  */
 
 void MainWindow::selectNextObject() {
-    QModelIndex newIndex = objSelector->model()->index(currentRow+1, 0);
+    QModelIndex newIndex = wdgObjects->tblObjects->selectionModel()->model()->index(currentRow+1, 0);
     wdgObjects->tblObjects->scrollTo(newIndex);
-    objSelector->select(newIndex, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+    wdgObjects->tblObjects->selectionModel()->select(newIndex, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
     object_model->select();
 }
 
@@ -318,8 +314,8 @@ void MainWindow::handleObjectSelection() {
     wdgGraphics->sldBrightness->setValue(0);
     wdgGraphics->sldContrast->setValue(0);
 
-    if (objSelector->selectedRows().isEmpty()) return;
-    currentRow = objSelector->selectedRows().at(0).row();
+    if (wdgObjects->tblObjects->selectionModel()->selectedRows().isEmpty()) return;
+    currentRow = wdgObjects->tblObjects->selectionModel()->selectedRows().at(0).row();
     QString objId = getObjectItemData(currentRow, 1).toString();
 
     curObj = db->getRawObjectData(objId, config->getUser());
