@@ -7,4 +7,3 @@ moc_*.cpp
 qrc_*.cpp
 daisi-gui.pro.user
 */Makefile
-*/daisi-*-tool
