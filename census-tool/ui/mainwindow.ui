@@ -146,7 +146,7 @@ QToolBox::tab:selected {
 }*/</string>
             </property>
             <property name="currentIndex">
-             <number>2</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="tbxTasksPage1">
              <attribute name="title">
@@ -941,7 +941,7 @@ QToolBox::tab:selected {
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="btgMapMode"/>
   <buttongroup name="button_group_types"/>
+  <buttongroup name="btgMapMode"/>
  </buttongroups>
 </ui>
