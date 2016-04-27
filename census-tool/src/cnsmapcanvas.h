@@ -184,7 +184,7 @@ private:
     QgsCoordinateReferenceSystem crsUTM;
     QgsCoordinateTransform qgsTrfm2LonLat;
 
-
+    QTime click_timer;
 
     QgsMapToolPan       *qgsToolPan  = 0;
     QgsMapToolEmitPoint *qgsToolPoint = 0;

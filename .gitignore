@@ -1,5 +1,6 @@
 build/
 Makefile
+*.a
 *.o
 ui_*.h
 moc_*.cpp

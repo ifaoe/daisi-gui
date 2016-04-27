@@ -1,4 +1,3 @@
-
 #include <QStyle>
 #include <QInputDialog>
 #include "mainwindow.h"

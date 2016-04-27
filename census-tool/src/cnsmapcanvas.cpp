@@ -2,6 +2,7 @@
 #include "ovrmapcanvas.h"
 #include "mainwindow.h"
 #include <qgsgeometry.h>
+#include <QMessageBox>
 
 void qDebug(QString text) {
 	qDebug() << text;
@@ -79,6 +80,8 @@ CnsMapCanvas::CnsMapCanvas(QWidget *parent,
 
     connect(this, SIGNAL(extentsChanged()),
             this, SLOT( doUpdateStatus()));
+
+    click_timer.start();
 
     // Initialisierung des ImageLayer der Karte
     qgis_image_layer_ = 0;
@@ -364,7 +367,9 @@ void CnsMapCanvas::doCanvasClicked(const QgsPoint &point,
     if ( !(doHandleCoords(point) && button == Qt::LeftButton) ) return;
 
     if (map_mode_ ==  MAP_MODE_DIGITIZE ) {
-
+        if (click_timer.elapsed() < 1000)
+            return;
+        click_timer.restart();
         int px, py;
         doCalcPixPos(point, px, py);
         double lon, lat;
@@ -428,6 +433,15 @@ bool CnsMapCanvas::openRasterLayer(const QString imagePath,
     	qgis_image_layer_ = 0;
      }
 
+    /*
+     * Don't know why this happens but sometimes the projectid is just empty
+     */
+    if (config->getProjectId().isEmpty()) {
+        QMessageBox error_box;
+        error_box.setText(tr("Fehler bei Sitzungsauswahl. Sitzung neu wählen oder Software neu starten."));
+        error_box.exec();
+        return false;
+    }
 
     QString file =imagePath+"cam"+strCam+"/geo/"+strFile+".tif";
     QFileInfo info (file);
