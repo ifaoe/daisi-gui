@@ -31,7 +31,7 @@ public:
     QStringList getSessionList(const QString & location);
     QSqlQuery * getObjectResult(QString session, QString user, QString filter="", QString order="");
     census * getRawObjectData(QString objId, QString usr);
-    bool getSpeciesList(QString type, QComboBox * combo_box);
+    bool getSpeciesList(const QString & type, QComboBox * combo_box);
     QStringList getUserList(int objId);
     census * getCensusData(QString objId);
     bool writeCensus(census * obj);
@@ -60,9 +60,18 @@ public:
     		const QString & having_filter = "TRUE", const QString & where_filter = "TRUE");
     CensorSqlTableModel * getObjectModel();
     QStringList getLocationList();
+
+    QString sessionName();
+    QString sessionPath();
+    QString sessionVersion();
+    void refreshSessionProperties(const QString & name);
 private:
     QSqlDatabase *db;
     ConfigHandler *config;
+
+    QString session_name;
+    QString session_path;
+    QString session_version;
 
     void setRecordTable(QSqlRecord * record, census * obj);
 };

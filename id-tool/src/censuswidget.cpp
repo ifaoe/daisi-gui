@@ -215,8 +215,8 @@ void CensusWidget::selectButtonByString(QButtonGroup * btnGrp, QString str) {
 // TODO: Entfernen
 void CensusWidget::SaveComboBoxSelection(QComboBox * combo_box) {
     int row = combo_box->currentIndex();
-    current_object->name = combo_box->model()->data(combo_box->model()->index(row,0)).toString();
-    current_object->code = combo_box->model()->data(combo_box->model()->index(row,2)).toString();
+    current_object->name = combo_box->model()->data(combo_box->model()->index(row,1)).toString();
+    current_object->code = combo_box->model()->data(combo_box->model()->index(row,0)).toString();
 }
 
 QVariant CensusWidget::GetComboBoxItem(QComboBox * combo_box) {
@@ -272,6 +272,7 @@ void CensusWidget::uiPreselection(census * cobj) {
         cobj->remarks.clear();
 
         cobj->imageQuality = 0;
+        ui->checkbox_image_quality->setChecked(false);
         return;
     }
 

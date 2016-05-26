@@ -83,7 +83,7 @@ bool ImgCanvas::loadObject(census * obj) {
     curCam = obj->camera;
     curImg = obj->image;
 
-    QString image_path = db->getProjectPath(obj->session);
+    QString image_path = db->sessionPath();
     QString file = image_path + "/cam" + obj->camera + "/geo/" + obj->image + ".tif";
     qDebug() << "Loading file " << file;
 

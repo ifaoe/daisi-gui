@@ -79,27 +79,28 @@ QStringList DatabaseHandler::getSessionList(const QString & location) {
     return sessionList;
 }
 
-bool DatabaseHandler::getSpeciesList(QString type, QComboBox * cmb_box) {
+bool DatabaseHandler::getSpeciesList(const QString & type, QComboBox * cmb_box) {
 	qDebug() << "Populating species list for " << type;
-    QString qstr = "SELECT name_de, name_lat, euring_id, length FROM taxa LEFT JOIN "
-            "(SELECT id_code, to_char(avg(length), 'FM99.99') as length FROM census WHERE tp='%1' AND censor=2 GROUP BY id_code) as lt ON taxa.euring_id = lt.id_code "
-    		"WHERE type='%1' ORDER BY seaflag DESC, name_de";
+    QSqlQuery query;
+    query.prepare("SELECT euring_code, name_de, name_lat FROM daisi_dev.bird_view_taxa WHERE type=:type AND version=:version ORDER BY seaflag DESC, name_de");
+    query.bindValue(":type", type);
+    query.bindValue(":version", session_version);
+    if (!query.exec())
+        qDebug() << query.lastError().text();
 	QSqlQueryModel * model = new QSqlQueryModel;
-	model->setQuery(qstr.arg(type));
-	qDebug() << qstr.arg(type);
-	model->setHeaderData(0, Qt::Horizontal, "Deutscher Name");
-	model->setHeaderData(1, Qt::Horizontal, "Wissenschaftlicher Name");
-	model->setHeaderData(2, Qt::Horizontal, "EURING Code");
-	model->setHeaderData(3, Qt::Horizontal, QString::fromUtf8("Länge"));
+    model->setQuery(query);
+    model->setHeaderData(0, Qt::Horizontal, "EURING Code");
+    model->setHeaderData(1, Qt::Horizontal, "Deutscher Name");
+    model->setHeaderData(2, Qt::Horizontal, "Wissenschaftlicher Name");
 	cmb_box->setModel(model);
+    cmb_box->setModelColumn(1);
 	QTableView * view = new QTableView;
 	cmb_box->setView(view);
 	view->verticalHeader()->hide();
-	view->hideColumn(2);
 	view->resizeColumnsToContents();
 	view->setSelectionMode(QAbstractItemView::SingleSelection);
 	view->setSelectionBehavior(QAbstractItemView::SelectRows);
-	view->setMinimumWidth(view->horizontalHeader()->length());
+    view->setMinimumWidth(view->horizontalHeader()->length());
 
 	return true;
 }
@@ -126,11 +127,11 @@ CensorSqlTableModel * DatabaseHandler::getObjectModel() {
 
 bool DatabaseHandler::GetAnthroObjectList(QComboBox * combo_box) {
     qDebug() << "Gettings list of anthropogenic objects from database.";
-    combo_box->addItem("",-1);
-    QString qstr = "SELECT code, description, remarks FROM stuk4_codes "
-    		"WHERE type='ANTHRO' AND code!='0' ORDER BY description";
-    qDebug() << qstr;
-	QSqlQuery query(qstr);
+    QSqlQuery query;
+    query.prepare("SELECT anthro_object, description_de FROM census_anthro_objects WHERE version=:version AND anthro_object>0 ORDER BY description_de");
+    query.bindValue(":version", session_version);
+    if (!query.exec())
+        qDebug() << query.lastError().text();
 	while (query.next()) {
 		combo_box->addItem(query.value(1).toString(), query.value(0));
 	}
@@ -260,6 +261,8 @@ bool DatabaseHandler::writeCensus(census * obj) {
         return done;
     } else { //UPDATE
         qDebug() << "Update!";
+        // Don't overwrite time_create with NULL
+        record.remove(record.indexOf("time_create"));
         record.setValue("fcns_id",table.record(0).value(0).toInt());
         bool check = true;
         check = check && table.setRecord(0, record);
@@ -328,6 +331,8 @@ void DatabaseHandler::setRecordTable(QSqlRecord * record, census * obj) {
     record->setValue("family_group", "{"+obj->family.join(",")+"}");
 
     record->setValue("time_modify", QDateTime::currentDateTime());
+
+    record->setValue("version", session_version);
 }
 
 /*
@@ -464,39 +469,39 @@ void DatabaseHandler::GetBirdAgeClasses(QComboBox * cmb_box) {
 	cmb_box->clear();
 	cmb_box->addItem("",-1);
 	qDebug() << "Getting bird age classes from database";
-	QStringList list;
-	QString qstr = "SELECT code, description FROM stuk4_codes WHERE type='AGE_YEARS' ORDER BY code";
-	qDebug() << qstr;
-	QSqlQuery query(qstr);
+    QSqlQuery query;
+    query.prepare("SELECT age_year, description_de FROM daisi_dev.bird_view_age_years WHERE type='BIRD' AND version=:version ORDER BY age_year");
+    query.bindValue(":version", session_version);
+    if (!query.exec())
+        qDebug() << query.lastError().text();
 	while (query.next()) {
         cmb_box->addItem(query.value(1).toString(), query.value(0));
 	}
 }
 
-void DatabaseHandler::GetMiscObjects(QComboBox * cmb_box) {
-	cmb_box->clear();
-	cmb_box->addItem("","0");
-	qDebug() << "Getting miscellanous objects from database";
-	QStringList list;
-	QString qstr = "SELECT code, description FROM stuk4_codes WHERE type='MISC' AND code!='0' ORDER BY description";
-	qDebug() << qstr;
-	QSqlQuery query(qstr);
-	while (query.next()) {
-		cmb_box->addItem(query.value(1).toString(), query.value(0));
-	}
+void DatabaseHandler::GetMiscObjects(QComboBox * combo_box) {
+    QSqlQuery query;
+    query.prepare("SELECT abiotic_object, description_de FROM census_abiotic_objects WHERE version=:version AND abiotic_object>0 ORDER BY description_de");
+    query.bindValue(":version", session_version);
+    if (!query.exec())
+        qDebug() << query.lastError().text();
+    while (query.next()) {
+        combo_box->addItem(query.value(1).toString(), query.value(0));
+    }
 }
 
 void DatabaseHandler::GetBirdPlumageClasses(QComboBox * cmb_box) {
-	cmb_box->clear();
-	cmb_box->addItem("",QVariant());
-	qDebug() << "Getting bird age classes from database";
-	QStringList list;
-	QString qstr = "SELECT code, description FROM stuk4_codes WHERE type='PLUMAGE' ORDER BY code";
-	qDebug() << qstr;
-	QSqlQuery query(qstr);
-	while (query.next()) {
-		cmb_box->addItem(query.value(1).toString(), query.value(0));
-	}
+    cmb_box->clear();
+    cmb_box->addItem("",-1);
+    qDebug() << "Getting bird plumage classes from database";
+    QSqlQuery query;
+    query.prepare("SELECT plumage, description_de FROM census_plumages WHERE version=:version ORDER BY plumage");
+    query.bindValue(":version", session_version);
+    if (!query.exec())
+        qDebug() << query.lastError().text();
+    while (query.next()) {
+        cmb_box->addItem(query.value(1).toString(), query.value(0));
+    }
 }
 
 void DatabaseHandler::deleteCensusData(QString objId, QString usr) {
@@ -522,8 +527,13 @@ bool DatabaseHandler::getSessionActive(const QString & session) {
 
 QSqlQueryModel * DatabaseHandler::getStuk4Behaviour() {
     QSqlQueryModel * model = new QSqlQueryModel;
-    model->setQuery("SELECT code, category, description FROM stuk4_codes "
-    		"where type='BEH' AND code!='0' ORDER BY cast(code as integer)");
+    QSqlQuery query;
+    query.prepare("SELECT behaviour, class_de, description_de FROM daisi_dev.bird_view_behaviours WHERE version=:version AND behaviour>0"
+                  " ORDER BY type, class_de, behaviour");
+    query.bindValue(":version", session_version);
+    if (!query.exec())
+        qDebug() << query.lastError().text();
+    model->setQuery(query);
     model->setHeaderData(0, Qt::Horizontal, "Code");
     model->setHeaderData(1, Qt::Horizontal, "Kategorie");
     model->setHeaderData(2, Qt::Horizontal, "Beschreibung");
@@ -532,8 +542,13 @@ QSqlQueryModel * DatabaseHandler::getStuk4Behaviour() {
 
 QSqlQueryModel * DatabaseHandler::getStuk4Associations() {
     QSqlQueryModel * model = new QSqlQueryModel;
-    model->setQuery("SELECT code, category, description FROM stuk4_codes "
-    		"where type='ASS' AND code!='0' ORDER BY cast(code as integer)");
+    QSqlQuery query;
+    query.prepare("SELECT association, class_de, description_de FROM daisi_dev.bird_view_associations WHERE version=:version AND association>0"
+                  " ORDER BY type, class_de, association");
+    query.bindValue(":version", session_version);
+    if (!query.exec())
+        qDebug() << query.lastError().text();
+    model->setQuery(query);
     model->setHeaderData(0, Qt::Horizontal, "Code");
     model->setHeaderData(1, Qt::Horizontal, "Kategorie");
     model->setHeaderData(2, Qt::Horizontal, "Beschreibung");
@@ -615,4 +630,29 @@ int DatabaseHandler::getCensusCount(const QString & session, const QString & use
 	if (query.next())
 		return query.value(0).toInt();
 	return 0;
+}
+
+void DatabaseHandler::refreshSessionProperties(const QString &name) {
+    QSqlQuery query;
+    query.prepare("SELECT path, version FROM projects WHERE project_id=:session_name");
+    query.bindValue(":session_name", name);
+    query.exec();
+    if (query.next()) {
+        session_name = name;
+        session_path = query.value(0).toString();
+        session_version = query.value(1).toString();
+    }
+
+}
+
+QString DatabaseHandler::sessionName() {
+    return session_name;
+}
+
+QString DatabaseHandler::sessionPath() {
+    return session_path;
+}
+
+QString DatabaseHandler::sessionVersion() {
+    return session_version;
 }

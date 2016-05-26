@@ -297,6 +297,8 @@ void MainWindow::handleSessionSelection() {
 
     session = wdgSession->cmbSession->currentText();
     config->setSessionName(session);
+    db->refreshSessionProperties(session);
+    census_widget->setupMetaData();
     filterMap["session"] = QString("session='%1'").arg(session);
     object_model->setFilter(QStringList(filterMap.values()).join(" AND "));
     currentRow = -1;
@@ -319,7 +321,6 @@ void MainWindow::handleObjectSelection() {
     QString objId = getObjectItemData(currentRow, 1).toString();
 
     curObj = db->getRawObjectData(objId, config->getUser());
-
 
     if (!imgcvs->loadObject(curObj)) {
         census_widget->setEnabled(false);
@@ -395,8 +396,6 @@ void MainWindow::HandleLocationSelection() {
 	wdgSession->cmbSession->setCurrentIndex(0);
     wdgSession->cmbSession->addItems(db->getSessionList(config->location()));
 	wdgSession->cmbSession->setEnabled(true);
-
-    census_widget->setupMetaData();
 }
 
 void MainWindow::showFilterDialog(int index) {
