@@ -45,4 +45,18 @@ SELECT
 FROM census_euring_codes c LEFT JOIN census_types t ON c.type_id=t.type_id
 ORDER BY seaflag DESC, name_de;
 
+CREATE OR REPLACE VIEW daisi_dev.bird_view_objects AS 
+ SELECT view_census.session,
+    view_census.rcns_id,
+    view_census.cam,
+    view_census.img,
+    view_census.pre_tp,
+    string_agg(view_census.tp, ','::text ORDER BY view_census.fcns_id) AS type_list,
+    count(*) AS count_censor,
+    max(view_census.censor) AS max_censor,
+    array_agg(view_census.usr) AS user_list
+   FROM view_census
+  GROUP BY view_census.session, view_census.rcns_id, view_census.cam, view_census.img, view_census.pre_tp
+ORDER BY view_census.session, view_census.cam, view_census.img, view_census.rcns_id;
+
 GRANT SELECT ON ALL TABLES IN SCHEMA daisi_dev TO daisi;

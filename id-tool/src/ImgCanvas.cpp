@@ -79,10 +79,6 @@ bool ImgCanvas::loadObject(census * obj) {
     }
     this->refresh();
 
-    curSession = obj->session;
-    curCam = obj->camera;
-    curImg = obj->image;
-
     QString image_path = db->sessionPath();
     QString file = image_path + "/cam" + obj->camera + "/geo/" + obj->image + ".tif";
     qDebug() << "Loading file " << file;
@@ -99,6 +95,11 @@ bool ImgCanvas::loadObject(census * obj) {
     } else {
         qDebug() << "Success.";
     }
+
+    curSession = obj->session;
+    curCam = obj->camera;
+    curImg = obj->image;
+
     QString basePath = info.filePath();
     QString baseName = info.fileName();
 
