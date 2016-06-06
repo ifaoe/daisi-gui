@@ -37,7 +37,7 @@ bool DaisiMapCanvas::openImage(const QString &path) {
         image_layer = 0;
     }
 
-    QFileInfo file = path;
+    QFileInfo file( path );
     if (!file.exists()) {
         qDebug() << "File " << path << " does not exist.";
         return false;

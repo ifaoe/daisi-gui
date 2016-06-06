@@ -221,9 +221,14 @@ QStringList MainWindow::getColumnDataList(int column) {
  */
 
 void MainWindow::selectNextObject() {
-    QModelIndex newIndex = wdgObjects->tblObjects->selectionModel()->model()->index(currentRow+1, 0);
-    wdgObjects->tblObjects->scrollTo(newIndex);
-    wdgObjects->tblObjects->selectionModel()->select(newIndex, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+    QModelIndex new_index;
+    if (old_object_id == getObjectItemData(currentRow, 1).toInt()) {
+        new_index = wdgObjects->tblObjects->selectionModel()->model()->index(currentRow+1, 0);
+    } else {
+        new_index = wdgObjects->tblObjects->selectionModel()->model()->index(currentRow, 0);
+    }
+    wdgObjects->tblObjects->scrollTo(new_index);
+    wdgObjects->tblObjects->selectionModel()->select(new_index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
     object_model->select();
 }
 
@@ -319,6 +324,7 @@ void MainWindow::handleObjectSelection() {
     if (wdgObjects->tblObjects->selectionModel()->selectedRows().isEmpty()) return;
     currentRow = wdgObjects->tblObjects->selectionModel()->selectedRows().at(0).row();
     QString objId = getObjectItemData(currentRow, 1).toString();
+    old_object_id = objId.toInt();
 
     curObj = db->getRawObjectData(objId, config->getUser());
 

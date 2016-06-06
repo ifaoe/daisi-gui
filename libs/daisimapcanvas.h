@@ -16,19 +16,6 @@
 
 class DaisiMapCanvas : public QgsMapCanvas
 {
-    enum MarkerProperty {
-        ICON_TYPE,      // IconType aus QgsMapMarker::IconType
-        COLOR_OUTLINE,  // QColor
-        COLOR_FILL,     // QColor
-        FILL,           // bool
-        OUTLINE_WIDTH,  // int Breite in PIXEL
-        LABEL_COLOR,    // QColor
-        LABEL_WIDTH,    // int TextBreite
-        LABEL_TEXT,     // QString
-        LABEL_OFF_X,    // int Label Offset horizontal (Pixel)
-        LABEL_OFF_Y,    // int Label Offset vertikal (Pixel)
-        SELECTABLE,     // bool
-    };
 
 public:
     DaisiMapCanvas();
@@ -43,7 +30,7 @@ public:
     bool addVectorLayer(const QString & layer_name, const QString & layer_type);
     void removeLayer(const QString & layer_name);
     void addGeometry(const QString & layer_name, const QString & id_name, const QString & wkt_string);
-    void removeGeometry(const QString & id_name);
+    void removeGeometry(const QString & layer_name, const QString & id_name);
     void hideFeature(const QString & id_name);
     QStringList getLayerList();
     QStringList getFeatureList(const QString & layer_name);

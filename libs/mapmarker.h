@@ -27,21 +27,36 @@ public:
 
     enum IconType
     {
-      ICON_NONE,
-      ICON_CROSS,
-      ICON_X,
-      ICON_BOX,
-      ICON_CIRCLE,
-	  ICON_TRIANGLE,
-	  ICON_DIAMOND,
-      ICON_CROSS_BOX,
-      ICON_CROSS_CIRCLE,
-	  ICON_CROSS_TRIANGLE,
-	  ICON_CROSS_DIAMOND,
-	  ICON_X_BOX,
-	  ICON_X_CIRCLE,
-	  ICON_X_DIAMOND,
+        ICON_NONE,
+        ICON_CROSS,
+        ICON_X,
+        ICON_BOX,
+        ICON_CIRCLE,
+        ICON_TRIANGLE,
+        ICON_DIAMOND,
+        ICON_CROSS_BOX,
+        ICON_CROSS_CIRCLE,
+        ICON_CROSS_TRIANGLE,
+        ICON_CROSS_DIAMOND,
+        ICON_X_BOX,
+        ICON_X_CIRCLE,
+        ICON_X_DIAMOND,
     };
+
+    enum Property {
+        ICON_TYPE,      // IconType aus QgsMapMarker::IconType
+        COLOR_OUTLINE,  // QColor
+        COLOR_FILL,     // QColor
+        FILL,           // bool
+        OUTLINE_WIDTH,  // int Breite in PIXEL
+        LABEL_COLOR,    // QColor
+        LABEL_WIDTH,    // int TextBreite
+        LABEL_TEXT,     // QString
+        LABEL_OFF_X,    // int Label Offset horizontal (Pixel)
+        LABEL_OFF_Y,    // int Label Offset vertikal (Pixel)
+        SELECTABLE,     // bool
+    };
+
 
 private:
     QColor mColor = Qt::red;

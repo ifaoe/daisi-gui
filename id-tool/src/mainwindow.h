@@ -84,6 +84,7 @@ private:
     void initSessionWidget();
     QVariant getObjectItemData(int row, int column);
     QStringList getColumnDataList(int column);
+    int old_object_id;
 public slots:
 private slots:
 	void handleSessionSelection();
