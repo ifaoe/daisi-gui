@@ -318,6 +318,7 @@ void ImgCanvas::handleCanvasClicked(const QgsPoint & point) {
 QgsRasterLayer * ImgCanvas::getImageLayer() { return imgLayer; }
 
 void ImgCanvas::beginMeasurement(int type) {
+    measurement_running = true;
     measurement_type = type;
     if (type == 0)
         measurement_dialog->setStandardButtons(QMessageBox::Cancel);
@@ -350,6 +351,7 @@ void ImgCanvas::endMeasurement(QAbstractButton * button = 0) {
 //    disconnect(measurement_dialog);
 //    delete measurement_dialog;
     measurement_type = 0;
+    measurement_running = false;
 }
 
 void ImgCanvas::setRasterBrightness(int value) {
@@ -382,7 +384,7 @@ void ImgCanvas::handleHideObjectMarkers() {
 }
 
 void ImgCanvas::handleRightClick(const QgsPoint & point_utm, Qt::MouseButton button) {
-    if (button != Qt::LeftButton)
+    if (button != Qt::LeftButton || measurement_running)
             return;
     if (imgLayer == 0 || !imgLayer->isValid())
         return;

@@ -84,7 +84,7 @@ private:
     std::vector<MapCanvasMarker*> msmMarkers;
     std::vector<MapCanvasMarker*> objMarkers;
     int measurement_type = 0;
-
+    bool measurement_running = false;
     void populateObjectLayer(census * obj);
     void refreshMapMarkers();
 private slots:
