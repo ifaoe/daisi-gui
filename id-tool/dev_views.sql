@@ -47,7 +47,7 @@ ORDER BY seaflag DESC, name_de;
 
 --CREATE OR REPLACE VIEW daisi_dev.bird_view_objects AS 
 -- SELECT view_census.session, view_census.rcns_id, view_census.cam, view_census.img, view_census.pre_tp, string_agg(view_census.tp, ','::text ORDER BY view_census.fcns_id) AS type_list, count(*) AS count_censor, max(view_census.censor) AS max_censor, array_agg(view_census.usr) AS user_list
---   FROM view_census
+--   FROM view_census WHERE
 --  GROUP BY view_census.session, view_census.rcns_id, view_census.cam, view_census.img, view_census.pre_tp
 --  ORDER BY view_census.session, view_census.cam, view_census.img, view_census.rcns_id;
 
@@ -60,6 +60,12 @@ CREATE OR REPLACE VIEW daisi_dev.bird_view_objects AS
     array_agg(c.usr) AS user_list
    FROM raw_census r LEFT JOIN census c USING(rcns_id) WHERE r.mark_delete IS NOT TRUE AND c.mark_delete IS NOT TRUE
   GROUP BY rcns_id
-ORDER BY cam, img;
+ORDER BY image_id, rcns_id;
+
+CREATE OR REPLACE VIEW daisi_dev.bird_view_markers AS 
+ SELECT 
+    rcns_id, r.tp, ux, uy, max(censor), count(*), session, img, cam
+   FROM raw_census r LEFT JOIN census c USING(rcns_id) WHERE r.mark_delete IS NOT TRUE AND c.mark_delete IS NOT TRUE AND (censor>0 OR censor IS NULL) 
+  GROUP BY rcns_id;
 
 GRANT SELECT ON ALL TABLES IN SCHEMA daisi_dev TO daisi;
