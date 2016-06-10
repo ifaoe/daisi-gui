@@ -51,7 +51,7 @@ public:
     QSqlQueryModel * getStuk4Behaviour();
     QSqlQueryModel * getStuk4Associations();
     QSqlQueryModel * getCloseObjects(census * obj);
-    QSqlQueryModel * getImageObjects(census * obj);
+    QSqlTableModel * getImageObjects(census * obj);
     QStringList getFlightInfoList(QString cam, QString flight, QString img);
     void GetBirdAgeClasses(QComboBox * cmb_box);
     void GetMiscObjects(QComboBox * cmb_box);
@@ -65,6 +65,9 @@ public:
     QString sessionPath();
     QString sessionVersion();
     void refreshSessionProperties(const QString & name);
+    void insertScreeningObject(const QString & session, const QString & camera, const QString & image,
+                               const QString & user, const QString & pre_type, double utm_x, double utm_y,
+                               double lon, double lat, int pixel_x, int pixel_y, int epsg);
 private:
     QSqlDatabase *db;
     ConfigHandler *config;

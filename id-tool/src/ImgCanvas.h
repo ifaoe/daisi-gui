@@ -49,7 +49,7 @@ public:
     void centerOnPixelPosition(int x, int y, double scale);
     void centerOnWorldPosition(double ux, double uy, double scale);
     QgsPoint calcWorldPosition(int x, int y);
-    void calcPixelPosition(QgsPoint pos);
+    QgsPoint calcPixelPosition(const QgsPoint & pos);
     QgsRasterLayer * getImageLayer();
     void setRasterBrightness(int value);
     void setRasterContrast(int value);
@@ -66,10 +66,14 @@ private:
     QgsMapToolEmitPoint *qgsEmitPointTool = 0;
     QgsMapToolPan * qgsMapPanTool = 0;
 
+    QgsCoordinateReferenceSystem crs_utm;
+    QgsCoordinateReferenceSystem crs_geo = QgsCoordinateReferenceSystem(4326);
+    QgsCoordinateTransform geo2utm;
+    QgsCoordinateTransform utm2geo;
 
     QNetworkAccessManager* networkManager = 0;
 
-    QSqlQueryModel * objModel = 0;
+    QSqlTableModel * objModel = 0;
 
     QString curSession = "";
     QString curCam = "";
@@ -82,6 +86,7 @@ private:
     int measurement_type = 0;
 
     void populateObjectLayer(census * obj);
+    void refreshMapMarkers();
 private slots:
     void handleCanvasClicked(const QgsPoint & point);
     void handleHideObjectMarkers();
@@ -89,6 +94,10 @@ private slots:
     void HandleZoomOut() {zoomOut();}
     void HandleZoomFullExtent() {zoomToFullExtent();}
     void endMeasurement(QAbstractButton * button);
+    void handleRightClick(const QgsPoint & point, Qt::MouseButton button);
+public slots:
+    void activatePanMode();
+    void activateMarkMode();
 signals:
     void measurementDone(int type, double size);
 };

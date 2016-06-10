@@ -603,13 +603,10 @@ QSqlQueryModel * DatabaseHandler::getCloseObjects(census * obj) {
     return model;
 }
 
-QSqlQueryModel * DatabaseHandler::getImageObjects(census * obj) {
-    QSqlQueryModel * model = new QSqlQueryModel;
-    QString qstr = "SELECT rcns_id, tp, ux, uy, max(censor), count(*) FROM view_census WHERE cam='" +
-            obj->camera + "' AND img='" + obj->image + "' AND session='"
-            + obj->session + "' AND (censor>0 OR censor IS NULL) GROUP BY rcns_id, tp, ux, uy ORDER BY rcns_id";
-    qDebug() << qstr;
-    model->setQuery(qstr);
+QSqlTableModel * DatabaseHandler::getImageObjects(census * obj) {
+    QSqlTableModel * model = new QSqlTableModel;
+    model->setTable("daisi_dev.bird_view_markers");
+    model->setFilter("cam='" + obj->camera + "' AND img='" + obj->image + "' AND session='" + obj->session + "'");
     model->setHeaderData(0, Qt::Horizontal, "Objekt Id");
     model->setHeaderData(1, Qt::Horizontal, "Typ");
     model->setHeaderData(2, Qt::Horizontal, "UTM X");
@@ -655,4 +652,25 @@ QString DatabaseHandler::sessionPath() {
 
 QString DatabaseHandler::sessionVersion() {
     return session_version;
+}
+
+void DatabaseHandler::insertScreeningObject(const QString &session, const QString &camera, const QString &image,
+                                            const QString &user, const QString &pre_type, double utm_x, double utm_y,
+                                            double lon, double lat, int pixel_x, int pixel_y, int epsg) {
+    QSqlQuery query;
+    query.prepare("INSERT INTO raw_census (session, cam, img, usr, tp, ux, uy, lx, ly, px, py, epsg) VALUES "
+                  "(:session, :camera, :image, :user, :type, :utm_x, :utm_y, :lon, :lat, :pixel_x, :pixel_y, :epsg)");
+    query.bindValue(":session", session);
+    query.bindValue(":camera", camera);
+    query.bindValue(":image", image);
+    query.bindValue(":user", user);
+    query.bindValue(":type", pre_type);
+    query.bindValue(":utm_x", utm_x);
+    query.bindValue(":utm_y", utm_y);
+    query.bindValue(":lon", lon);
+    query.bindValue(":lat", lat);
+    query.bindValue(":pixel_x", pixel_x);
+    query.bindValue(":pixel_y", pixel_y);
+    query.bindValue(":epsg", epsg);
+    query.exec();
 }

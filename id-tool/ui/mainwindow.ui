@@ -43,78 +43,6 @@
     <item row="0" column="2">
      <widget class="QFrame" name="frame_toolbar">
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="5" column="0">
-        <widget class="QToolButton" name="toolbutton_toggle_marks">
-         <property name="toolTip">
-          <string>Markierungen ein-/ausblenden</string>
-         </property>
-         <property name="text">
-          <string>...</string>
-         </property>
-         <property name="icon">
-          <iconset theme="flag-green">
-           <normaloff>.</normaloff>.</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>32</width>
-           <height>32</height>
-          </size>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QToolButton" name="toolbutton_zoom_original">
-         <property name="toolTip">
-          <string>1:1 Zoom</string>
-         </property>
-         <property name="text">
-          <string>...</string>
-         </property>
-         <property name="icon">
-          <iconset theme="zoom-original">
-           <normaloff>.</normaloff>.</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>32</width>
-           <height>32</height>
-          </size>
-         </property>
-         <property name="checkable">
-          <bool>false</bool>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QToolButton" name="toolbutton_zoom_out">
-         <property name="toolTip">
-          <string>Rauszoomen</string>
-         </property>
-         <property name="text">
-          <string>...</string>
-         </property>
-         <property name="icon">
-          <iconset theme="zoom-out">
-           <normaloff>.</normaloff>.</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>32</width>
-           <height>32</height>
-          </size>
-         </property>
-        </widget>
-       </item>
        <item row="2" column="0">
         <widget class="QToolButton" name="toolbutton_zoom_in">
          <property name="toolTip">
@@ -155,16 +83,16 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="0">
-        <widget class="QToolButton" name="toolbutton_take_measurement">
+       <item row="3" column="0">
+        <widget class="QToolButton" name="toolbutton_zoom_out">
          <property name="toolTip">
-          <string>Messung durchführen</string>
+          <string>Rauszoomen</string>
          </property>
          <property name="text">
           <string>...</string>
          </property>
          <property name="icon">
-          <iconset theme="measure">
+          <iconset theme="zoom-out">
            <normaloff>.</normaloff>.</iconset>
          </property>
          <property name="iconSize">
@@ -184,8 +112,8 @@
           <string>...</string>
          </property>
          <property name="icon">
-          <iconset theme="internet-web-browser">
-           <normaloff>.</normaloff>.</iconset>
+          <iconset resource="icons.qrc">
+           <normaloff>:/icons/icons/32x32/internet-web-browser.png</normaloff>:/icons/icons/32x32/internet-web-browser.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -195,6 +123,78 @@
          </property>
          <property name="checkable">
           <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QToolButton" name="toolbutton_toggle_marks">
+         <property name="toolTip">
+          <string>Markierungen ein-/ausblenden</string>
+         </property>
+         <property name="text">
+          <string>...</string>
+         </property>
+         <property name="icon">
+          <iconset resource="icons.qrc">
+           <normaloff>:/icons/icons/32x32/flag-green.png</normaloff>:/icons/icons/32x32/flag-green.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QToolButton" name="toolbutton_take_measurement">
+         <property name="toolTip">
+          <string>Messung durchführen</string>
+         </property>
+         <property name="text">
+          <string>...</string>
+         </property>
+         <property name="icon">
+          <iconset resource="icons.qrc">
+           <normaloff>:/icons/icons/22x22/measure.png</normaloff>:/icons/icons/22x22/measure.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QToolButton" name="toolbutton_zoom_original">
+         <property name="toolTip">
+          <string>1:1 Zoom</string>
+         </property>
+         <property name="text">
+          <string>...</string>
+         </property>
+         <property name="icon">
+          <iconset theme="zoom-original">
+           <normaloff>.</normaloff>.</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
          </property>
         </widget>
        </item>
@@ -210,6 +210,61 @@
           </size>
          </property>
         </spacer>
+       </item>
+       <item row="9" column="0">
+        <widget class="QToolButton" name="toolbutton_mark_object">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="icons.qrc">
+           <normaloff>:/icons/icons/24x24/node-transform.svg</normaloff>:/icons/icons/24x24/node-transform.svg</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">buttongroup_map_modes</string>
+         </attribute>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QToolButton" name="toolbutton_pan">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="icons.qrc">
+           <normaloff>:/icons/icons/24x24/transform-move.svg</normaloff>:/icons/icons/24x24/transform-move.svg</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">buttongroup_map_modes</string>
+         </attribute>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -268,6 +323,11 @@
    <header>../libs/QCollapsibleToolbox.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttongroup_map_modes"/>
+ </buttongroups>
 </ui>
