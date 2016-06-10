@@ -219,6 +219,9 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="toolTip">
+          <string>Nachmarkieren</string>
+         </property>
          <property name="text">
           <string/>
          </property>
@@ -242,6 +245,9 @@
        </item>
        <item row="8" column="0">
         <widget class="QToolButton" name="toolbutton_pan">
+         <property name="toolTip">
+          <string>Karte verschieben</string>
+         </property>
          <property name="text">
           <string/>
          </property>
