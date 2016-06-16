@@ -83,6 +83,9 @@ MainWindow::MainWindow( ConfigHandler *cfgArg, DatabaseHandler *dbArg, QWidget *
     connect(ui->toolbutton_zoom_original, SIGNAL(clicked()), this, SLOT(handleOneToOneZoom()));
     connect(ui->toolbutton_take_measurement, SIGNAL(clicked()), this, SLOT(handleMiscMeasurement()));
 
+    connect(ui->toolbutton_pan, SIGNAL(pressed()), imgcvs, SLOT(activatePanMode()));
+    connect(ui->toolbutton_mark_object, SIGNAL(pressed()), imgcvs, SLOT(activateMarkMode()));
+
     ui->statusBar->showMessage("Bereit. Kein Objekt geladen.");
 
     connect(wdgObjects->tblObjects->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(showFilterDialog(int)));

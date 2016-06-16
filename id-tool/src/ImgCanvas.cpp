@@ -20,6 +20,9 @@
 #include <qgsgeometry.h>
 #include <qgsvectordataprovider.h>
 #include <QSqlRecord>
+#include <QMenu>
+#include <QSqlQuery>
+#include <QSqlError>
 
 ImgCanvas::ImgCanvas(QWidget *parent, Ui::MainWindow *mUi, ConfigHandler *cfg, DatabaseHandler *db)
     : QgsMapCanvas(parent),ui(mUi), cfg(cfg), db(db) {
@@ -50,14 +53,13 @@ ImgCanvas::ImgCanvas(QWidget *parent, Ui::MainWindow *mUi, ConfigHandler *cfg, D
     QGridLayout* layout = (QGridLayout*)measurement_dialog->layout();
     layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
 
-
-
     setMapTool(qgsMapPanTool);
 
     connect(ui->toolbutton_toggle_marks, SIGNAL(clicked()), this, SLOT(handleHideObjectMarkers()));
     connect(ui->toolbutton_zoom_in,SIGNAL(clicked()),this,SLOT(HandleZoomIn()));
     connect(ui->toolbutton_zoom_out,SIGNAL(clicked()),this,SLOT(HandleZoomOut()));
     connect(ui->toolbutton_zoom_full,SIGNAL(clicked()),this,SLOT(HandleZoomFullExtent()));
+    connect(qgsEmitPointTool, SIGNAL(canvasClicked(QgsPoint,Qt::MouseButton)), this, SLOT(handleRightClick(QgsPoint,Qt::MouseButton)));
 }
 
 ImgCanvas::~ImgCanvas() {
@@ -100,6 +102,8 @@ bool ImgCanvas::loadObject(census * obj) {
     curCam = obj->camera;
     curImg = obj->image;
 
+
+
     QString basePath = info.filePath();
     QString baseName = info.fileName();
 
@@ -115,6 +119,13 @@ bool ImgCanvas::loadObject(census * obj) {
         return false;
     }
     imgProvider = imgLayer->dataProvider();
+
+    crs_utm = imgLayer->crs();
+    utm2geo.setSourceCrs(crs_utm);
+    utm2geo.setDestCRS(crs_geo);
+
+    geo2utm.setSourceCrs(crs_geo);
+    geo2utm.setDestCRS(crs_utm);
 
     /*
      * No Data Values deaktivieren.
@@ -149,14 +160,69 @@ bool ImgCanvas::loadObject(census * obj) {
 
     objModel = db->getImageObjects(obj);
 
+    refreshMapMarkers();
+
+//    for (uint i=0; i<objMarkers.size(); i++)
+//    {
+//        delete objMarkers[i];
+//    }
+//    objMarkers.clear();
+
+//    // TODO: Add markers if object change not only image change
+
+//    for (int i=0; i<objModel->rowCount(); i++) {
+//        int id = objModel->record(i).value(0).toInt();
+//        double ux = objModel->record(i).value(2).toDouble();
+//        double uy = objModel->record(i).value(3).toDouble();
+//        int mcen = objModel->record(i).value(4).toInt();
+//        int ccen = objModel->record(i).value(5).toInt();
+
+//        MapCanvasMarker * marker = new MapCanvasMarker(this);
+//        marker->setCenter(QgsPoint(ux,uy));
+//        marker->setIconType(MapCanvasMarker::ICON_CIRCLE);
+//        marker->setIconSize(5);
+//        marker->setDrawWidth(1);
+//        marker->setIconColor(Qt::black);
+//        marker->setFill(true);
+//        marker->setText(QString::number(id));
+//        marker->setTextColor(Qt::red);
+//        marker->setTextWidth(2);
+//        marker->setTextOffset(15,15);
+
+//        if (mcen == 2) {
+//            marker->setFillColor(Qt::darkGreen);
+//        } else if (mcen == 1) {
+//            if (ccen > 1)
+//                marker->setFillColor(Qt::darkRed);
+//            else
+//                marker->setFillColor(Qt::darkGray);
+//        } else {
+//            marker->setFillColor(Qt::gray);
+//        }
+
+//        objMarkers.push_back(marker);
+
+//        marker = new QgsMapMarker(this);
+//        marker->setCenter(QgsPoint(ux,uy));
+//        marker->setIconType(QgsMapMarker::ICON_CIRCLE);
+//        marker->setPenWidth(1);
+//        marker->setIconSize(3);
+//        marker->setColor(Qt::black);
+//
+//        objMarkers.push_back(marker);
+//    }
+    return true;
+}
+
+void ImgCanvas::refreshMapMarkers() {
     for (uint i=0; i<objMarkers.size(); i++)
     {
         delete objMarkers[i];
     }
     objMarkers.clear();
 
-    // TODO: Add markers if object change not only image change
-
+    if (!objModel->select())
+        qDebug() << objModel->lastError().text();
     for (int i=0; i<objModel->rowCount(); i++) {
         int id = objModel->record(i).value(0).toInt();
         double ux = objModel->record(i).value(2).toDouble();
@@ -188,19 +254,8 @@ bool ImgCanvas::loadObject(census * obj) {
         }
 
         objMarkers.push_back(marker);
-
-//        marker = new QgsMapMarker(this);
-//        marker->setCenter(QgsPoint(ux,uy));
-//        marker->setIconType(QgsMapMarker::ICON_CIRCLE);
-//        marker->setPenWidth(1);
-//        marker->setIconSize(3);
-//        marker->setColor(Qt::black);
-//
-//        objMarkers.push_back(marker);
     }
-
     handleHideObjectMarkers();
-    return true;
 }
 
 void ImgCanvas::centerOnPixelPosition(int x, int y, double scale) {
@@ -232,11 +287,14 @@ QgsPoint ImgCanvas::calcWorldPosition(int x, int y) {
     return QgsPoint(wx,wy);
 }
 
-void ImgCanvas::calcPixelPosition(QgsPoint pos) {
-    double w = this->width()/2;
-    double h = this->height()/2;
-    QgsRectangle view(pos.x()-w, pos.y()-h, pos.x()+w, pos.y()+h);
-    this->setExtent(view);
+QgsPoint ImgCanvas::calcPixelPosition(const QgsPoint & pos ) {
+        double utm_min_x = imgLayer->extent().xMinimum();
+        double utm_min_y = imgLayer->extent().yMinimum();
+
+        return QgsPoint (
+                    floor(abs(pos.x() - utm_min_x)/imgLayer->rasterUnitsPerPixelX()),
+                    floor(abs(pos.y() - utm_min_y)/imgLayer->rasterUnitsPerPixelY())
+                    );
 }
 
 /*
@@ -260,6 +318,7 @@ void ImgCanvas::handleCanvasClicked(const QgsPoint & point) {
 QgsRasterLayer * ImgCanvas::getImageLayer() { return imgLayer; }
 
 void ImgCanvas::beginMeasurement(int type) {
+    measurement_running = true;
     measurement_type = type;
     if (type == 0)
         measurement_dialog->setStandardButtons(QMessageBox::Cancel);
@@ -292,6 +351,7 @@ void ImgCanvas::endMeasurement(QAbstractButton * button = 0) {
 //    disconnect(measurement_dialog);
 //    delete measurement_dialog;
     measurement_type = 0;
+    measurement_running = false;
 }
 
 void ImgCanvas::setRasterBrightness(int value) {
@@ -321,4 +381,46 @@ void ImgCanvas::handleHideObjectMarkers() {
             objMarkers[i]->hide();
     }
     refresh();
+}
+
+void ImgCanvas::handleRightClick(const QgsPoint & point_utm, Qt::MouseButton button) {
+    if (button != Qt::LeftButton || measurement_running)
+            return;
+    if (imgLayer == 0 || !imgLayer->isValid())
+        return;
+
+    QMenu type_context_menu(tr("Typauswahl"), this);
+    QAction *vf_action = type_context_menu.addAction(trUtf8("Vogel fliegend"));
+    vf_action->setData("VF");
+    QAction *vs_action = type_context_menu.addAction(trUtf8("Vogel schwimmend"));
+    vs_action->setData("VS");
+    QAction *mm_action = type_context_menu.addAction(trUtf8("Meeressäuger"));
+    mm_action->setData("MM");
+    QAction *an_action = type_context_menu.addAction(trUtf8("Anthropogenes Objekt"));
+    an_action->setData("AN");
+    QAction *tr_action = type_context_menu.addAction(trUtf8("Müll"));
+    tr_action->setData("TR");
+    QAction *uo_action = type_context_menu.addAction(trUtf8("Unbekannt"));
+    uo_action->setData("UO");
+    QAction *action = type_context_menu.exec(QCursor::pos());
+
+    if (action == 0)
+        return;
+
+    QgsPoint point_pixel = calcPixelPosition(point_utm);
+    QgsPoint point_geo = utm2geo.transform(point_utm);
+    db->insertScreeningObject(curSession, curCam, curImg, cfg->getSystemUser(), action->data().toString(),
+                              point_utm.x(), point_utm.y(), point_geo.x(), point_geo.y(), point_pixel.x(), point_pixel.y(),
+                              crs_utm.postgisSrid()-32600);
+    qDebug() << crs_utm.postgisSrid();
+    objModel->select();
+    refreshMapMarkers();
+}
+
+void ImgCanvas::activatePanMode() {
+    setMapTool(qgsMapPanTool);
+}
+
+void ImgCanvas::activateMarkMode() {
+    setMapTool(qgsEmitPointTool);
 }

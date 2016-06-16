@@ -1,14 +1,16 @@
 <RCC>
-  <qresource prefix="icons">
-    <file>icons/22x22/view-list-text.png</file>
-    <file>icons/22x22/measure.png</file>
-    <file>icons/22x22/edit-delete.png</file>
-    <file>icons/22x22/document-save.png</file>
-    <file>icons/32x32/flag-green.png</file>
-    <file>icons/32x32/internet-web-browser.png</file>
-    <file>icons/32x32/zoom-fit-best.png</file>
-    <file>icons/32x32/zoom-out.png</file>
-    <file>icons/32x32/zoom-original.png</file>
-    <file>icons/32x32/zoom-in.png</file>
-  </qresource>
+    <qresource prefix="/icons">
+        <file>icons/22x22/view-list-text.png</file>
+        <file>icons/22x22/measure.png</file>
+        <file>icons/22x22/edit-delete.png</file>
+        <file>icons/22x22/document-save.png</file>
+        <file>icons/32x32/flag-green.png</file>
+        <file>icons/32x32/internet-web-browser.png</file>
+        <file>icons/32x32/zoom-fit-best.png</file>
+        <file>icons/32x32/zoom-out.png</file>
+        <file>icons/32x32/zoom-original.png</file>
+        <file>icons/32x32/zoom-in.png</file>
+        <file>icons/24x24/node-transform.svg</file>
+        <file>icons/24x24/transform-move.svg</file>
+    </qresource>
 </RCC>
