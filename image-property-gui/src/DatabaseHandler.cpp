@@ -7,8 +7,8 @@
 
 #include "DatabaseHandler.h"
 #include <QSqlQuery>
+#include <QSqlError>
 #include <QDebug>
-#include <iostream>
 using namespace std;
 
 DatabaseHandler::DatabaseHandler(ConfigHandler * config) : config(config){
@@ -22,12 +22,11 @@ DatabaseHandler::DatabaseHandler(ConfigHandler * config) : config(config){
 }
 
 void DatabaseHandler::OpenDatabase() {
-    DatabaseInfo db_info = config->getDatabaseInfo(config->getPreferredDatabase());
-    db->setHostName(db_info.host);
-    db->setDatabaseName(db_info.name);
-    db->setPort(db_info.port);
-    db->setUserName(db_info.user);
-    db->setPassword(db_info.password);
+    db->setHostName(config->dbHost());
+    db->setDatabaseName(config->dbName());
+    db->setPort(config->dbPort());
+    db->setUserName(config->dbUser());
+    db->setPassword(config->dbPassword());
     qDebug() << "Opening Database " + db->databaseName()+ " on Host " + db->hostName() + ".";
     if (!db->open()) {
         qFatal("Could not open Database");
@@ -95,9 +94,17 @@ void DatabaseHandler::GetStuk4Codes(QString type, QComboBox * combo_box) {
 	}
 }
 
-bool DatabaseHandler::SaveCode(QString type) {
-	Q_UNUSED(type);
-	return true;
+QString DatabaseHandler::getSessionVersion(const QString &session) {
+    QSqlQuery query;
+    query.prepare("SELECT distinct version FROM projects WHERE flight_id=:session");
+    query.bindValue(":session", session);
+    if (!query.exec()) {
+        qDebug() << "Error while getting version: " << query.lastError() .text();
+    }
+    if (query.next()) {
+        return query.value(0).toString();
+    }
+    return QString();
 }
 
 QString DatabaseHandler::GetPropertyProgress(QString type) {
@@ -110,13 +117,83 @@ QString DatabaseHandler::GetPropertyProgress(QString type) {
 			"JOIN "
             "(SELECT count(1) as total FROM images WHERE session='%2') as t2 "
 			" ON TRUE";
-    qDebug() << query_string.arg(type).arg(config->getPreferredSession());
-    cout <<  query_string.arg(type).arg(config->getPreferredSession()).toStdString() << endl;
     QSqlQuery query(query_string.arg(type).arg(config->getPreferredSession()));
 	if (query.next()) {
 		current = query.value(0).toString();
 		total = query.value(1).toString();
-	}
+    } else {
+        qDebug() << query.lastError().text();
+    }
 	return_string = current + "\t/" + total;
 	return return_string;
+}
+
+QSqlQueryModel * DatabaseHandler::getIceCodes() {
+    qDebug() << "Getting ice codes...";
+    QSqlQueryModel * model = new QSqlQueryModel;
+    QSqlQuery query;
+    query.prepare("SELECT ice, description_de FROM meta_ice WHERE version=:version");
+    query.bindValue(":version", config->version());
+    if (!query.exec()) {
+        qDebug() << query.lastError().text();
+        return NULL;
+    }
+    model->setQuery(query);
+    return model;
+}
+
+QSqlQueryModel * DatabaseHandler::getGlareCodes() {
+    qDebug() << "Getting glare codes...";
+    QSqlQueryModel * model = new QSqlQueryModel;
+    QSqlQuery query;
+    query.prepare("SELECT glare, description_de, remarks_de FROM meta_glare WHERE version=:version");
+    query.bindValue(":version", config->version());
+    if (!query.exec()) {
+        qDebug() << query.lastError().text();
+        return NULL;
+    }
+    model->setQuery(query);
+    return model;
+}
+
+QSqlQueryModel * DatabaseHandler::getTurbidityCodes() {
+    qDebug() << "Getting turbidity codes...";
+    QSqlQueryModel * model = new QSqlQueryModel;
+    QSqlQuery query;
+    query.prepare("SELECT turbidity, description_de, remarks_de FROM meta_turbidity WHERE version=:version");
+    query.bindValue(":version", config->version());
+    if (!query.exec()) {
+        qDebug() << query.lastError().text();
+        return NULL;
+    }
+    model->setQuery(query);
+    return model;
+}
+
+QSqlQueryModel * DatabaseHandler::getClarityCodes() {
+    qDebug() << "Getting clarity codes...";
+    QSqlQueryModel * model = new QSqlQueryModel;
+    QSqlQuery query;
+    query.prepare("SELECT clarity, description_de, remarks_de FROM meta_clarity WHERE version=:version");
+    query.bindValue(":version", config->version());
+    if (!query.exec()) {
+        qDebug() << query.lastError().text();
+        return NULL;
+    }
+    model->setQuery(query);
+    return model;
+}
+
+QSqlQueryModel * DatabaseHandler::getSeastateCodes() {
+    qDebug() << "Getting seastate codes...";
+    QSqlQueryModel * model = new QSqlQueryModel;
+    QSqlQuery query;
+    query.prepare("SELECT seastate, description_de FROM meta_seastate WHERE version=:version");
+    query.bindValue(":version", config->version());
+    if (!query.exec()) {
+        qDebug() << query.lastError().text();
+        return NULL;
+    }
+    model->setQuery(query);
+    return model;
 }

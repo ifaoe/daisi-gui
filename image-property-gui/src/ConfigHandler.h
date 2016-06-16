@@ -17,20 +17,9 @@
 #include <QSettings>
 #include <QDebug>
 
-struct DatabaseInfo {
-    QString id = "local";
-    QString host = "localhost";
-    int port = 5432;
-    QString name = "daisi";
-    QString password = "18ifaoe184";
-    QString user = "daisi";
-};
-
 class ConfigHandler : public QSettings{
 public:
     void InitSettings();
-    void AddDatabase(const QString & id, const QString & host, int port, const QString & name,const QString & user,
-            const QString & password);
     void setUser(const QString & user_name) { user = user_name; }
     QString getUser() {return user;}
     void setAppPosition(QPoint pos);
@@ -44,11 +33,17 @@ public:
     void setSessionName(const QString & session);
     QString getPreferredSession();
     QStringList getDatabaseList();
-    DatabaseInfo getDatabaseInfo(const QString & id);
     QString getSystemUser();
-
+    QString dbHost();
+    QString dbName();
+    int dbPort();
+    QString dbUser();
+    QString dbPassword();
+    void setVersion(const QString & version) { version_p = version; }
+    QString version() {return version_p;}
 private:
     QString user;
+    QString version_p;
 };
 
 #endif /* CONFIGHANDLER_H_ */

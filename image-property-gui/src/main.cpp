@@ -54,6 +54,7 @@ int main(int argc, char * argv[]) {
     config->InitSettings();
 
     DatabaseHandler * db = new DatabaseHandler(config);
+    db->OpenDatabase();
 
     MainWindow main_window(config, db);
     if (config->getAppMaximized())

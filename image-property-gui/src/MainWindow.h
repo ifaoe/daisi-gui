@@ -41,8 +41,8 @@ private:
 	void UpdateProgress();
     QVariant getModelItem(int row, int column);
     QStringList getColumnDataList(int column);
+    void setComboModelView(QComboBox * combo, QAbstractItemModel * model);
 private slots:
-    void HandleServerSelection(const QString & server);
     void HandleSessionSelection(const QString & session);
 	void HandleSaveData(QAbstractButton * button);
 	void UpdateDatabaseProgress();

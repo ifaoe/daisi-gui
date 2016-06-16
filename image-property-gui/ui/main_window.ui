@@ -58,7 +58,8 @@
              <string>Speichern</string>
             </property>
             <property name="icon">
-             <iconset theme="document-save"/>
+             <iconset theme="document-save">
+              <normaloff>.</normaloff>.</iconset>
             </property>
             <property name="dbvalue" stdset="0">
              <string>glare_key</string>
@@ -93,7 +94,8 @@
              <string>Speichern</string>
             </property>
             <property name="icon">
-             <iconset theme="document-save"/>
+             <iconset theme="document-save">
+              <normaloff>.</normaloff>.</iconset>
             </property>
             <property name="dbvalue" stdset="0">
              <string>seastate</string>
@@ -128,7 +130,8 @@
              <string>Speichern</string>
             </property>
             <property name="icon">
-             <iconset theme="document-save"/>
+             <iconset theme="document-save">
+              <normaloff>.</normaloff>.</iconset>
             </property>
             <property name="dbvalue" stdset="0">
              <string>turbidity</string>
@@ -163,7 +166,8 @@
              <string>Speichern</string>
             </property>
             <property name="icon">
-             <iconset theme="document-save"/>
+             <iconset theme="document-save">
+              <normaloff>.</normaloff>.</iconset>
             </property>
             <property name="dbvalue" stdset="0">
              <string>clarity</string>
@@ -198,7 +202,8 @@
              <string>Speichern</string>
             </property>
             <property name="icon">
-             <iconset theme="document-save"/>
+             <iconset theme="document-save">
+              <normaloff>.</normaloff>.</iconset>
             </property>
             <property name="dbvalue" stdset="0">
              <string>ice</string>
@@ -261,7 +266,8 @@
              <string>Speichern</string>
             </property>
             <property name="icon">
-             <iconset theme="document-save"/>
+             <iconset theme="document-save">
+              <normaloff>.</normaloff>.</iconset>
             </property>
             <property name="dbvalue" stdset="0">
              <string>remarks</string>
@@ -283,9 +289,6 @@
        <item>
         <widget class="QWidget" name="session_widget" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout_7">
-          <item>
-           <widget class="QComboBox" name="combo_server"/>
-          </item>
           <item>
            <widget class="QComboBox" name="combo_session"/>
           </item>

@@ -17,14 +17,42 @@ MainWindow::MainWindow(ConfigHandler * config, DatabaseHandler * db)
 	// TODO Auto-generated constructor stub
 	ui->setupUi(this);
 
-    ui->combo_server->addItem("");
-    ui->combo_server->addItems(config->getDatabaseList());
-
-    connect(ui->combo_server, SIGNAL(currentIndexChanged(QString)),this, SLOT(HandleServerSelection(QString)));
     connect(ui->combo_session, SIGNAL(currentIndexChanged(QString)),this, SLOT(HandleSessionSelection(QString)));
 
 	connect(ui->buttonGroup_save_type,SIGNAL(buttonClicked(QAbstractButton*)),this, SLOT(HandleSaveData(QAbstractButton*)));
     connect(ui->tableView_image_properties->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(handleHeaderFilter(int)));
+
+    ui->combo_session->clear();
+    ui->combo_session->addItem("");
+    ui->combo_session->addItems(db->GetProjectList());
+
+    if (property_table != 0)
+        delete property_table;
+    property_table = db->getPropertyTable();
+    ui->tableView_image_properties->setModel(property_table);
+    qDebug() << "Error: " << property_table->lastError().text();
+
+    index_list.clear();
+    index_list["glare_key"] = property_table->fieldIndex("glare_key");
+    index_list["seastate"] = property_table->fieldIndex("seastate");
+    index_list["turbidity"] =  property_table->fieldIndex("turbidity");
+    index_list["clarity"] = property_table->fieldIndex("clarity");
+    index_list["ice"] = property_table->fieldIndex("ice");
+    index_list["remarks"] = property_table->fieldIndex("remarks");
+    index_list["transect"] = property_table->fieldIndex("transect");
+    index_list["camera"] = property_table->fieldIndex("camera");
+    index_list["image"] = property_table->fieldIndex("image");
+
+    for (int i=0; i<property_table->columnCount(); i++) {
+        if (!index_list.values().contains(i))
+            ui->tableView_image_properties->hideColumn(i);
+    }
+
+    ui->tableView_image_properties->horizontalHeader()->moveSection(index_list["transect"],0);
+    ui->tableView_image_properties->verticalHeader()->setResizeMode(QHeaderView::Fixed);
+
+//	property_table->setFilter("FALSE");
+    property_table->setOrderClause("ORDER BY transect, camera, image");
 
 }
 
@@ -37,6 +65,7 @@ MainWindow::~MainWindow() {
 
 void MainWindow::LoadSession() {
 	UpdateProgress();
+    ui->tableView_image_properties->resizeColumnsToContents();
 }
 
 void MainWindow::ApplyFilters() {
@@ -82,52 +111,8 @@ QStringList MainWindow::getColumnDataList(int column) {
  * SLOTS:
  */
 
-
-void MainWindow::HandleServerSelection(const QString & server) {
-    ui->combo_session->clear();
-    ui->combo_session->addItem("");
-    if (server.isEmpty())
-        return;
-    config->setPreferredDatabase(ui->combo_server->currentText());
-	db->OpenDatabase();
-
-	db->GetStuk4Codes("CLARITY",ui->comboBox_clarity);
-	db->GetStuk4Codes("GLARE",ui->comboBox_glare);
-	db->GetStuk4Codes("SEASTATE",ui->comboBox_seastate);
-	db->GetStuk4Codes("ICE",ui->comboBox_ice);
-	db->GetStuk4Codes("TURBIDITY",ui->comboBox_turbidity);
-    ui->combo_session->addItems(db->GetProjectList());
-
-    if (property_table != 0)
-        delete property_table;
-    property_table = db->getPropertyTable();
-    ui->tableView_image_properties->setModel(property_table);
-    qDebug() << "Error: " << property_table->lastError().text();
-
-	index_list.clear();
-	index_list["glare_key"] = property_table->fieldIndex("glare_key");
-	index_list["seastate"] = property_table->fieldIndex("seastate");
-	index_list["turbidity"] =  property_table->fieldIndex("turbidity");
-	index_list["clarity"] = property_table->fieldIndex("clarity");
-	index_list["ice"] = property_table->fieldIndex("ice");
-	index_list["remarks"] = property_table->fieldIndex("remarks");
-    index_list["transect"] = property_table->fieldIndex("transect");
-    index_list["camera"] = property_table->fieldIndex("camera");
-    index_list["image"] = property_table->fieldIndex("image");
-
- 	for (int i=0; i<property_table->columnCount(); i++) {
-		if (!index_list.values().contains(i))
-			ui->tableView_image_properties->hideColumn(i);
-	}
-
-    ui->tableView_image_properties->horizontalHeader()->moveSection(index_list["transect"],0);
- 	ui->tableView_image_properties->verticalHeader()->setResizeMode(QHeaderView::Fixed);
-
-//	property_table->setFilter("FALSE");
-    property_table->setOrderClause("ORDER BY transect, camera, image");
-}
-
 void MainWindow::SetTableData(QString column_name, QVariant data) {
+    qDebug() << "Save " << column_name << " as " << data.toString();
 	int column = property_table->fieldIndex(column_name);
 	QModelIndexList index_list = ui->tableView_image_properties->selectionModel()->selectedRows(column);
 	QItemSelection old_selection = ui->tableView_image_properties->selectionModel()->selection();
@@ -156,7 +141,9 @@ void MainWindow::SetTableData(QString column_name, QVariant data) {
 	progress_dialog_->setLabelText(tr("Schreibe Daten in Datenbank..."));
 	database_progess_ = index_list.size();
 	connect(property_table, SIGNAL(beforeUpdate(int, QSqlRecord&)), this, SLOT(UpdateDatabaseProgress()));
-	property_table->submitAll();
+    if (!property_table->submitAll()) {
+        qDebug() << property_table->lastError().text();
+    };
 	progress_dialog_->setLabelText(tr("Stelle Auswahl wieder her..."));
 	progress_dialog_->setRange(0, top_left_row.size());
 	QModelIndex top_left, bottom_right;
@@ -175,9 +162,23 @@ void MainWindow::SetTableData(QString column_name, QVariant data) {
 	delete progress_dialog_;
 }
 
+void MainWindow::setComboModelView(QComboBox *combo, QAbstractItemModel *model) {
+    QTableView * view = new QTableView;
+    combo->setModel(model);
+    combo->setView(view);
+    view->resizeColumnsToContents();
+    combo->setModelColumn(0);
+}
+
 void MainWindow::HandleSessionSelection(const QString & session) {
     if (session.isEmpty())
         return;
+    config->setVersion(db->getSessionVersion(session));
+    setComboModelView(ui->comboBox_clarity, db->getClarityCodes());
+    setComboModelView(ui->comboBox_glare, db->getGlareCodes());
+    setComboModelView(ui->comboBox_ice, db->getIceCodes());
+    setComboModelView(ui->comboBox_seastate, db->getSeastateCodes());
+    setComboModelView(ui->comboBox_turbidity, db->getTurbidityCodes());
     filter_map["session"] = QString("session='%1'").arg(session);
     config->setSessionName(session);
     UpdateProgress();
@@ -187,15 +188,15 @@ void MainWindow::HandleSessionSelection(const QString & session) {
 void MainWindow::HandleSaveData(QAbstractButton * button) {
 	QString type = button->property("dbvalue").toString();
 	if (type == "glare_key") {
-		SetTableData(type, ui->comboBox_glare->itemData(ui->comboBox_glare->currentIndex()));
+        SetTableData(type, ui->comboBox_glare->currentText());
 	} else if (type == "seastate") {
-		SetTableData(type, ui->comboBox_seastate->itemData(ui->comboBox_seastate->currentIndex()));
+        SetTableData(type, ui->comboBox_seastate->currentText());
 	} else if (type == "turbidity") {
-		SetTableData(type,ui->comboBox_turbidity->itemData(ui->comboBox_turbidity->currentIndex()));
+        SetTableData(type,ui->comboBox_turbidity->currentText());
 	} else if (type == "clarity") {
-		SetTableData(type, ui->comboBox_clarity->itemData(ui->comboBox_clarity->currentIndex()));
+        SetTableData(type, ui->comboBox_clarity->currentText());
 	} else if (type == "ice") {
-		SetTableData(type, ui->comboBox_ice->itemData(ui->comboBox_ice->currentIndex()));
+        SetTableData(type, ui->comboBox_ice->currentText());
 	} else if (type == "remarks") {
 		SetTableData(type, ui->plainTextEdit_remarks->toPlainText());
 	}

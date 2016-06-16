@@ -23,10 +23,15 @@ public:
 	QStringList GetProjectCams();
 	QStringList GetProjectTracs();
 	void GetStuk4Codes(QString type, QComboBox * combo_box);
-	bool SaveCode(QString type);
+    QSqlQueryModel * getIceCodes();
+    QSqlQueryModel * getGlareCodes();
+    QSqlQueryModel * getSeastateCodes();
+    QSqlQueryModel * getTurbidityCodes();
+    QSqlQueryModel * getClarityCodes();
 	QSqlDatabase * GetDatabase() {return db;}
     QSqlSortModel * getPropertyTable();
 	QString GetPropertyProgress(QString type);
+    QString getSessionVersion(const QString & session);
 private:
     ConfigHandler * config = 0;
 	QSqlDatabase * db = 0;
