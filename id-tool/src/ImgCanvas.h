@@ -80,6 +80,7 @@ private:
     QString curImg = "";
 
     QMessageBox * measurement_dialog = 0;
+    QPoint measure_position = QPoint();
     QgsPolyline msmList;
     std::vector<MapCanvasMarker*> msmMarkers;
     std::vector<MapCanvasMarker*> objMarkers;
@@ -97,7 +98,7 @@ private slots:
     void handleRightClick(const QgsPoint & point, Qt::MouseButton button);
 public slots:
     void activatePanMode();
-    void activateMarkMode();
+    void activatePointMode();
 signals:
     void measurementDone(int type, double size);
 };

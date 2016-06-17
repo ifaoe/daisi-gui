@@ -325,17 +325,20 @@ void ImgCanvas::beginMeasurement(int type) {
     else
         measurement_dialog->setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
     measurement_dialog->setInformativeText(QString::fromUtf8("Bitte Messpunkte setzen."));
+    if (!measure_position.isNull())
+        measurement_dialog->move(measure_position);
+
     measurement_dialog->show();
 
     msmList.clear();
-    setMapTool(qgsEmitPointTool);
+    activatePointMode();
     connect(qgsEmitPointTool, SIGNAL( canvasClicked(const QgsPoint &, Qt::MouseButton) ),
             this, SLOT( handleCanvasClicked(const QgsPoint &)));
     connect(measurement_dialog, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(endMeasurement(QAbstractButton*)));
 }
 
 void ImgCanvas::endMeasurement(QAbstractButton * button = 0) {
-    setMapTool(qgsMapPanTool);
+    ui->toolbutton_pan->click();
     disconnect(qgsEmitPointTool, SIGNAL( canvasClicked(const QgsPoint &, Qt::MouseButton) ),
             this, SLOT( handleCanvasClicked(const QgsPoint &)));
     if (button != 0) {
@@ -344,6 +347,7 @@ void ImgCanvas::endMeasurement(QAbstractButton * button = 0) {
         else if (measurement_dialog->buttonRole(button) ==  QMessageBox::RejectRole)
             emit measurementDone(measurement_type, -1.0);
     }
+    measure_position = measurement_dialog->pos();
     msmList.clear();
     for (uint i=0; i<msmMarkers.size(); i++)
         delete msmMarkers[i];
@@ -421,6 +425,6 @@ void ImgCanvas::activatePanMode() {
     setMapTool(qgsMapPanTool);
 }
 
-void ImgCanvas::activateMarkMode() {
+void ImgCanvas::activatePointMode() {
     setMapTool(qgsEmitPointTool);
 }
