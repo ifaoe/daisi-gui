@@ -353,7 +353,7 @@ void MainWindow::handleSessionSelection() {
      * TODO: image_properties neu indizieren
      */
     filter_map.clear();
-    filter_map["session"] = QString("session='%1' AND project='%2'").arg(config->getFlightId()).arg(ui->cmbSession->currentText());
+    filter_map["session"] = QString("session='%1' AND project='%2'").arg(config->getFlightId()).arg(config->getProjectId());
     ui->chbNotReady->setChecked(false);
     /*
      * ModelView referenziert Datenbank-View daisi_bird_census_images

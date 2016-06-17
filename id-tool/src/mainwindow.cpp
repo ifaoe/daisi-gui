@@ -84,7 +84,7 @@ MainWindow::MainWindow( ConfigHandler *cfgArg, DatabaseHandler *dbArg, QWidget *
     connect(ui->toolbutton_take_measurement, SIGNAL(clicked()), this, SLOT(handleMiscMeasurement()));
 
     connect(ui->toolbutton_pan, SIGNAL(pressed()), imgcvs, SLOT(activatePanMode()));
-    connect(ui->toolbutton_mark_object, SIGNAL(pressed()), imgcvs, SLOT(activateMarkMode()));
+    connect(ui->toolbutton_mark_object, SIGNAL(pressed()), imgcvs, SLOT(activatePointMode()));
 
     ui->statusBar->showMessage("Bereit. Kein Objekt geladen.");
 
