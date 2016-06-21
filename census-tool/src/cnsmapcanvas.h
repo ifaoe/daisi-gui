@@ -90,6 +90,8 @@ public slots:
     void doUpdateStatus();
     void hideMarker(bool hide);
     void closeCanvas();
+    void setCamera(const QString & camera) { curCam = camera; }
+    void setImage(const QString & image) { curImg = image; }
 private:
     Ui::MainWindow* ui = 0;
     ConfigHandler* config;
@@ -196,8 +198,6 @@ private:
     bool openRasterLayer(const QString imagePath, const QString strCam, const QString strFile);
 
     bool openPolyLayer(QString strCam, QString strFile);
-
-    bool openEditLayer(const QString strCam, const QString strFile);
 
     bool refreshLayerSet();
 

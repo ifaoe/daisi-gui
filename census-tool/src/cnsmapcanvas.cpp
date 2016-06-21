@@ -326,7 +326,6 @@ bool CnsMapCanvas::doCalcWorldPos(const int pixX ,const int pixY,
 // --------------------------------------------------------------------------
 bool CnsMapCanvas::doOpenRasterLayer(QString cam, QString file) {
 	bool done = true;
-	done = done &&	openEditLayer(cam, file);
     done = done && openPolyLayer(cam, file);
     done = done && openRasterLayer(config->getProjectPath(), cam, file);
 
@@ -379,7 +378,7 @@ void CnsMapCanvas::doCanvasClicked(const QgsPoint &point,
         uy = point.y();
 
         QString type = ui->button_group_types->checkedButton()->property("dbvalue").toString();
-        db->writeRawCensus(type,config->getUtmSector(), curCam , curImg, config->getUser(),
+        db->writeRawCensus(type,config->getUtmSector(), config->current_cam , config->current_image, config->getUser(),
         		config->getProjectId(),
 				QString::number(py), QString::number(px),
 				QString::number(ux, 'g', 15), QString::number(uy, 'g', 15),
@@ -393,36 +392,6 @@ void CnsMapCanvas::doCanvasClicked(const QgsPoint &point,
     doUpdateStatus();
 
 }
-
-// --------------------------------------------------------------------------
-bool CnsMapCanvas::openEditLayer(const QString strCam, const QString strFile) {
-
-	if (qgis_edit_layer_ != 0) {
-		qgsLyrRegistry->removeMapLayer("EDIT");
-//		delete layer;
-		qgis_edit_layer_ = 0;
-	}
-
-
-    curCam = strCam;
-    curImg = strFile;
-
-    QString props = QString("Point?")+
-                    QString("crs=epsg:326")+
-                    QString::number(config->getUtmSector());
-
-    qgis_edit_layer_ = new QgsVectorLayer(props, "EDIT", "memory");
-
-
-    if ( qgis_edit_layer_->isValid() ) {
-    	qDebug() << tr("editLayer OPEN ")+strFile;
-    } else {
-        qWarning(tr("editLayer OPEN FAILED ")+strFile);
-        return 0;
-    }
-
-    return true;
- }
 
 // --------------------------------------------------------------------------
 bool CnsMapCanvas::openRasterLayer(const QString imagePath,
@@ -610,7 +579,7 @@ void CnsMapCanvas::UpdateObjectMarkers() {
     QSqlTableModel * query_model = static_cast<QSqlTableModel *>(ui->tbwObjects->model());
     query_model->select();
 //	query_model->clear();
-//    db->UpdateObjectQuery(curCam,curImg,query_model);
+//    db->UpdateObjectQuery(config->current_cam,config->current_image,query_model);
 //	query_model->query().exec();
     MapCanvasMarker * temp_marker;
     for (int i=0; i<object_markers_.size(); i++) {
