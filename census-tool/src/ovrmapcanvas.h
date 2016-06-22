@@ -42,6 +42,7 @@ class OvrMapCanvas : public QgsMapCanvas
         void doSelectNextTile();
         void doSelectPrevTile();
         void doSelectTile(int num);
+        int currentTile() {return curTile;}
 
     private:
         Ui::MainWindow* ui = 0;

@@ -201,6 +201,7 @@ void MainWindow::deleteSelection() {
     // Aktuelle Objektliste laden
     // Das ist die sichere Variante zum seperaten Löschen in DB und UI
     mapCanvas->UpdateObjectMarkers();
+
 }
 
 void MainWindow::clearSelection() {
@@ -241,6 +242,8 @@ void MainWindow::handleImageSelection()
 	int currentRow = imgSelector->selectedRows().at(0).row();
     selected_file = image_table_model->data(currentRow, image_table_model->fieldIndex("img")).toString();
     selected_cam  = image_table_model->data(currentRow, image_table_model->fieldIndex("cam")).toString();
+    config->current_cam = selected_cam;
+    config->current_image = selected_file;
     bool image_done = image_table_model->data(currentRow, image_table_model->fieldIndex("examined")).toBool();
     bool analysed = image_table_model->data(currentRow, image_table_model->fieldIndex("analysed")).toBool();
 
@@ -282,9 +285,6 @@ void MainWindow::handleImageSelection()
 	  this->setWindowTitle("BirdCensus - Kamera "
 			  + selected_cam +" - "+selected_file);
 	  ovrCanvas->doSelectFirstTile();
-
-	  config->current_cam = selected_cam;
-	  config->current_image = selected_file;
 
     if (config->getProjectId().startsWith("Testdatensatz") && !config->getAdmin())
         object_table_model->setFilter(QString("session='%1' AND cam='%2' AND img='%3' AND usr='%4'")

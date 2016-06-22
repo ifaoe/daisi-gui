@@ -551,12 +551,9 @@ bool CnsMapCanvas::refreshLayerSet() {
 
 	QList<QgsMapCanvasLayer> layerSet;
 
-
-	qgsLayerRegistry->addMapLayer(qgis_edit_layer_,false,true);
 	qgsLayerRegistry->addMapLayer(qgis_poly_layer_,false,true);
 	qgsLayerRegistry->addMapLayer(qgis_image_layer_,false,true);
 
-	layerSet.append(qgis_edit_layer_);
 	layerSet.append(qgis_poly_layer_);
 	layerSet.append(qgis_image_layer_);
 
@@ -609,6 +606,7 @@ void CnsMapCanvas::UpdateObjectMarkers() {
 //    this->refresh();
     ui->tbwObjects->resizeColumnsToContents();
     ui->tbwObjects->horizontalHeader()->setStretchLastSection(true);
+    ovrCanvas->doSelectTile(ovrCanvas->currentTile());
 }
 
 void CnsMapCanvas::UpdateObjectSelection() {
