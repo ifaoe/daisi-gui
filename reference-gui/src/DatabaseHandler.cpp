@@ -21,21 +21,15 @@ DatabaseHandler::DatabaseHandler(UserSettings * cfg) : config(cfg){
 }
 
 bool DatabaseHandler::OpenDatabase() {
-	if (config->getPreferredDatabase().isEmpty())
-		return false;
-
 	if (db->isOpen()) {
 		db->close();
 	}
 
-	DatabaseInfo info = config->getDatabaseInfo(config->getPreferredDatabase());
-	if (info.id.isEmpty())
-		return false;
-    db->setHostName(info.host);
-    db->setDatabaseName(info.name);
-    db->setPort(info.port);
-    db->setUserName(info.user);
-    db->setPassword(info.password);
+    db->setHostName(config->dbHost());
+    db->setDatabaseName(config->dbName());
+    db->setPort(config->dbPort());
+    db->setUserName(config->dbUser());
+    db->setPassword(config->dbPassword());
     qDebug() << "Opening Database " + db->databaseName()+ " on Host " + db->hostName() + ".";
     if (!db->open()) {
         qFatal("Could not open Database");
@@ -49,8 +43,11 @@ DatabaseHandler::~DatabaseHandler() {
 }
 
 QString DatabaseHandler::GetImageLocation(const QString & session, const QString & cam, const QString & img) {
-	QString query_string = "SELECT path FROM projects WHERE project_id='%1'";
-	QSqlQuery query(query_string.arg(session));
+    QSqlQuery query;
+    query.prepare("SELECT path FROM projects WHERE project_id=:project AND location=:location");
+    query.bindValue(":project", session);
+    query.bindValue(":location", config->location());
+    query.exec();
 	if (query.next())
 		return 	query.value(0).toString() + QString("/cam%1/geo/%2.tif").arg(cam).arg(img);
 	return QString();
@@ -63,6 +60,15 @@ void DatabaseHandler::GetFilterOptions(QComboBox * box, const QString & type) {
 	QSqlQuery query(query_string.arg(box->property("column").toString()).arg(type));
 	while(query.next())
 			box->addItem(query.value(0).toString(),query.value(0));
+}
+
+QStringList DatabaseHandler::getLocationList() {
+    QSqlQuery query("SELECT DISTINCT location FROM projects");
+    query.exec();
+    QStringList locations;
+    while(query.next())
+        locations.append(query.value(0).toString());
+    return locations;
 }
 
 QStringList DatabaseHandler::GetSessionList() {

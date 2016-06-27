@@ -45,7 +45,6 @@ int main(int argc, char *argv[])
     QgsApplication::setPrefixPath("/usr", true);
     QgsApplication::initQgis();
     UserSettings * config = new UserSettings;
-    config->InitSettings();
     DatabaseHandler * db = new DatabaseHandler(config);
     MainWindow main_window(config, db);
     if (config->getAppMaximized())

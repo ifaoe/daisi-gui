@@ -6,8 +6,6 @@
 
 QT       += core sql xml webkit
 
-CONFIG += console
-
 TARGET = daisi-reference
 TEMPLATE = app
 

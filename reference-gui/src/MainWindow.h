@@ -65,7 +65,7 @@ private slots:
 	void HandleColumnChooser();
 	void HandleTypeFilter(int index);
 	void HandleSelectionChange(const QItemSelection & selected, const QItemSelection & deselected);
-	void HandleServerSelection();
+    void handleLocationSelection();
 	void HandleImagePopup();
 	void handleHeaderFilter(int column);
 	void handleSessionSelection(int index);

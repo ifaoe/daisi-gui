@@ -49,6 +49,7 @@ bool ImageCanvas::LoadObject(const QString & session, const QString & cam, const
 	if(!image_file.isFile() || !image_file.isReadable())
 		return false;
 
+    qDebug() << "Opening image: " << image_file.path();
 	image_layer = new QgsRasterLayer(image_file.filePath(),image_file.fileName());
 	connect(image_layer,SIGNAL(progressUpdate(int)),this,SLOT(ShowProgress(int)));
 	image_layer->setLayerName("image");

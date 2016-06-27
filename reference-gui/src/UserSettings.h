@@ -13,20 +13,8 @@
 #include <QPoint>
 #include <QSize>
 
-struct DatabaseInfo {
-	QString id = "local";
-	QString host = "localhost";
-	int port = 5432;
-	QString name = "daisi";
-	QString password = "18ifaoe184";
-	QString user = "daisi";
-};
-
 class UserSettings : public QSettings{
 public:
-	void InitSettings();
-	void AddDatabase(const QString & id, const QString & host, int port, const QString & name,const QString & user,
-			const QString & password);
 
 	void setVisibleColumns(QStringList columns);
 	QStringList getVisibleColumns();
@@ -36,10 +24,13 @@ public:
 	QSize getAppSize();
 	void setAppMaximized(bool max);
 	bool getAppMaximized();
-	void setPreferredDatabase(QString database);
-	QString getPreferredDatabase();
-	QStringList getDatabaseList();
-	DatabaseInfo getDatabaseInfo(const QString & id);
+    QString dbHost();
+    QString dbName();
+    int dbPort();
+    QString dbUser();
+    QString dbPassword();
+    QString location();
+    void setLocation(const QString & location);
     int getRedChannel();
     int getGreenChannel();
     int getBlueChannel();

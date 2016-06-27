@@ -45,7 +45,7 @@ MainWindow::MainWindow(UserSettings * config, DatabaseHandler * db)
 	filter_map["standard"] = "confidence<4 AND censor=2";
 
 	if (!db->OpenDatabase())
-		HandleServerSelection();
+        handleLocationSelection();
 
 	SetDatabaseModels();
 	ui->table_view_objects->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -63,7 +63,7 @@ MainWindow::MainWindow(UserSettings * config, DatabaseHandler * db)
 	SetupTables();
 	HandleColumnVisibility();
 
-	connect(ui->actionMit_Server_verbinden,SIGNAL(triggered()),this,SLOT(HandleServerSelection()));
+    connect(ui->actionMit_Server_verbinden,SIGNAL(triggered()),this,SLOT(handleLocationSelection()));
 	connect(ui->button_image_popup, SIGNAL(clicked()),this,SLOT(HandleImagePopup()));
 	connect(ui->actionSpalten,SIGNAL(triggered()),this,SLOT(HandleColumnChooser()));
 	connect(ui->button_save_image,SIGNAL(clicked()),canvas, SLOT(SaveImage()));
@@ -103,6 +103,10 @@ MainWindow::MainWindow(UserSettings * config, DatabaseHandler * db)
     QMap<QString, QString>::iterator i;
     for (i=column_translation.begin(); i!=column_translation.end(); ++i)
         column_dialog->addColumn(i.value(), i.key());
+
+    connect(ui->table_view_objects->selectionModel(),
+            SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
+            SLOT(HandleSelectionChange(const QItemSelection &, const QItemSelection &)));
 }
 
 MainWindow::~MainWindow() {
@@ -118,13 +122,14 @@ MainWindow::~MainWindow() {
 //}
 
 void MainWindow::HandleFilter() {
-    disconnect(ui->table_view_objects->selectionModel());
+//    disconnect(ui->table_view_objects->selectionModel());
+//    disconnect(this, SLOT(HandleSelectionChange(QItemSelection,QItemSelection)));
+    ui->table_view_objects->blockSignals(true);
+
 	census_model->setFilter( static_cast<QStringList>(filter_map.values()).join(" AND ") );
 	census_model->select();
 	ui->table_view_objects->resizeColumnsToContents();
-    connect(ui->table_view_objects->selectionModel(),
-            SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
-            SLOT(HandleSelectionChange(const QItemSelection &, const QItemSelection &)));
+    ui->table_view_objects->blockSignals(false);
 }
 
 void MainWindow::SetupTables() {
@@ -268,15 +273,12 @@ void MainWindow::HandleTypeFilter(int index){
     handleSessionSelection(ui->combo_session->currentIndex());
 };
 
-void MainWindow::HandleServerSelection() {
+void MainWindow::handleLocationSelection() {
 	bool check;
-    qDebug() << config->getDatabaseList();
-	QString database = QInputDialog::getItem(this,tr("Datenbank auswählen..."),tr("Datenbank:"),
-			config->getDatabaseList(),0,false,&check);
+    QString location = QInputDialog::getItem(this,tr("Standort auswählen..."),tr("Standort:"),
+            db->getLocationList(),0,false,&check);
 	if (check) {
-		config->setPreferredDatabase(database);
-		db->OpenDatabase();
-		SetDatabaseModels();
+        config->setLocation(location);
 	} else {
 		return;
 	}

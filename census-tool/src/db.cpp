@@ -1,6 +1,5 @@
 #include "db.h"
 #include <iostream>
-#include <iostream>
 #include <QHeaderView>
 
 Database::Database(ConfigHandler *aConfig) : config(aConfig)
