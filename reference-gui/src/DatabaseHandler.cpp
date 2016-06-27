@@ -9,6 +9,7 @@
 #include <QSqlQuery>
 #include <QDebug>
 #include <QSqlError>
+#include <QMessageBox>
 
 DatabaseHandler::DatabaseHandler(UserSettings * cfg) : config(cfg){
 	// TODO Auto-generated constructor stub
@@ -63,8 +64,12 @@ void DatabaseHandler::GetFilterOptions(QComboBox * box, const QString & type) {
 }
 
 QStringList DatabaseHandler::getLocationList() {
-    QSqlQuery query("SELECT DISTINCT location FROM projects");
-    query.exec();
+    QSqlQuery query;
+    query.prepare("SELECT DISTINCT location FROM projects ORDER BY location");
+    if (!query.exec()) {
+       QMessageBox::critical(0, "Database Error", query.lastError().text());
+       exit(EXIT_FAILURE);
+    }
     QStringList locations;
     while(query.next())
         locations.append(query.value(0).toString());

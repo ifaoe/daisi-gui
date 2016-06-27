@@ -10,6 +10,7 @@
 #include <qgsmaplayerregistry.h>
 #include <QFileDialog>
 #include <qgsmapcanvasmap.h>
+#include <QMessageBox>
 
 ImageCanvas::ImageCanvas(DatabaseHandler * db, QWidget * parent) : QgsMapCanvas(parent),  parent(parent), db(db)  {
 //	sizePolicy().setHeightForWidth(true);
@@ -38,25 +39,31 @@ ImageCanvas::~ImageCanvas() {
 
 bool ImageCanvas::LoadObject(const QString & session, const QString & cam, const QString & img, const double & ux,
 		const double & uy) {
-	if ((current_session == session) && (current_cam == cam) && (current_img == img)) {
+    if ((current_session == session) && (current_cam == cam) && (current_img == img)) {
 		CenterOnWorldPosition(ux, uy, 1.0);
 		return true;
 	}
-
 	UnloadObject();
 
-	QFileInfo image_file(db->GetImageLocation(session, cam, img));
-	if(!image_file.isFile() || !image_file.isReadable())
-		return false;
-
+    QString file_location = db->GetImageLocation(session, cam, img);
+    if (file_location.isEmpty()) {
+        QMessageBox::critical(0, "Fehler", trUtf8("Bild für den Standort nicht verfügbar."));
+        return false;
+    }
+    QFileInfo image_file(file_location);
     qDebug() << "Opening image: " << image_file.path();
+    if(!image_file.isFile() || !image_file.isReadable()) {
+        QMessageBox::critical(0,"Fehler",trUtf8("Bild konnte nicht geöffnet werden."));
+		return false;
+    }
 	image_layer = new QgsRasterLayer(image_file.filePath(),image_file.fileName());
 	connect(image_layer,SIGNAL(progressUpdate(int)),this,SLOT(ShowProgress(int)));
 	image_layer->setLayerName("image");
     image_provider = image_layer->dataProvider();
-    if (!image_layer->isValid())
+    if (!image_layer->isValid()) {
+        QMessageBox::critical(0,"Fehler",trUtf8("Bild ist beschädigt und konnte nicht geöffnet werden."));
     	return false;
-
+    }
     /*
      * No Data Values deaktivieren.
      * Verursachen Probleme in Bezug auf georeferenzierte JPEGs oder JPEG komprimierte TIFFs

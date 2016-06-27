@@ -4,11 +4,10 @@
 #
 #-------------------------------------------------
 
-QT       += core sql xml webkit
+QT += core gui sql webkit network xml
 
 TARGET = daisi-reference
 TEMPLATE = app
-
 SOURCES += main.cpp \
         MainWindow.cpp \
         DatabaseHandler.cpp \

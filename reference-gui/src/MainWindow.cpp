@@ -104,6 +104,9 @@ MainWindow::MainWindow(UserSettings * config, DatabaseHandler * db)
     for (i=column_translation.begin(); i!=column_translation.end(); ++i)
         column_dialog->addColumn(i.value(), i.key());
 
+    RefreshColumnMap();
+//    HandleFilter();
+
     connect(ui->table_view_objects->selectionModel(),
             SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this,
             SLOT(HandleSelectionChange(const QItemSelection &, const QItemSelection &)));
@@ -240,8 +243,7 @@ void MainWindow::HandleSelectionChange(const QItemSelection & selected, const QI
     ui->info_table->item(4,0)->setText(QString::number(ly));
 
 	if (!canvas->LoadObject(current_session, current_cam, current_img,ux,uy)) {
-		QMessageBox messageBox;
-		messageBox.critical(0,"Fehler","Bild konnte nicht geladen werden.");
+
 	}
 //    updateMapPosition(lx, ly);
 }
@@ -275,6 +277,12 @@ void MainWindow::HandleTypeFilter(int index){
 
 void MainWindow::handleLocationSelection() {
 	bool check;
+    QStringList location_list = db->getLocationList();
+    if (location_list.isEmpty()) {
+        QMessageBox::critical(0, "Error", "Could not get location list from database.");
+        exit(EXIT_FAILURE);
+    }
+
     QString location = QInputDialog::getItem(this,tr("Standort auswählen..."),tr("Standort:"),
             db->getLocationList(),0,false,&check);
 	if (check) {
@@ -282,11 +290,6 @@ void MainWindow::handleLocationSelection() {
 	} else {
 		return;
 	}
-	filter_map.remove("session");
-	populateSessionBox();
-	RefreshColumnMap();
-	HandleColumnVisibility();
-	HandleFilter();
 }
 
 void MainWindow::HandleImagePopup() {
