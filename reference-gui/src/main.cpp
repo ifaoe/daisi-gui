@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     // Applikation initialisieren
    	QCoreApplication::setOrganizationName("ifaoe");
    	QCoreApplication::setOrganizationDomain("ifaoe.de");
-	QCoreApplication::setApplicationName("daisi-image-library");
+    QCoreApplication::setApplicationName("daisi-reference");
     QApplication app(argc, argv);
     QIcon::setThemeName("breeze-dark");
 	QStringList theme_paths;

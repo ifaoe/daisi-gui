@@ -81,7 +81,7 @@ QString UserSettings::dbPassword() {
 }
 
 QString UserSettings::location() {
-    return value("location", "Rostock").toString();
+    return value("location", QString()).toString();
 }
 
 void UserSettings::setLocation(const QString & location) {

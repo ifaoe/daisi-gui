@@ -20,6 +20,12 @@
 MainWindow::MainWindow(UserSettings * config, DatabaseHandler * db)
 	: QMainWindow(0), ui(new Ui::MainWindow), config(config), db(db){
 	// TODO Auto-generated constructor stub
+    if (!db->OpenDatabase()) {
+        QMessageBox::critical(0, "Fehler", "Keine Datenbankverbindung");
+        exit(EXIT_FAILURE);
+    }
+    if (config->location().isEmpty())
+        handleLocationSelection();
 	ui->setupUi(this);
 
 	type_tab_bar = new QTabBar(ui->widget_types);
@@ -43,9 +49,6 @@ MainWindow::MainWindow(UserSettings * config, DatabaseHandler * db)
 	ui->widget_types->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
 	ui->widget_types->setFixedHeight(type_tab_bar->height());
 	filter_map["standard"] = "confidence<4 AND censor=2";
-
-	if (!db->OpenDatabase())
-        handleLocationSelection();
 
 	SetDatabaseModels();
 	ui->table_view_objects->setSelectionBehavior(QAbstractItemView::SelectRows);

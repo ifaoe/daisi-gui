@@ -48,7 +48,9 @@ QString DatabaseHandler::GetImageLocation(const QString & session, const QString
     query.prepare("SELECT path FROM projects WHERE project_id=:project AND location=:location");
     query.bindValue(":project", session);
     query.bindValue(":location", config->location());
-    query.exec();
+    if (!query.exec()) {
+        QMessageBox::critical(0,"Database error", query.lastError().text());
+    }
 	if (query.next())
 		return 	query.value(0).toString() + QString("/cam%1/geo/%2.tif").arg(cam).arg(img);
 	return QString();
