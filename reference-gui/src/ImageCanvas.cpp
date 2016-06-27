@@ -47,7 +47,7 @@ bool ImageCanvas::LoadObject(const QString & session, const QString & cam, const
 
     QString file_location = db->GetImageLocation(session, cam, img);
     if (file_location.isEmpty()) {
-        QMessageBox::critical(0, "Fehler", trUtf8("Bild %1 für den Standort nicht verfügbar."));
+        QMessageBox::critical(0, "Fehler", trUtf8("Bild für den Standort nicht verfügbar."));
         return false;
     }
     QFileInfo image_file(file_location);
