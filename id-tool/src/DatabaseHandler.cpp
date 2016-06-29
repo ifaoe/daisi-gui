@@ -141,7 +141,7 @@ bool DatabaseHandler::GetAnthroObjectList(QComboBox * combo_box) {
 QStringList DatabaseHandler::getUserList(int objId) {
     qDebug() << "Getting user list from database. For id " << objId;
     QStringList userList;
-    QString qstr = "SELECT DISTINCT usr, censor FROM census WHERE rcns_id=%1 AND mark_delete IS NULL ORDER BY censor";
+    QString qstr = "SELECT DISTINCT usr, censor FROM census WHERE rcns_id=%1 AND mark_delete IS NOT TRUE ORDER BY censor";
     QSqlQuery query(qstr.arg(objId));
     qDebug() << query.executedQuery();
     if (query.size() == -1) return userList;
