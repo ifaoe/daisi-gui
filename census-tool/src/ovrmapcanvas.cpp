@@ -255,7 +255,7 @@ bool OvrMapCanvas::openImageTiles(QString strCam, QString strFile) {
      }
     if (! qgs_image_envelope_ ) return false;
 
-    QgsRasterLayer * hit_image;
+    QgsRasterLayer * hit_image = 0;
     QString cnn_path = QString("%1/cam%2/cnn/%3.tif").arg(config->getProjectPath()).arg(strCam).arg(strFile);
     QFileInfo info (cnn_path);
     qDebug() << "Trying to open CNN hit image " << cnn_path;
@@ -328,10 +328,12 @@ bool OvrMapCanvas::openImageTiles(QString strCam, QString strFile) {
             /*
              * check hitimage on rectangle
              */
-            int max_value = hit_image->dataProvider()->bandStatistics(config->getGreenChannel(), QgsRasterBandStats::Max, rectangle, 0).maximumValue;
-            qDebug() << max_value;
-            if (max_value==0)
-                continue;
+            if (hit_image != 0) {
+                int max_value = hit_image->dataProvider()->bandStatistics(config->getGreenChannel(), QgsRasterBandStats::Max, rectangle, 0).maximumValue;
+                if (max_value==0)
+                    continue;
+            }
+
 
             QgsFeature fet = QgsFeature(qgs_image_tiles_->dataProvider()->fields());
             fet.setGeometry( geom );
@@ -354,6 +356,8 @@ bool OvrMapCanvas::openImageTiles(QString strCam, QString strFile) {
             }
         }
     }
+    if (hit_image!=0)
+        delete hit_image;
     qgs_image_tiles_->commitChanges();
 
     QgsStringMap properties;
