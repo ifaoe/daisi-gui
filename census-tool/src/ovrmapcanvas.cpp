@@ -1,5 +1,6 @@
 #include "ovrmapcanvas.h"
 #include "cnsmapcanvas.h"
+#include <QDebug>
 // ----------------------------------------------------------------------
 OvrMapCanvas::OvrMapCanvas(QWidget *parent,
                            Ui::MainWindow* aUI,
@@ -196,6 +197,54 @@ void OvrMapCanvas::refreshLayerPaintList() {
       this->setLayerSet(list);
 }
 
+QgsGeometry * OvrMapCanvas::polygonize(const QString & camera, const QString & image) {
+    /*
+     * try to open CNN hit image
+     */
+    QgsRasterLayer * hit_image;
+    QString cnn_path = QString("%1/cam%2/cnn/%3.tif").arg(config->getProjectPath()).arg(camera).arg(image);
+    QFileInfo info (cnn_path);
+    qDebug() << "Trying to open CNN hit image " << cnn_path;
+    if ( !info.isFile() || !info.isReadable() ) {
+        qDebug() << "cnn hit image invalid file  " << cnn_path;
+        return 0;
+    }
+    QString basePath = info.filePath();
+    QString baseName = info.fileName();
+    hit_image = new QgsRasterLayer(basePath,baseName);
+    if (!hit_image->isValid()) {
+        delete hit_image;
+        return 0;
+    }
+    /*
+     * build geometry from raster
+     */
+    int raster_size_x = hit_image->width()/hit_image->rasterUnitsPerPixelX();
+    int raster_size_y = hit_image->height()/hit_image->rasterUnitsPerPixelY();
+    int minimum_x = hit_image->extent().xMinimum();
+    int minimum_y = hit_image->extent().yMinimum();
+    QgsRasterBlock * block = hit_image->dataProvider()->block(config->getGreenChannel(), hit_image->extent(), hit_image->width(), hit_image->height());
+    qDebug() << raster_size_x << block->width() << raster_size_y << block->height();
+    QgsGeometry * geometry = QgsGeometry::fromRect(hit_image->extent());\
+    QgsMultiPolygon polygon;
+    for (int x=0; x<raster_size_x; x++) {
+        for (int y=0; y<raster_size_y; y++) {
+            if (block->value(x,y)<200) {
+                double min_x = minimum_x + hit_image->rasterUnitsPerPixelX()*(x-0.5);
+                double max_x = minimum_x + hit_image->rasterUnitsPerPixelX()*(x+0.5);
+                double min_y = minimum_y + hit_image->rasterUnitsPerPixelY()*(y-0.5);
+                double max_y = minimum_y + hit_image->rasterUnitsPerPixelY()*(y+0.5);
+//                polygon.append(QgsGeometry::fromRect(QgsRectangle(min_x, min_y, max_x, max_y))->asPolygon());
+                geometry = geometry->difference(QgsGeometry::fromRect(QgsRectangle(min_x, min_y, max_x, max_y)));
+            }
+        }
+    }
+//    geometry = QgsGeometry::fromMultiPolygon(polygon)->buffer(1e-5,0)->simplify(0.01);
+    qDebug() << geometry->exportToWkt();
+    delete hit_image;
+    return geometry;
+}
+
 // ----------------------------------------------------------------------
 bool OvrMapCanvas::openImageTiles(QString strCam, QString strFile) {
 
@@ -205,6 +254,22 @@ bool OvrMapCanvas::openImageTiles(QString strCam, QString strFile) {
          qgs_image_tiles_ = 0;
      }
     if (! qgs_image_envelope_ ) return false;
+
+    QgsRasterLayer * hit_image;
+    QString cnn_path = QString("%1/cam%2/cnn/%3.tif").arg(config->getProjectPath()).arg(strCam).arg(strFile);
+    QFileInfo info (cnn_path);
+    qDebug() << "Trying to open CNN hit image " << cnn_path;
+    if ( !info.isFile() || !info.isReadable() ) {
+        qDebug() << "cnn hit image invalid file  " << cnn_path;
+    } else {
+        QString basePath = info.filePath();
+        QString baseName = info.fileName();
+        hit_image = new QgsRasterLayer(basePath,baseName);
+        if (!hit_image->isValid()) {
+            delete hit_image;
+            hit_image = 0;
+        }
+    }
 
     QList<QgsField> fields;
     fields.append(QgsField("CAM",     QVariant::Int,    "Kamera"));
@@ -230,6 +295,7 @@ bool OvrMapCanvas::openImageTiles(QString strCam, QString strFile) {
                               imgCanvas->height()-100,
                               x1, y1);
 
+
     QgsRectangle r0(x0, y0, x1, y1);
     double utmTileWidth  = r0.width();
     double utmTileHeight = r0.height();
@@ -249,6 +315,7 @@ bool OvrMapCanvas::openImageTiles(QString strCam, QString strFile) {
     } else {
         return false;
     }
+//    polygonize(strCam, strFile);
     tileFeatureIds.clear();int fcnt = 1;
      for(int y = numY; y >=0 ; y-- ) {
             for(int x = 0; x < (numX+1); x++ ) {
@@ -256,7 +323,16 @@ bool OvrMapCanvas::openImageTiles(QString strCam, QString strFile) {
             y0 = offsY + y*utmTileHeight;
             x1 = x0 + utmTileWidth;
             y1 = y0 + utmTileHeight;
-            QgsGeometry* geom = QgsGeometry::fromRect(QgsRectangle(x0, y0, x1, y1));
+            QgsRectangle rectangle = QgsRectangle(x0, y0, x1, y1);
+            QgsGeometry* geom = QgsGeometry::fromRect(rectangle);
+            /*
+             * check hitimage on rectangle
+             */
+            int max_value = hit_image->dataProvider()->bandStatistics(config->getGreenChannel(), QgsRasterBandStats::Max, rectangle, 0).maximumValue;
+            qDebug() << max_value;
+            if (max_value==0)
+                continue;
+
             QgsFeature fet = QgsFeature(qgs_image_tiles_->dataProvider()->fields());
             fet.setGeometry( geom );
             done = done && fet.setAttribute("CAM",strCam.toInt());

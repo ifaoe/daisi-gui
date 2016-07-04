@@ -13,6 +13,7 @@
 #include <qgsvectordataprovider.h>
 #include <qgsmaptool.h>
 #include <qgsmaptoolemitpoint.h>
+#include <qgsrasterlayer.h>
 #include "db.h"
 #include "ui_mainwindow.h"
 
@@ -74,6 +75,8 @@ class OvrMapCanvas : public QgsMapCanvas
         int selTileId = -1;
         int curTile = -1;
         QList<int> tileFeatureIds;
+
+        QgsGeometry * polygonize(const QString & camera, const QString & image);
 
 };
 
