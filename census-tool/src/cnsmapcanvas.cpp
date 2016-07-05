@@ -82,6 +82,7 @@ CnsMapCanvas::CnsMapCanvas(QWidget *parent,
             this, SLOT( doUpdateStatus()));
 
     click_timer.start();
+    tile_timer.start();
 
     // Initialisierung des ImageLayer der Karte
     qgis_image_layer_ = 0;
@@ -263,11 +264,15 @@ void CnsMapCanvas::doHandleKeyReleased(QKeyEvent *keyEvent) {
         keyShift = false;
         qDebug() << "MCVS KEY SHIFT MODE OF";
     }
-    if (keyEvent->key() == Qt::Key_Space && !keyShift) {
+    if (keyEvent->key() == Qt::Key_Space && !keyShift && (tile_timer.elapsed() > 1000)) {
+        tile_timer.restart();
         ovrCanvas->doSelectNextTile();
     }
     if (keyEvent->key() == Qt::Key_Space && keyShift) {
         ovrCanvas->doSelectPrevTile();
+    }
+    if (keyEvent->key() == Qt::Key_Return) {
+        ovrCanvas->selectNextImage();
     }
 }
 

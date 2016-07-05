@@ -34,7 +34,7 @@ class OvrMapCanvas : public QgsMapCanvas
         bool openImageEnvelope(QString strCam, QString strFile, QgsRectangle imgExt);
         bool saveRawTile(bool insert);
         bool readRawTile();
-
+        void selectNextImage();
     signals:
         
     public slots:
@@ -65,6 +65,8 @@ class OvrMapCanvas : public QgsMapCanvas
         double  curTileUX  = 0;
         double  curTileUY  = 0;
         QDateTime rawImgTileTm = QDateTime::currentDateTimeUtc();
+
+        QList<int> tile_list;
 
 
         QgsMapLayerRegistry* qgsLyrRegistry = 0;

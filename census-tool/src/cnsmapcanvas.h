@@ -187,6 +187,7 @@ private:
     QgsCoordinateTransform qgsTrfm2LonLat;
 
     QTime click_timer;
+    QTime tile_timer;
 
     QgsMapToolPan       *qgsToolPan  = 0;
     QgsMapToolEmitPoint *qgsToolPoint = 0;

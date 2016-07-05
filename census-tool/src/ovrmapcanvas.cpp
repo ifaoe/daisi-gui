@@ -34,40 +34,35 @@ void OvrMapCanvas::doSelectFirstTile() {
 }
 // ----------------------------------------------------------------------
 void OvrMapCanvas::doSelectNextTile() {
-    if (curTile<tileFeatureIds.size()) {
-    	curTile++;
-    	doSelectTile(curTile);
+    if (!tile_list.empty()) {
+        curTile = tile_list.first();
+        doSelectTile(curTile);
     } else {
-        QMessageBox::StandardButton reply;
-        reply = QMessageBox::question(this,trUtf8("Ende des Bildes"),trUtf8("Soll das nächste Bild geladen werden? (Aktuelles Bild wird als fertig markiert!)"),
-                                      QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-
-
-
-        if(reply == QMessageBox::Yes) {
-            int rawImgID = -1;
-            QString rawImgTmWhen = "";
-            QString rawImgTmSeen = "";
-            db->readRawImage(config->getCurrentCam(), config->getCurrentImage(), config->getUser(), rawImgID, rawImgTmWhen,
-            		rawImgTmSeen);
-            if (!db->writeImageDone(1, rawImgID)) {
-            	QMessageBox warning;
-            	warning.setText("Konnte Daten nicht in die Datenbankschreiben.");
-            	warning.setInformativeText("Bitte in Kürze nocheinmal versuchen.");
-            	warning.setStandardButtons(QMessageBox::Ok);
-            	return;
-            }
-            int curRow = ui->image_table->selectionModel()->selectedRows().at(0).row();
-            if (curRow < ui->image_table->model()->rowCount()) {
-            	QModelIndex newRow =ui->image_table->selectionModel()->model()->index(curRow+1,0);
-                ui->image_table->selectionModel()->select(
-                		newRow, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
-            }
-        } else {
+        int rawImgID = -1;
+        QString rawImgTmWhen = "";
+        QString rawImgTmSeen = "";
+        db->readRawImage(config->getCurrentCam(), config->getCurrentImage(), config->getUser(), rawImgID, rawImgTmWhen,
+                rawImgTmSeen);
+        if (!db->writeImageDone(1, rawImgID)) {
+            QMessageBox warning;
+            warning.setText("Konnte Daten nicht in die Datenbankschreiben.");
+            warning.setInformativeText("Bitte in Kürze nocheinmal versuchen.");
+            warning.setStandardButtons(QMessageBox::Ok);
             return;
         }
+        selectNextImage();
     }
 }
+
+void OvrMapCanvas::selectNextImage() {
+    int curRow = ui->image_table->selectionModel()->selectedRows().at(0).row();
+    if (curRow < ui->image_table->model()->rowCount()) {
+        QModelIndex newRow =ui->image_table->selectionModel()->model()->index(curRow+1,0);
+        ui->image_table->selectionModel()->select(
+                newRow, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+    }
+}
+
 // ----------------------------------------------------------------------
 void OvrMapCanvas::doSelectPrevTile() {
     if (curTile>1) {
@@ -135,6 +130,7 @@ bool OvrMapCanvas:: readRawTile() {
 
 // ----------------------------------------------------------------------
 void OvrMapCanvas::doSelectTile(int num) {
+    tile_list.removeOne(num);
     qgs_image_tiles_->removeSelection();
     if (!qgs_image_tiles_ ) return;
     saveRawTile(false);
@@ -157,6 +153,7 @@ void OvrMapCanvas::doSelectTile(int num) {
            imgCanvas->setFocus();
        }
     }
+    imgCanvas->refresh();
 }
 // ----------------------------------------------------------------------
 void OvrMapCanvas::doCanvasClicked(const QgsPoint &point,
@@ -175,16 +172,17 @@ void OvrMapCanvas::doCanvasClicked(const QgsPoint &point,
        QgsGeometry* tileGeom = tileFeature.geometry();
        if ( tileGeom->contains(pntGeom)) {
            selTileId = tileFeature.id();
-           qgs_image_tiles_->select(selTileId);
-           curTile=tileFeature.attribute("IX").toInt();
-           curTileW = tileGeom->boundingBox().width();
-           curTileH = tileGeom->boundingBox().height();
-           curTileUX = tileGeom->boundingBox().center().x();
-           curTileUY = tileGeom->boundingBox().center().y();
-           isCurTile = true;
-           readRawTile();
-           imgCanvas->doCenter1by1(tileGeom->boundingBox().center());
-           imgCanvas->setFocus();
+           doSelectTile(selTileId);
+//           qgs_image_tiles_->select(selTileId);
+//           curTile=tileFeature.attribute("IX").toInt();
+//           curTileW = tileGeom->boundingBox().width();
+//           curTileH = tileGeom->boundingBox().height();
+//           curTileUX = tileGeom->boundingBox().center().x();
+//           curTileUY = tileGeom->boundingBox().center().y();
+//           isCurTile = true;
+//           readRawTile();
+//           imgCanvas->doCenter1by1(tileGeom->boundingBox().center());
+//           imgCanvas->setFocus();
        }
     }
 }
@@ -330,6 +328,7 @@ bool OvrMapCanvas::openImageTiles(QString strCam, QString strFile) {
              */
             if (hit_image != 0) {
                 int max_value = hit_image->dataProvider()->bandStatistics(config->getGreenChannel(), QgsRasterBandStats::Max, rectangle, 0).maximumValue;
+                qDebug() << "max_value: " << max_value;
                 if (max_value==0)
                     continue;
             }
@@ -354,6 +353,7 @@ bool OvrMapCanvas::openImageTiles(QString strCam, QString strFile) {
                 tileFeatureIds.append(fet.id());
                 qgs_image_tiles_->addFeature(fet,false);
             }
+            tile_list.append(fcnt);
         }
     }
     if (hit_image!=0)
