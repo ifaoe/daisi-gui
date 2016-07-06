@@ -41,7 +41,6 @@ class OvrMapCanvas : public QgsMapCanvas
         void doCanvasClicked(const QgsPoint &point, Qt::MouseButton button);
         void doSelectFirstTile();
         void doSelectNextTile();
-        void doSelectPrevTile();
         void doSelectTile(int num);
         int currentTile() {return curTile;}
 
@@ -67,19 +66,18 @@ class OvrMapCanvas : public QgsMapCanvas
         QDateTime rawImgTileTm = QDateTime::currentDateTimeUtc();
 
         QList<int> tile_list;
+        int max_tiles;
 
 
         QgsMapLayerRegistry* qgsLyrRegistry = 0;
         QgsVectorLayer* qgs_image_envelope_ = 0 ;
         QgsVectorLayer* qgs_image_tiles_ = 0 ;
+        QgsRasterLayer *hit_image = 0;
 
         QgsMapToolEmitPoint *qgsToolPoint = 0;
         int selTileId = -1;
         int curTile = -1;
         QList<int> tileFeatureIds;
-
-        QgsGeometry * polygonize(const QString & camera, const QString & image);
-
 };
 
 #endif // OVRMAPCANVAS_H

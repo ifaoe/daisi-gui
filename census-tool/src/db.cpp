@@ -285,21 +285,21 @@ QStringList Database::getSessionList() {
     return sessionlist;
 }
 
-QStringList Database::getSessionParameters(const QString & session) {
+bool Database::getSessionParameters(const QString & session) {
     QStringList return_list;
-    QString query =
-            "SELECT flight_id, utm_sector, path FROM "
-            "projects where project_id='" + session + "'";
-    qDebug() << query;
-    QSqlQuery req;
-    if ( ! req.exec(query) ) {
-    	qDebug() << req.lastError().text();
-        return return_list;
-    }
-    if(req.next())
-        for (int i=0; i<3; i++)
-            return_list.append(QString(req.value(i).toString()));
-    return return_list;
+    QSqlQuery query;
+    query.prepare("SELECT flight_id, utm_sector, path, cnn_support FROM projects WHERE project_id=:project");
+    query.bindValue(":project", session);
+    if (!query.exec())
+        return false;
+    if (!query.next())
+        return false;
+
+    config->setFlightId(query.value(0).toString());
+    config->setUtmSector(query.value(1).toInt());
+    config->setProjectPath(query.value(2).toString());
+    config->setCnnSupport(query.value(3).toBool());
+    return true;
 }
 
 SqlReadyTableModel * Database::getImageView() {

@@ -79,7 +79,7 @@ public:
 
     QStringList getSessionList();
 
-    QStringList getSessionParameters(const QString & session);
+    bool getSessionParameters(const QString & session);
 
     SqlReadyTableModel * getImageView();
 

@@ -242,8 +242,6 @@ void MainWindow::handleImageSelection()
 	int currentRow = imgSelector->selectedRows().at(0).row();
     selected_file = image_table_model->data(currentRow, image_table_model->fieldIndex("img")).toString();
     selected_cam  = image_table_model->data(currentRow, image_table_model->fieldIndex("cam")).toString();
-    config->current_cam = selected_cam;
-    config->current_image = selected_file;
     bool image_done = image_table_model->data(currentRow, image_table_model->fieldIndex("examined")).toBool();
     bool analysed = image_table_model->data(currentRow, image_table_model->fieldIndex("analysed")).toBool();
 
@@ -285,7 +283,8 @@ void MainWindow::handleImageSelection()
 	  this->setWindowTitle("BirdCensus - Kamera "
 			  + selected_cam +" - "+selected_file);
 	  ovrCanvas->doSelectFirstTile();
-
+      config->current_cam = selected_cam;
+      config->current_image = selected_file;
     if (config->getProjectId().startsWith("Testdatensatz") && !config->getAdmin())
         object_table_model->setFilter(QString("session='%1' AND cam='%2' AND img='%3' AND usr='%4'")
                                       .arg(config->getProjectId()).arg(config->getCurrentCam()).arg(config->getCurrentImage()).arg(config->getUser()));
@@ -341,11 +340,7 @@ void MainWindow::handleSessionSelection() {
 	config->setProjectId(ui->cmbSession->currentText());
 	if (config->getProjectId().isEmpty())
 		return;
-    QStringList project_parameters = db->getSessionParameters(config->getProjectId());
-    qDebug() << config->getProjectId();
-    config->setFlightId(project_parameters[0]);
-    config->setUtmSector(project_parameters[1].toInt());
-    config->setProjectPath(project_parameters[2]);
+    db->getSessionParameters(config->getProjectId());
 
     /*
      * Filtern nach session und anschließend nach project_list.

@@ -70,7 +70,8 @@ public:
 	int getTileWidth();
 	int getTileHeight();
 	double getSelectDistance();
-
+    void setCnnSupport(bool support) { cnn_support = support; }
+    bool cnnSupport() {return cnn_support; }
 
 	private:
 	QString user;
@@ -78,6 +79,7 @@ public:
 	QString flight_id;
 	int utm_sector;
 	QString project_path;
+    bool cnn_support = false;
 };
 
 //const QString ACFG_SQL_QRY_READ_IMAGES =

@@ -30,7 +30,7 @@ OvrMapCanvas::OvrMapCanvas(QWidget *parent,
 
 // ----------------------------------------------------------------------
 void OvrMapCanvas::doSelectFirstTile() {
-    doSelectTile(1);
+    doSelectNextTile();
 }
 // ----------------------------------------------------------------------
 void OvrMapCanvas::doSelectNextTile() {
@@ -38,6 +38,7 @@ void OvrMapCanvas::doSelectNextTile() {
         curTile = tile_list.first();
         doSelectTile(curTile);
     } else {
+        qDebug() << "No more tiles to load. Next image.";
         int rawImgID = -1;
         QString rawImgTmWhen = "";
         QString rawImgTmSeen = "";
@@ -56,18 +57,11 @@ void OvrMapCanvas::doSelectNextTile() {
 
 void OvrMapCanvas::selectNextImage() {
     int curRow = ui->image_table->selectionModel()->selectedRows().at(0).row();
+    qDebug() << "Current row: " << curRow << " from " << ui->image_table->model()->rowCount() << " rows.";
     if (curRow < ui->image_table->model()->rowCount()) {
         QModelIndex newRow =ui->image_table->selectionModel()->model()->index(curRow+1,0);
         ui->image_table->selectionModel()->select(
                 newRow, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
-    }
-}
-
-// ----------------------------------------------------------------------
-void OvrMapCanvas::doSelectPrevTile() {
-    if (curTile>1) {
-        curTile--;
-        doSelectTile(curTile);
     }
 }
 
@@ -130,6 +124,9 @@ bool OvrMapCanvas:: readRawTile() {
 
 // ----------------------------------------------------------------------
 void OvrMapCanvas::doSelectTile(int num) {
+    if(!tile_list.contains(num))
+        return;
+    qDebug() << "Loading tile " << num << " from " << max_tiles << " tiles.";
     tile_list.removeOne(num);
     qgs_image_tiles_->removeSelection();
     if (!qgs_image_tiles_ ) return;
@@ -172,17 +169,18 @@ void OvrMapCanvas::doCanvasClicked(const QgsPoint &point,
        QgsGeometry* tileGeom = tileFeature.geometry();
        if ( tileGeom->contains(pntGeom)) {
            selTileId = tileFeature.id();
-           doSelectTile(selTileId);
-//           qgs_image_tiles_->select(selTileId);
-//           curTile=tileFeature.attribute("IX").toInt();
-//           curTileW = tileGeom->boundingBox().width();
-//           curTileH = tileGeom->boundingBox().height();
-//           curTileUX = tileGeom->boundingBox().center().x();
-//           curTileUY = tileGeom->boundingBox().center().y();
-//           isCurTile = true;
-//           readRawTile();
-//           imgCanvas->doCenter1by1(tileGeom->boundingBox().center());
-//           imgCanvas->setFocus();
+//           doSelectTile(selTileId);
+           qgs_image_tiles_->select(selTileId);
+           curTile=tileFeature.attribute("IX").toInt();
+           curTileW = tileGeom->boundingBox().width();
+           curTileH = tileGeom->boundingBox().height();
+           curTileUX = tileGeom->boundingBox().center().x();
+           curTileUY = tileGeom->boundingBox().center().y();
+           isCurTile = true;
+           readRawTile();
+           imgCanvas->doCenter1by1(tileGeom->boundingBox().center());
+           imgCanvas->setFocus();
+           tile_list.removeOne(selTileId);
        }
     }
 }
@@ -195,79 +193,15 @@ void OvrMapCanvas::refreshLayerPaintList() {
       this->setLayerSet(list);
 }
 
-QgsGeometry * OvrMapCanvas::polygonize(const QString & camera, const QString & image) {
-    /*
-     * try to open CNN hit image
-     */
-    QgsRasterLayer * hit_image;
-    QString cnn_path = QString("%1/cam%2/cnn/%3.tif").arg(config->getProjectPath()).arg(camera).arg(image);
-    QFileInfo info (cnn_path);
-    qDebug() << "Trying to open CNN hit image " << cnn_path;
-    if ( !info.isFile() || !info.isReadable() ) {
-        qDebug() << "cnn hit image invalid file  " << cnn_path;
-        return 0;
-    }
-    QString basePath = info.filePath();
-    QString baseName = info.fileName();
-    hit_image = new QgsRasterLayer(basePath,baseName);
-    if (!hit_image->isValid()) {
-        delete hit_image;
-        return 0;
-    }
-    /*
-     * build geometry from raster
-     */
-    int raster_size_x = hit_image->width()/hit_image->rasterUnitsPerPixelX();
-    int raster_size_y = hit_image->height()/hit_image->rasterUnitsPerPixelY();
-    int minimum_x = hit_image->extent().xMinimum();
-    int minimum_y = hit_image->extent().yMinimum();
-    QgsRasterBlock * block = hit_image->dataProvider()->block(config->getGreenChannel(), hit_image->extent(), hit_image->width(), hit_image->height());
-    qDebug() << raster_size_x << block->width() << raster_size_y << block->height();
-    QgsGeometry * geometry = QgsGeometry::fromRect(hit_image->extent());\
-    QgsMultiPolygon polygon;
-    for (int x=0; x<raster_size_x; x++) {
-        for (int y=0; y<raster_size_y; y++) {
-            if (block->value(x,y)<200) {
-                double min_x = minimum_x + hit_image->rasterUnitsPerPixelX()*(x-0.5);
-                double max_x = minimum_x + hit_image->rasterUnitsPerPixelX()*(x+0.5);
-                double min_y = minimum_y + hit_image->rasterUnitsPerPixelY()*(y-0.5);
-                double max_y = minimum_y + hit_image->rasterUnitsPerPixelY()*(y+0.5);
-//                polygon.append(QgsGeometry::fromRect(QgsRectangle(min_x, min_y, max_x, max_y))->asPolygon());
-                geometry = geometry->difference(QgsGeometry::fromRect(QgsRectangle(min_x, min_y, max_x, max_y)));
-            }
-        }
-    }
-//    geometry = QgsGeometry::fromMultiPolygon(polygon)->buffer(1e-5,0)->simplify(0.01);
-    qDebug() << geometry->exportToWkt();
-    delete hit_image;
-    return geometry;
-}
-
 // ----------------------------------------------------------------------
 bool OvrMapCanvas::openImageTiles(QString strCam, QString strFile) {
-
+    tile_list.clear();
     if ( qgs_image_tiles_ ) {
          QString id = qgs_image_tiles_->id();
          qgsLyrRegistry->removeMapLayer(id);
          qgs_image_tiles_ = 0;
      }
     if (! qgs_image_envelope_ ) return false;
-
-    QgsRasterLayer * hit_image = 0;
-    QString cnn_path = QString("%1/cam%2/cnn/%3.tif").arg(config->getProjectPath()).arg(strCam).arg(strFile);
-    QFileInfo info (cnn_path);
-    qDebug() << "Trying to open CNN hit image " << cnn_path;
-    if ( !info.isFile() || !info.isReadable() ) {
-        qDebug() << "cnn hit image invalid file  " << cnn_path;
-    } else {
-        QString basePath = info.filePath();
-        QString baseName = info.fileName();
-        hit_image = new QgsRasterLayer(basePath,baseName);
-        if (!hit_image->isValid()) {
-            delete hit_image;
-            hit_image = 0;
-        }
-    }
 
     QList<QgsField> fields;
     fields.append(QgsField("CAM",     QVariant::Int,    "Kamera"));
@@ -326,10 +260,10 @@ bool OvrMapCanvas::openImageTiles(QString strCam, QString strFile) {
             /*
              * check hitimage on rectangle
              */
-            if (hit_image != 0) {
-                int max_value = hit_image->dataProvider()->bandStatistics(config->getGreenChannel(), QgsRasterBandStats::Max, rectangle, 0).maximumValue;
-                qDebug() << "max_value: " << max_value;
-                if (max_value==0)
+            if (imgCanvas->hitImage() != 0) {
+                int max_value_green = imgCanvas->hitImage()->dataProvider()->bandStatistics(
+                            config->getGreenChannel(), QgsRasterBandStats::Max, rectangle, 0).maximumValue;
+                if (max_value_green<=0)
                     continue;
             }
 
@@ -348,16 +282,15 @@ bool OvrMapCanvas::openImageTiles(QString strCam, QString strFile) {
             done = done && fet.setAttribute("IX",fcnt);
             if (!done) return false;
             if (geom->intersects(envGeom)) {
+                tile_list.append(fcnt);
                 int fid = ++fcnt;
                 fet.setFeatureId(fid);
                 tileFeatureIds.append(fet.id());
                 qgs_image_tiles_->addFeature(fet,false);
             }
-            tile_list.append(fcnt);
         }
     }
-    if (hit_image!=0)
-        delete hit_image;
+    max_tiles = tile_list.size();
     qgs_image_tiles_->commitChanges();
 
     QgsStringMap properties;

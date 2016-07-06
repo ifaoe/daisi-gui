@@ -57,6 +57,8 @@ CnsMapCanvas::CnsMapCanvas(QWidget *parent,
     connect(ui->btnMapDigitize, SIGNAL(clicked()), this, SLOT(doModeDigitize()));
     connect(ui->btnMapSelect, SIGNAL(clicked()), this, SLOT(doModeSelect()));
 
+    connect(ui->horizontalSlider_cnn, SIGNAL(sliderReleased()), this, SLOT(updateCnnTransparency()));
+
 
     // Verbindung des qgsMapToolPoint mit der Rechenroutine
     connect(// Quelle der Nachricht qgsMapToolPoint->canvasClicked(..
@@ -268,9 +270,6 @@ void CnsMapCanvas::doHandleKeyReleased(QKeyEvent *keyEvent) {
         tile_timer.restart();
         ovrCanvas->doSelectNextTile();
     }
-    if (keyEvent->key() == Qt::Key_Space && keyShift) {
-        ovrCanvas->doSelectPrevTile();
-    }
     if (keyEvent->key() == Qt::Key_Return) {
         ovrCanvas->selectNextImage();
     }
@@ -331,6 +330,7 @@ bool CnsMapCanvas::doCalcWorldPos(const int pixX ,const int pixY,
 // --------------------------------------------------------------------------
 bool CnsMapCanvas::doOpenRasterLayer(QString cam, QString file) {
 	bool done = true;
+    openHitImageLayer(cam, file);
     done = done && openPolyLayer(cam, file);
     done = done && openRasterLayer(config->getProjectPath(), cam, file);
 
@@ -513,6 +513,45 @@ bool CnsMapCanvas::openRasterLayer(const QString imagePath,
 
 }
 
+bool CnsMapCanvas::openHitImageLayer(const QString & camera, const QString & image) {
+    if (qgis_hit_image != 0) {
+        qgsLayerRegistry->removeMapLayer(qgis_hit_image->id());
+        qgis_hit_image = 0;
+    }
+
+    if (config->cnnSupport()) {
+        QString cnn_path = QString("%1/cam%2/cnn/%3.tif").arg(config->getProjectPath()).arg(camera).arg(image);
+        QFileInfo info (cnn_path);
+        qDebug() << "Trying to open CNN hit image " << cnn_path;
+        if ( !info.isFile() || !info.isReadable() ) {
+            qDebug() << "cnn hit image invalid file  " << cnn_path;
+            return false;
+        } else {
+            QString basePath = info.filePath();
+            QString baseName = info.fileName();
+            qgis_hit_image = new QgsRasterLayer(basePath,baseName);
+            if (!qgis_hit_image->isValid()) {
+                qDebug() << "cnn hit image invalid raster  " << cnn_path;
+                qgsLayerRegistry->removeMapLayer(qgis_hit_image->id());
+                qgis_hit_image = 0;
+                return false;
+            }
+        }
+    }
+    updateCnnTransparency();
+    return true;
+}
+
+void CnsMapCanvas::updateCnnTransparency() {
+    if (qgis_hit_image == 0)
+        return;
+    double opac = 1-ui->horizontalSlider_cnn->value()/100.0;
+    qDebug() << "Set hit image opacity to " << opac;
+    qgis_hit_image->renderer()->setOpacity(opac);
+    qgis_hit_image->reload();
+    refresh();
+}
+
 bool CnsMapCanvas::openPolyLayer(QString strCam, QString strFile) {
     if ( qgis_poly_layer_!=0 ) {
     	qgsLayerRegistry->removeMapLayer(qgis_poly_layer_->id());
@@ -556,11 +595,20 @@ bool CnsMapCanvas::refreshLayerSet() {
 
 	QList<QgsMapCanvasLayer> layerSet;
 
-	qgsLayerRegistry->addMapLayer(qgis_poly_layer_,false,true);
-	qgsLayerRegistry->addMapLayer(qgis_image_layer_,false,true);
+    if (qgis_hit_image != 0) {
+        qgsLayerRegistry->addMapLayer(qgis_hit_image);
+        layerSet.append(qgis_hit_image);
+    }
 
-	layerSet.append(qgis_poly_layer_);
-	layerSet.append(qgis_image_layer_);
+    if (qgis_poly_layer_ != 0) {
+        qgsLayerRegistry->addMapLayer(qgis_poly_layer_,false,true);
+        layerSet.append(qgis_poly_layer_);
+    }
+
+    if (qgis_image_layer_ != 0) {
+        qgsLayerRegistry->addMapLayer(qgis_image_layer_,false,true);
+        layerSet.append(qgis_image_layer_);
+    }
 
 	qgsLyrRegistry->reloadAllLayers();
 	setLayerSet(layerSet);

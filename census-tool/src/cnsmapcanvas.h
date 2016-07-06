@@ -74,6 +74,7 @@ public:
     bool SelectObjectByLocation(const QgsPoint & point);
     bool SelectObjectById(int rcns_id);
     int current_object_selection() {return current_object_selection_;}
+    QgsRasterLayer * hitImage() {return qgis_hit_image;}
 signals:
     
 public slots:
@@ -174,7 +175,8 @@ private:
     int   cvImageBirdStatus = 0;
     QgsVectorLayer* qgis_edit_layer_ = 0;
     QgsVectorLayer* qgis_poly_layer_ = 0;
-    QgsRasterLayer* qgis_image_layer_ = 0 ;
+    QgsRasterLayer* qgis_image_layer_ = 0;
+    QgsRasterLayer* qgis_hit_image = 0;
     QgsRasterDataProvider* qgsImgProvider = 0;
     QgsMapLayerRegistry * qgsLayerRegistry;
 
@@ -200,9 +202,13 @@ private:
 
     bool openPolyLayer(QString strCam, QString strFile);
 
+    bool openHitImageLayer(const QString & camera, const QString & image);
+
     bool refreshLayerSet();
 
     void UpdateObjectSelection();
+private slots:
+    void updateCnnTransparency();
 };
 
 #endif // CNSMAPCANVAS_H
