@@ -1,13 +1,42 @@
-build/
-Makefile
-*.a
+# C++ objects and libs
+
+*.slo
+*.lo
 *.o
-ui_*.h
+*.a
+*.la
+*.lai
+*.so
+*.dll
+*.dylib
+
+# Qt-es
+
+/.qmake.cache
+/.qmake.stash
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+*.moc
 moc_*.cpp
 qrc_*.cpp
-daisi-gui.pro.user
-*/Makefile
-census-tool/daisi-census-tool
-id-tool/daisi-id-tool
-image-property-gui/daisi-img-prop
-reference-gui/daisi-reference
+ui_*.h
+Makefile*
+*build-*
+
+# QtCreator
+
+*.autosave
+
+# QtCtreator Qml
+*.qmlproject.user
+*.qmlproject.user.*
+
+# QtCtreator CMake
+CMakeLists.txt.user
+
+*census-tool
+*id-tool
+*daisi-img-prop
+*daisi-reference
