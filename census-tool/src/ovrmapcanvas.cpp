@@ -34,6 +34,7 @@ void OvrMapCanvas::doSelectFirstTile() {
 }
 // ----------------------------------------------------------------------
 void OvrMapCanvas::doSelectNextTile() {
+    tile_list.removeOne(curTile);
     if (!tile_list.empty()) {
         curTile = tile_list.first();
         doSelectTile(curTile);
@@ -124,10 +125,6 @@ bool OvrMapCanvas:: readRawTile() {
 
 // ----------------------------------------------------------------------
 void OvrMapCanvas::doSelectTile(int num) {
-    if(!tile_list.contains(num))
-        return;
-    qDebug() << "Loading tile " << num << " from " << max_tiles << " tiles.";
-    tile_list.removeOne(num);
     qgs_image_tiles_->removeSelection();
     if (!qgs_image_tiles_ ) return;
     saveRawTile(false);
@@ -180,7 +177,6 @@ void OvrMapCanvas::doCanvasClicked(const QgsPoint &point,
            readRawTile();
            imgCanvas->doCenter1by1(tileGeom->boundingBox().center());
            imgCanvas->setFocus();
-           tile_list.removeOne(selTileId);
        }
     }
 }
