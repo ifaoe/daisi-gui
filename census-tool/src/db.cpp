@@ -286,10 +286,10 @@ QStringList Database::getSessionList() {
 }
 
 bool Database::getSessionParameters(const QString & session) {
-    QStringList return_list;
     QSqlQuery query;
-    query.prepare("SELECT flight_id, utm_sector, path, cnn_support FROM projects WHERE project_id=:project");
+    query.prepare("SELECT flight_id, utm_sector, path, cnn_support FROM projects WHERE project_id=:project AND location=:location");
     query.bindValue(":project", session);
+    query.bindValue(":location", config->location());
     if (!query.exec())
         return false;
     if (!query.next())
