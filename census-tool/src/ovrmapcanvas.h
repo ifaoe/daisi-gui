@@ -58,7 +58,6 @@ class OvrMapCanvas : public QgsMapCanvas
         QString rawImgTileUX = "";
         QString rawImgTileUY = "";
 
-        bool isCurTile  = false;
         double  curTileW  = 0;
         double  curTileH  = 0;
         double  curTileUX  = 0;
@@ -66,6 +65,7 @@ class OvrMapCanvas : public QgsMapCanvas
         QDateTime rawImgTileTm = QDateTime::currentDateTimeUtc();
 
         QList<int> tile_list;
+        QList<int> tile_list_done;
         int max_tiles;
 
 
@@ -77,7 +77,6 @@ class OvrMapCanvas : public QgsMapCanvas
         QgsMapToolEmitPoint *qgsToolPoint = 0;
         int selTileId = -1;
         int curTile = -1;
-        QList<int> tileFeatureIds;
 };
 
 #endif // OVRMAPCANVAS_H

@@ -34,7 +34,12 @@ void OvrMapCanvas::doSelectFirstTile() {
 }
 // ----------------------------------------------------------------------
 void OvrMapCanvas::doSelectNextTile() {
+    if (tile_list.first() != curTile) {
+        doSelectTile(tile_list.first());
+        return;
+    }
     tile_list.removeOne(curTile);
+    tile_list_done.append(curTile);
     if (!tile_list.empty()) {
         curTile = tile_list.first();
         doSelectTile(curTile);
@@ -68,7 +73,7 @@ void OvrMapCanvas::selectNextImage() {
 
 // ----------------------------------------------------------------------
 bool OvrMapCanvas:: saveRawTile(bool insert) {
-    if (isCurTile && !insert) {
+    if (!insert) {
       QDateTime tmNow  = QDateTime::currentDateTimeUtc();
       QString   tmSeen = QString::number(rawImgTileTm.secsTo(tmNow));
       QString   tmWhen = rawImgTileTm.toString(Qt::ISODate);
@@ -130,21 +135,19 @@ void OvrMapCanvas::doSelectTile(int num) {
     saveRawTile(false);
     QgsFeatureIterator iter = qgs_image_tiles_->dataProvider()->getFeatures();
     QgsFeature tileFeature;
-    isCurTile = false;
-    while (iter.nextFeature(tileFeature) && !isCurTile) {
-       if ( tileFeature.attribute("IX").toInt() == num) {
+    while (iter.nextFeature(tileFeature)) {
+       if ( tileFeature.id() == num) {
            qgs_image_tiles_->select(tileFeature.id());
            QgsGeometry* tileGeom = tileFeature.geometry();
-           isCurTile = true;
            curTileW = tileGeom->boundingBox().width();
            curTileH = tileGeom->boundingBox().height();
            curTileUX = tileGeom->boundingBox().center().x();
            curTileUY = tileGeom->boundingBox().center().y();
            curTile = num;
-           isCurTile = true;
            readRawTile();
            imgCanvas->doCenter1by1(tileGeom->boundingBox().center());
            imgCanvas->setFocus();
+           break;
        }
     }
     imgCanvas->refresh();
@@ -152,31 +155,29 @@ void OvrMapCanvas::doSelectTile(int num) {
 // ----------------------------------------------------------------------
 void OvrMapCanvas::doCanvasClicked(const QgsPoint &point,
                                   Qt::MouseButton button) {
-    selTileId = -1;
 
     if (!(qgs_image_tiles_) ) return;
     saveRawTile(false);
     qgs_image_tiles_->removeSelection();
     if ( button != Qt::LeftButton ) return;
     QgsFeatureIterator iter = qgs_image_tiles_->dataProvider()->getFeatures();
-    isCurTile = false;
     QgsFeature tileFeature;
     QgsGeometry* pntGeom = QgsGeometry::fromPoint(point);
-    while (iter.nextFeature(tileFeature) && !isCurTile) {
+    while (iter.nextFeature(tileFeature)) {
        QgsGeometry* tileGeom = tileFeature.geometry();
        if ( tileGeom->contains(pntGeom)) {
-           selTileId = tileFeature.id();
-//           doSelectTile(selTileId);
-           qgs_image_tiles_->select(selTileId);
-           curTile=tileFeature.attribute("IX").toInt();
+           if (tileFeature.id() == curTile)
+               break;
+           qgs_image_tiles_->select(tileFeature.id());
+           curTile = tileFeature.id();
            curTileW = tileGeom->boundingBox().width();
            curTileH = tileGeom->boundingBox().height();
            curTileUX = tileGeom->boundingBox().center().x();
            curTileUY = tileGeom->boundingBox().center().y();
-           isCurTile = true;
            readRawTile();
            imgCanvas->doCenter1by1(tileGeom->boundingBox().center());
            imgCanvas->setFocus();
+           break;
        }
     }
 }
@@ -192,6 +193,8 @@ void OvrMapCanvas::refreshLayerPaintList() {
 // ----------------------------------------------------------------------
 bool OvrMapCanvas::openImageTiles(QString strCam, QString strFile) {
     tile_list.clear();
+    tile_list_done.clear();
+    curTile = -1;
     if ( qgs_image_tiles_ ) {
          QString id = qgs_image_tiles_->id();
          qgsLyrRegistry->removeMapLayer(id);
@@ -233,7 +236,6 @@ bool OvrMapCanvas::openImageTiles(QString strCam, QString strFile) {
     int numY = floor(ttlHeight/utmTileHeight);
     double offsX = qgs_image_envelope_->extent().xMinimum() + (ttlWidth - utmTileWidth*(numX+1) )/2;
     double offsY = qgs_image_envelope_->extent().yMinimum() + (ttlHeight - utmTileHeight*(numY+1) )/2;
-    bool done = true;
     qgs_image_tiles_->startEditing();
     // Auslesen der geometry
     QgsFeatureIterator iter = qgs_image_envelope_->dataProvider()->getFeatures();
@@ -244,7 +246,8 @@ bool OvrMapCanvas::openImageTiles(QString strCam, QString strFile) {
         return false;
     }
 //    polygonize(strCam, strFile);
-    tileFeatureIds.clear();int fcnt = 1;
+    int fcnt = 1;
+
      for(int y = numY; y >=0 ; y-- ) {
             for(int x = 0; x < (numX+1); x++ ) {
             x0 = offsX + x*utmTileWidth;
@@ -263,26 +266,23 @@ bool OvrMapCanvas::openImageTiles(QString strCam, QString strFile) {
                     continue;
             }
 
-
-            QgsFeature fet = QgsFeature(qgs_image_tiles_->dataProvider()->fields());
-            fet.setGeometry( geom );
-            done = done && fet.setAttribute("CAM",strCam.toInt());
-            done = done && fet.setAttribute("FILE",strFile);
-            done = done && fet.setAttribute("SESSION",config->getProjectId());
-            done = done && fet.setAttribute("SECTOR",config->getUtmSector());
-            done = done && fet.setAttribute("USER",config->getUser());
-            done = done && fet.setAttribute("TWIDTH",config->getTileWidth());
-            done = done && fet.setAttribute("THEIGHT",config->getTileHeight());
-            done = done && fet.setAttribute("TCOL",x);
-            done = done && fet.setAttribute("TROW",y);
-            done = done && fet.setAttribute("IX",fcnt);
-            if (!done) return false;
             if (geom->intersects(envGeom)) {
+                QgsFeature fet = QgsFeature(qgs_image_tiles_->dataProvider()->fields());
+                fet.setGeometry( geom );
+                fet.setAttribute("CAM",strCam.toInt());
+                fet.setAttribute("FILE",strFile);
+                fet.setAttribute("SESSION",config->getProjectId());
+                fet.setAttribute("SECTOR",config->getUtmSector());
+                fet.setAttribute("USER",config->getUser());
+                fet.setAttribute("TWIDTH",config->getTileWidth());
+                fet.setAttribute("THEIGHT",config->getTileHeight());
+                fet.setAttribute("TCOL",x);
+                fet.setAttribute("TROW",y);
+                fet.setAttribute("IX",fcnt);
                 tile_list.append(fcnt);
-                int fid = ++fcnt;
-                fet.setFeatureId(fid);
-                tileFeatureIds.append(fet.id());
+                fet.setFeatureId(fcnt);
                 qgs_image_tiles_->addFeature(fet,false);
+                fcnt++;
             }
         }
     }
