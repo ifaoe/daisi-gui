@@ -28,7 +28,6 @@ struct DatabaseInfo {
 
 class ConfigHandler : public QSettings{
 public:
-	void InitSettings();
     void AddDatabase(const QString & host, int port, const QString & name,const QString & user, const QString & password);
 	void setUser(const QString & user_name) { user = user_name; }
 	QString getUser() {return user;}
@@ -49,12 +48,14 @@ public:
 	QString getPreferredSession();
     void setLocation(const QString & location);
     QString location();
-    QString getSystemUser();
+    void setSystemUser(const QString & login) { system_user = login; }
+    QString getSystemUser() { return system_user; }
     int getRedChannel();
     int getGreenChannel();
     int getBlueChannel();
 private:
     QString user;
+    QString system_user;
 };
 
 #endif /* CONFIGHANDLER_H_ */

@@ -18,6 +18,7 @@
 #include "mainwindow.h"
 #include "DatabaseHandler.h"
 #include "qfusionstyle.h"
+#include <QInputDialog>
 
 int main(int argc, char *argv[])
 {
@@ -62,7 +63,6 @@ int main(int argc, char *argv[])
 //    QApplication::setDesktopSettingsAware(false);
 //    QApplication::setStyle("breeze-dark");
     ConfigHandler *config = new ConfigHandler;
-    config->InitSettings();
 
     // Qgis Pfad setzen und Provider laden
     QgsApplication::setPrefixPath("/usr", true);
@@ -70,6 +70,36 @@ int main(int argc, char *argv[])
 
     DatabaseHandler *db = new DatabaseHandler(config);
     db->OpenDatabase();
+
+    bool confirm = true;
+    QString user;
+    while (confirm) {
+        user = QInputDialog::getText(0, "Nutzername", "Bitte Nutzernamen eingeben.", QLineEdit::Normal, "", &confirm);
+        if (!confirm)
+            exit(0);
+        if (!db->checkUsername(user)) {
+            QMessageBox::warning(0, "Fehler", "Nutzer existiert nicht oder hat keine Berechtigung für das ID-Tool.");
+        } else {
+            break;
+        }
+    }
+    config->setSystemUser(user);
+    config->setUser(user);
+
+
+    QString password;
+    confirm = true;
+    while (confirm) {
+        password = QInputDialog::getText(0, "Passwort", QString::fromUtf8("Bitte Passwort für Nutzer: %1 angeben.").arg(config->getUser()), QLineEdit::Password,
+                                         "", &confirm);
+        if (!confirm)
+            exit(0);
+        if (!db->checkPassword(config->getUser(), password)) {
+            QMessageBox::warning(0, "Fehler", "Falsches Passwort.");
+        } else {
+            break;
+        }
+    }
 
     MainWindow main_window(config, db);
     if (config->getAppMaximized())

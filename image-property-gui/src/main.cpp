@@ -11,6 +11,8 @@
 #include "ConfigHandler.h"
 #include "DatabaseHandler.h"
 #include "qfusionstyle.h"
+#include <QInputDialog>
+#include <QMessageBox>
 
 int main(int argc, char * argv[]) {
     QCoreApplication::setOrganizationName("ifaoe");
@@ -51,16 +53,45 @@ int main(int argc, char * argv[]) {
 //     file.close();
 //    }
     ConfigHandler *config = new ConfigHandler;
-    config->InitSettings();
 
     DatabaseHandler * db = new DatabaseHandler(config);
     db->OpenDatabase();
 
+    bool confirm = true;
+    QString user;
+    while (confirm) {
+        user = QInputDialog::getText(0, "Nutzername", "Bitte Nutzernamen eingeben.", QLineEdit::Normal, "", &confirm);
+        if (!confirm)
+            exit(0);
+        if (!db->checkUsername(user)) {
+            QMessageBox::warning(0, "Fehler", "Nutzer existiert nicht oder hat keine Berechtigung für das ID-Tool.");
+        } else {
+            break;
+        }
+    }
+    config->setUser(user);
+
+
+    QString password;
+    confirm = true;
+    while (confirm) {
+        password = QInputDialog::getText(0, "Passwort", QString::fromUtf8("Bitte Passwort für Nutzer: %1 angeben.").arg(config->getUser()), QLineEdit::Password,
+                                         "", &confirm);
+        if (!confirm)
+            exit(0);
+        if (!db->checkPassword(config->getUser(), password)) {
+            QMessageBox::warning(0, "Fehler", "Falsches Passwort.");
+        } else {
+            break;
+        }
+    }
+
     MainWindow main_window(config, db);
-    if (config->getAppMaximized())
+    if (config->getAppMaximized()) {
         main_window.showMaximized();
-    else
+    } else {
         main_window.show();
+    }
 
 	return app.exec();
 }

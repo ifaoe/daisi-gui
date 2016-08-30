@@ -35,8 +35,3 @@ Makefile*
 
 # QtCtreator CMake
 CMakeLists.txt.user
-
-*census-tool
-*id-tool
-*daisi-img-prop
-*daisi-reference

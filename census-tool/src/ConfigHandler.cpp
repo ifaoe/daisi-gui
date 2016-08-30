@@ -17,10 +17,6 @@
 #include <QPoint>
 #include <QStringList>
 
-void ConfigHandler::InitSettings() {
-	user = QString(getenv("USER"));
-}
-
 void ConfigHandler::setLocation(const QString &location) {
     setValue("location", location);
 }
@@ -128,4 +124,8 @@ QString ConfigHandler::replaceProjectSettings(const QString & query) {
     src.replace("$(session)",project_id);
     src.replace("$(flight)",flight_id);
     return src;
+}
+
+void ConfigHandler::setUser(const QString &login) {
+    user = login;
 }

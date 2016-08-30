@@ -24,7 +24,6 @@ public:
 	 */
 	QString current_cam;
 	QString current_image;
-	void InitSettings();
 	void setAppPosition(QPoint pos);
 	QPoint getAppPosition();
 	void setAppSize(QSize size);
@@ -72,6 +71,7 @@ public:
 	double getSelectDistance();
     void setCnnSupport(bool support) { cnn_support = support; }
     bool cnnSupport() {return cnn_support; }
+    void setUser(const QString & login);
 
 	private:
 	QString user;

@@ -44,16 +44,45 @@ int main(int argc, char *argv[])
 //    }
 
     ConfigHandler* config = new ConfigHandler();
-    config->InitSettings();
 
     // Einlesen der Datenbankparameter
     Database * db = new Database(config);
 
+    db->OpenDatabase();
+
+
+    bool confirm = true;
+    QString user;
+    while (confirm) {
+        user = QInputDialog::getText(0, "Nutzername", "Bitte Nutzernamen eingeben.", QLineEdit::Normal, "", &confirm);
+        if (!confirm)
+            exit(0);
+        if (!db->checkUsername(user)) {
+            QMessageBox::warning(0, "Fehler", "Nutzer existiert nicht oder hat keine Berechtigung für das ID-Tool.");
+        } else {
+            break;
+        }
+    }
+    config->setUser(user);
+
+
+    QString password;
+    confirm = true;
+    while (confirm) {
+        password = QInputDialog::getText(0, "Passwort", QString::fromUtf8("Bitte Passwort für Nutzer: %1 angeben.").arg(config->getUser()), QLineEdit::Password,
+                                         "", &confirm);
+        if (!confirm)
+            exit(0);
+        if (!db->checkPassword(config->getUser(), password)) {
+            QMessageBox::warning(0, "Fehler", "Falsches Passwort.");
+        } else {
+            break;
+        }
+    }
+
     // Qgis Pfad setzen und Provider laden
     QgsApplication::setPrefixPath(config->getQGisPrefixPath(), true);
     QgsApplication::initQgis();
-
-    db->OpenDatabase();
 
     // Applikation starten
     MainWindow win(config, db);

@@ -105,6 +105,7 @@ private slots:
 	void HandleLocationSelection();
 	void showFilterDialog(int index);
     void selectNextObject();
+    void handlePasswordChange();
 };
 
 #endif // MAINWINDOW_H

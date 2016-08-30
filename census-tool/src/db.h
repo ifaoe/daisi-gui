@@ -41,6 +41,10 @@ public:
 
     QStringList getLocationList();
 
+    bool checkUsername(const QString & login);
+    bool checkPassword(const QString & login, const QString & password);
+    bool changePassword(const QString &login, const QString &password);
+
     void UpdateObjectQuery(const QString cam, const QString img, QSqlQueryModel * model);
 
     bool deleteRawCensus(int id, const QString & cam, const QString & img, const QString & usr);

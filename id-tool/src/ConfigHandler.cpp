@@ -17,14 +17,6 @@
 #include <QPoint>
 #include <QStringList>
 
-void ConfigHandler::InitSettings() {
-    user = QString(getenv("USER"));
-}
-
-QString ConfigHandler::getSystemUser() {
-    return QString(getenv("USER"));
-}
-
 void ConfigHandler::setLocation(const QString &location) {
     setValue("location", location);
 }

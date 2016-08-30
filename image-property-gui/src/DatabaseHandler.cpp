@@ -9,6 +9,8 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QDebug>
+#include <QMessageBox>
+
 using namespace std;
 
 DatabaseHandler::DatabaseHandler(ConfigHandler * config) : config(config){
@@ -196,4 +198,44 @@ QSqlQueryModel * DatabaseHandler::getSeastateCodes() {
     }
     model->setQuery(query);
     return model;
+}
+
+bool DatabaseHandler::checkUsername(const QString & login) {
+    QSqlQuery query;
+    query.prepare("SELECT exists(SELECT TRUE FROM users JOIN user_groups USING(user_id) JOIN groups USING(group_id) "
+                  "WHERE login=:login AND group_name='daisi-staff')");
+    query.bindValue(":login", login);
+    if (!query.exec()) {
+        QMessageBox::critical(0, "Datenbankfehler", query.lastError().text());
+        exit(1);
+    }
+    if (query.next())
+        return query.value(0).toBool();
+    return false;
+}
+
+bool DatabaseHandler::checkPassword(const QString &login, const QString &password) {
+    QSqlQuery query;
+    query.prepare("SELECT password_hash = crypt(:password,password_hash) FROM users WHERE login=:login");
+    query.bindValue(":password", password);
+    query.bindValue(":login", login);
+    if (!query.exec()) {
+        QMessageBox::critical(0, "Datenbankfehler", query.lastError().text());
+        exit(1);
+    }
+    if (query.next())
+        return query.value(0).toBool();
+    return false;
+}
+
+bool DatabaseHandler::changePassword(const QString &login, const QString &password) {
+    QSqlQuery query;
+    query.prepare("UPDATE users SET password_hash = crypt(:password,gen_salt('bf')) WHERE login=:login");
+    query.bindValue(":password", password);
+    query.bindValue(":login", login);
+    if (!query.exec()) {
+        QMessageBox::critical(0, "Datenbankfehler", query.lastError().text());
+        exit(1);
+    }
+    return true;
 }

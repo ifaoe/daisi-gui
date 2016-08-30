@@ -17,15 +17,6 @@
 #include <QPoint>
 #include <QStringList>
 
-void ConfigHandler::InitSettings() {
-    user = QString(getenv("USER"));
-}
-
-
-QString ConfigHandler::getSystemUser() {
-    return QString(getenv("USER"));
-}
-
 void ConfigHandler::setSessionName(const QString & session) {
     setValue("session", session);
 }

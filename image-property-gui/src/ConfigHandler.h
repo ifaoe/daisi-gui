@@ -33,7 +33,6 @@ public:
     void setSessionName(const QString & session);
     QString getPreferredSession();
     QStringList getDatabaseList();
-    QString getSystemUser();
     QString dbHost();
     QString dbName();
     int dbPort();

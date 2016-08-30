@@ -82,6 +82,7 @@ private slots:
 	void handleAdminPass();
     void handleLocationSelection();
     void handleHeaderFilter(int index);
+    void handlePasswordChange();
 };
 
 #endif // MAINWINDOW_H

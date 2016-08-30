@@ -19,6 +19,7 @@
 #include <QTableView>
 #include <QHeaderView>
 #include <QDateTime>
+#include <QMessageBox>
 
 DatabaseHandler::DatabaseHandler(ConfigHandler *cfgArg) :config(cfgArg) {
     // TODO Auto-generated constructor stub
@@ -85,8 +86,7 @@ bool DatabaseHandler::getSpeciesList(const QString & type, QComboBox * cmb_box) 
     query.prepare("SELECT euring_code, name_de, name_lat FROM daisi_dev.bird_view_taxa WHERE type=:type AND version=:version ORDER BY seaflag DESC, name_de");
     query.bindValue(":type", type);
     query.bindValue(":version", session_version);
-    if (!query.exec())
-        qDebug() << query.lastError().text();
+    if (!query.exec()) qDebug() << query.lastError().text();
 	QSqlQueryModel * model = new QSqlQueryModel;
     model->setQuery(query);
     model->setHeaderData(0, Qt::Horizontal, "EURING Code");
@@ -130,8 +130,7 @@ bool DatabaseHandler::GetAnthroObjectList(QComboBox * combo_box) {
     QSqlQuery query;
     query.prepare("SELECT anthro_object, description_de FROM census_anthro_objects WHERE version=:version AND anthro_object>0 ORDER BY description_de");
     query.bindValue(":version", session_version);
-    if (!query.exec())
-        qDebug() << query.lastError().text();
+    if (!query.exec()) qDebug() << query.lastError().text();
 	while (query.next()) {
 		combo_box->addItem(query.value(1).toString(), query.value(0));
 	}
@@ -472,8 +471,7 @@ void DatabaseHandler::GetBirdAgeClasses(QComboBox * cmb_box) {
     QSqlQuery query;
     query.prepare("SELECT age_year, description_de FROM daisi_dev.bird_view_age_years WHERE type='BIRD' AND version=:version ORDER BY age_year");
     query.bindValue(":version", session_version);
-    if (!query.exec())
-        qDebug() << query.lastError().text();
+    if (!query.exec()) qDebug() << query.lastError().text();
 	while (query.next()) {
         cmb_box->addItem(query.value(1).toString(), query.value(0));
 	}
@@ -673,4 +671,44 @@ void DatabaseHandler::insertScreeningObject(const QString &session, const QStrin
     query.bindValue(":pixel_y", pixel_y);
     query.bindValue(":epsg", epsg);
     query.exec();
+}
+
+bool DatabaseHandler::checkUsername(const QString & login) {
+    QSqlQuery query;
+    query.prepare("SELECT exists(SELECT TRUE FROM users JOIN user_groups USING(user_id) JOIN groups USING(group_id) "
+                  "WHERE login=:login AND group_name='daisi-census')");
+    query.bindValue(":login", login);
+    if (!query.exec()) {
+        QMessageBox::critical(0, "Datenbankfehler", query.lastError().text());
+        exit(1);
+    }
+    if (query.next())
+        return query.value(0).toBool();
+    return false;
+}
+
+bool DatabaseHandler::checkPassword(const QString &login, const QString &password) {
+    QSqlQuery query;
+    query.prepare("SELECT password_hash = crypt(:password,password_hash) FROM users WHERE login=:login");
+    query.bindValue(":password", password);
+    query.bindValue(":login", login);
+    if (!query.exec()) {
+        QMessageBox::critical(0, "Datenbankfehler", query.lastError().text());
+        exit(1);
+    }
+    if (query.next())
+        return query.value(0).toBool();
+    return false;
+}
+
+bool DatabaseHandler::changePassword(const QString &login, const QString &password) {
+    QSqlQuery query;
+    query.prepare("UPDATE users SET password_hash = crypt(:password,gen_salt('bf')) WHERE login=:login");
+    query.bindValue(":password", password);
+    query.bindValue(":login", login);
+    if (!query.exec()) {
+        QMessageBox::critical(0, "Datenbankfehler", query.lastError().text());
+        exit(1);
+    }
+    return true;
 }

@@ -32,6 +32,10 @@ public:
     QSqlSortModel * getPropertyTable();
 	QString GetPropertyProgress(QString type);
     QString getSessionVersion(const QString & session);
+
+    bool checkUsername(const QString & login);
+    bool checkPassword(const QString & login, const QString & password);
+    bool changePassword(const QString & login, const QString & password);
 private:
     ConfigHandler * config = 0;
 	QSqlDatabase * db = 0;

@@ -12,5 +12,6 @@
         <file>icons/32x32/zoom-in.png</file>
         <file>icons/24x24/node-transform.svg</file>
         <file>icons/24x24/transform-move.svg</file>
+        <file>icons/24x24/object-locked.svg</file>
     </qresource>
 </RCC>

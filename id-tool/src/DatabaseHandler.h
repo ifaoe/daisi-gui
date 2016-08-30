@@ -68,6 +68,10 @@ public:
     void insertScreeningObject(const QString & session, const QString & camera, const QString & image,
                                const QString & user, const QString & pre_type, double utm_x, double utm_y,
                                double lon, double lat, int pixel_x, int pixel_y, int epsg);
+
+    bool checkUsername(const QString & login);
+    bool checkPassword(const QString & login, const QString & password);
+    bool changePassword(const QString & login, const QString & password);
 private:
     QSqlDatabase *db;
     ConfigHandler *config;

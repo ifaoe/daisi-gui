@@ -75,6 +75,8 @@ MainWindow::MainWindow(ConfigHandler *aConfig, Database * aDb)
     connect( ui->image_table->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(handleHeaderFilter(int)));
 
     connect( ui->option_location, SIGNAL(clicked()), this, SLOT(handleLocationSelection()));
+
+    connect( ui->option_password_change, SIGNAL(clicked(bool)), this, SLOT(handlePasswordChange()));
 }
 
 // ------------------------------------------------------------------------
@@ -453,4 +455,52 @@ void MainWindow::handleLocationSelection() {
     ui->cmbSession->clear();
     ui->cmbSession->addItem("");
     ui->cmbSession->addItems(db->getSessionList());
+}
+
+void MainWindow::handlePasswordChange() {
+    QDialog * password_dialog = new QDialog(this);
+    password_dialog->setWindowTitle(QString::fromUtf8("Passwort ändern."));
+    QVBoxLayout * layout = new QVBoxLayout(password_dialog);
+    QLineEdit * old_password = new QLineEdit(password_dialog);
+    old_password->setEchoMode(QLineEdit::Password);
+    QLineEdit * new_password = new QLineEdit(password_dialog);
+    new_password->setEchoMode(QLineEdit::Password);
+    QLineEdit * new_password_repeat = new QLineEdit(password_dialog);
+    new_password_repeat->setEchoMode(QLineEdit::Password);
+    QFrame * line = new QFrame;
+    line->setFrameShape(QFrame::HLine);
+    line->setFrameShadow(QFrame::Sunken);
+    QDialogButtonBox * buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, password_dialog);
+
+    layout->addWidget(new QLabel("Altes Passwort:", password_dialog));
+    layout->addWidget(old_password);
+    layout->addWidget(line);
+    layout->addWidget(new QLabel("Neues Passwort:", password_dialog));
+    layout->addWidget(new_password);
+    layout->addWidget(new QLabel("Neues Passwort wiederholen:", password_dialog));
+    layout->addWidget(new_password_repeat);
+    layout->addItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
+    layout->addWidget(buttons);
+
+    connect(buttons, SIGNAL(accepted()), password_dialog, SLOT(accept()));
+    connect(buttons, SIGNAL(rejected()), password_dialog, SLOT(reject()));
+
+    if (password_dialog->exec() == QDialog::Accepted) {
+        if(!db->checkPassword(config->getUser(), old_password->text())) {
+            QMessageBox::warning(this, "Fehler",QString::fromUtf8( "Falsches Passwort für Nutzer %1").arg(config->getUser()));
+            return;
+        }
+        if (new_password->text().isEmpty()) {
+            QMessageBox::warning(this, "Fehler",QString::fromUtf8( "Passwort darf nicht leer sein."));
+            return;
+        }
+        if (new_password->text() != new_password_repeat->text()) {
+            QMessageBox::warning(this, "Fehler",QString::fromUtf8( "Passwörter stimmen nicht überein."));
+            return;
+        }
+        if (db->changePassword(config->getUser(), new_password->text())) {
+            QMessageBox::information(this, "Information", QString::fromUtf8("Passwort erfolgreich geändert."));
+            return;
+        }
+    }
 }
