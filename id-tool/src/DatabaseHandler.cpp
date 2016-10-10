@@ -629,8 +629,9 @@ int DatabaseHandler::getCensusCount(const QString & session, const QString & use
 
 void DatabaseHandler::refreshSessionProperties(const QString &name) {
     QSqlQuery query;
-    query.prepare("SELECT path, version FROM projects WHERE project_id=:session_name");
+    query.prepare("SELECT path, version FROM projects WHERE project_id=:session_name AND location=:location");
     query.bindValue(":session_name", name);
+    query.bindValue(":location", config->location());
     query.exec();
     if (query.next()) {
         session_name = name;
