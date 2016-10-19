@@ -713,3 +713,20 @@ bool DatabaseHandler::changePassword(const QString &login, const QString &passwo
     }
     return true;
 }
+
+QgsGeometry * DatabaseHandler::getInversePolygon(const QString &session, const QString &camera, const QString &image) {
+    QSqlQuery query;
+    query.prepare("SELECT ST_AsText(ST_DIFFERENCE(envelope,ST_BUFFER(cut_envelope,1e-8))) FROM images "
+                  "WHERE session=:session AND camera=:camera AND image=:image");
+    query.bindValue(":session", session);
+    query.bindValue(":camera", camera);
+    query.bindValue(":image", image);
+    if (!query.exec()) {
+        QMessageBox::critical(0, "Datenbankfehler", query.lastError().text());
+        exit(1);
+    }
+    if (query.next())
+        return QgsGeometry::fromWkt(query.value(0).toString());;
+    qDebug() << QString("No envelope for query %1 found.").arg(query.executedQuery());
+    return 0;
+}

@@ -91,7 +91,8 @@ MainWindow::MainWindow( ConfigHandler *cfgArg, DatabaseHandler *dbArg, QWidget *
 
     connect(wdgObjects->tblObjects->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(showFilterDialog(int)));
 
-    connect(ui->toolbutton_password, SIGNAL(clicked(bool)), this, SLOT(handlePasswordChange()));
+    connect(ui->action_change_password, SIGNAL(triggered(bool)), this, SLOT(handlePasswordChange()));
+    connect(ui->toolButton_envelope, SIGNAL(clicked(bool)), imgcvs, SLOT(showPolyLayer(bool)));
 
 }
 

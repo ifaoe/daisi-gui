@@ -23,6 +23,8 @@
 #include <QMenu>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <qgssymbolv2.h>
+#include <qgssinglesymbolrendererv2.h>
 
 ImgCanvas::ImgCanvas(QWidget *parent, Ui::MainWindow *mUi, ConfigHandler *cfg, DatabaseHandler *db)
     : QgsMapCanvas(parent),ui(mUi), cfg(cfg), db(db) {
@@ -155,6 +157,41 @@ bool ImgCanvas::loadObject(census * obj) {
     imgLayer->setRenderer( renderer );
 
     layerStack->addMapLayer("image", imgLayer, 100);
+
+    if (poly_layer) {
+        layerStack->removeMapLayer("poly");
+//        delete poly_layer;
+//        poly_layer = 0;
+    }
+
+    poly_layer = new QgsVectorLayer(QString("Polygon?crs=%1").arg(crs_geo.authid()), "Polygon Layer", "memory");
+
+    QgsFillSymbolV2 * symbol = new QgsFillSymbolV2;
+    symbol->setAlpha(0.3);
+    symbol->setColor(Qt::red);
+
+    QgsGeometry * polygon = db->getInversePolygon(obj->session, obj->camera, obj->image);
+    if (polygon) {
+        polygon->transform(geo2utm);
+
+        poly_layer->setRendererV2(new QgsSingleSymbolRendererV2(symbol));
+        QgsFeature fet = QgsFeature( poly_layer->dataProvider()->fields() );
+        fet.setGeometry( polygon );
+        poly_layer->startEditing();
+        poly_layer->addFeature(fet,true);
+        poly_layer->commitChanges();
+
+        QgsRectangle rect = poly_layer->extent();
+        rect.setXMinimum(rect.xMinimum()-10);
+        rect.setYMinimum(rect.yMinimum()-10);
+        rect.setXMaximum(rect.xMaximum()+10);
+        rect.setYMaximum(rect.yMaximum()+10);
+        setExtent(rect);
+
+        layerStack->addMapLayer("poly",poly_layer, 50);
+    }
+
+
     setExtent(fullExtent());
     centerOnWorldPosition(obj->ux, obj->uy, 1.0);
 
@@ -427,4 +464,14 @@ void ImgCanvas::activatePanMode() {
 
 void ImgCanvas::activatePointMode() {
     setMapTool(qgsEmitPointTool);
+}
+
+void ImgCanvas::showPolyLayer(bool visible) {
+    if (!poly_layer)
+        return;
+    if (visible) {
+       poly_layer->setLayerTransparency(100);
+    } else {
+       poly_layer->setLayerTransparency(0);
+    }
 }

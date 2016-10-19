@@ -61,7 +61,9 @@ private:
     ConfigHandler *cfg = 0;
     DatabaseHandler *db = 0;
     QgsRasterLayer * imgLayer = 0;
+    QgsVectorLayer * poly_layer = 0;
     QgsRasterDataProvider* imgProvider = 0;
+
 
     QgsMapToolEmitPoint *qgsEmitPointTool = 0;
     QgsMapToolPan * qgsMapPanTool = 0;
@@ -99,6 +101,7 @@ private slots:
 public slots:
     void activatePanMode();
     void activatePointMode();
+    void showPolyLayer(bool visible);
 signals:
     void measurementDone(int type, double size);
 };

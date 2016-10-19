@@ -13,5 +13,24 @@
         <file>icons/24x24/node-transform.svg</file>
         <file>icons/24x24/transform-move.svg</file>
         <file>icons/24x24/object-locked.svg</file>
+        <file>icons/24x24/ic_zoom_in_white_48dp_1x.png</file>
+        <file>icons/24x24/ic_zoom_out_white_48dp_1x.png</file>
+        <file>icons/24x24/ic_developer_mode_white_48dp_1x.png</file>
+        <file>icons/24x24/ic_gps_fixed_white_48dp_1x.png</file>
+        <file>icons/24x24/ic_lock_open_white_48dp_1x.png</file>
+        <file>icons/24x24/ic_add_location_white_48dp_1x.png</file>
+        <file>icons/24x24/ic_explore_white_48dp_1x.png</file>
+        <file>icons/24x24/ic_satellite_white_48dp_1x.png</file>
+        <file>icons/24x24/ic_open_with_white_48dp_1x.png</file>
+        <file>icons/24x24/ic_zoom_out_map_white_48dp_1x.png</file>
+        <file>icons/24x24/ic_settings_ethernet_white_48dp_1x.png</file>
+        <file>icons/24x24/ic_place_white_48dp_1x.png</file>
+        <file>icons/24x24/ic_cancel_white_48dp_1x.png</file>
+        <file>icons/24x24/ic_close_white_48dp_1x.png</file>
+        <file>icons/24x24/ic_fullscreen_exit_white_48dp_1x.png</file>
+        <file>icons/24x24/ic_fullscreen_white_48dp_1x.png</file>
+        <file>icons/24x24/ic_grid_off_white_48dp_1x.png</file>
+        <file>icons/24x24/ic_grid_on_white_48dp_1x.png</file>
+        <file>icons/24x24/ic_menu_white_48dp_1x.png</file>
     </qresource>
 </RCC>

@@ -22,6 +22,7 @@
 #include "ConfigHandler.h"
 #include "census.hpp"
 #include "CensorSqlTableModel.h"
+#include <qgsgeometry.h>
 
 class DatabaseHandler {
 public:
@@ -72,6 +73,8 @@ public:
     bool checkUsername(const QString & login);
     bool checkPassword(const QString & login, const QString & password);
     bool changePassword(const QString & login, const QString & password);
+
+    QgsGeometry * getInversePolygon(const QString & session, const QString & camera, const QString & image);
 private:
     QSqlDatabase *db;
     ConfigHandler *config;
