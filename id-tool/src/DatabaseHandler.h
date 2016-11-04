@@ -31,7 +31,7 @@ public:
     bool OpenDatabase();
     QStringList getSessionList(const QString & location);
     QSqlQuery * getObjectResult(QString session, QString user, QString filter="", QString order="");
-    census * getRawObjectData(QString objId, QString usr);
+    census * getRawObjectData(int object_id, QString usr);
     bool getSpeciesList(const QString & type, QComboBox * combo_box);
     QStringList getUserList(int objId);
     census * getCensusData(QString objId);

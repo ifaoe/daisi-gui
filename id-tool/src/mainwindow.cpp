@@ -25,6 +25,7 @@
 #include <QInputDialog>
 #include <QSqlRecord>
 #include <QSpacerItem>
+#include <QSortFilterProxyModel>
 #include "QSearchDialog.h"
 
 MainWindow::MainWindow( ConfigHandler *cfgArg, DatabaseHandler *dbArg, QWidget *parent) :
@@ -205,6 +206,18 @@ QVariant MainWindow::getObjectItemData(int row, int column) {
 	return object_model->data(index);
 }
 
+QModelIndex MainWindow::getObjectIndex(int object_id) {
+    QSortFilterProxyModel proxy;
+    proxy.setSourceModel(object_model);
+    proxy.setFilterKeyColumn(1);
+    proxy.setFilterFixedString(QString::number(object_id));
+    QModelIndex index = proxy.mapToSource(proxy.index(0,0));
+    if (index.isValid())
+        return index;
+    else
+        return QModelIndex();
+}
+
 QStringList MainWindow::getColumnDataList(int column) {
 	QStringList result_list;
 	for (int i=0; i<object_model->rowCount(); i++) {
@@ -228,17 +241,6 @@ QStringList MainWindow::getColumnDataList(int column) {
  * SLOTS
  */
 
-void MainWindow::selectNextObject() {
-    QModelIndex new_index;
-    if (old_object_id == getObjectItemData(currentRow, 1).toInt()) {
-        new_index = wdgObjects->tblObjects->selectionModel()->model()->index(currentRow+1, 0);
-    } else {
-        new_index = wdgObjects->tblObjects->selectionModel()->model()->index(currentRow, 0);
-    }
-    wdgObjects->tblObjects->scrollTo(new_index);
-    wdgObjects->tblObjects->selectionModel()->select(new_index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
-    object_model->select();
-}
 
 /*
  * Recalculate direction value depending on QDial value
@@ -331,9 +333,9 @@ void MainWindow::handleObjectSelection() {
 
     if (wdgObjects->tblObjects->selectionModel()->selectedRows().isEmpty()) return;
     currentRow = wdgObjects->tblObjects->selectionModel()->selectedRows().at(0).row();
-    QString objId = getObjectItemData(currentRow, 1).toString();
-    old_object_id = objId.toInt();
+    int objId = getObjectItemData(currentRow, 1).toInt();
 
+    old_object_id = objId;
     curObj = db->getRawObjectData(objId, config->getUser());
 
     if (!imgcvs->loadObject(curObj)) {
@@ -357,6 +359,15 @@ void MainWindow::handleObjectSelection() {
             QString("Project: %1, Kamera: %2, Bild: %3, Objekt ID: %4")
             .arg(curObj->session).arg(curObj->camera).arg(curObj->image).arg(curObj->id)
             );
+}
+
+void MainWindow::selectNextObject() {
+    int new_id = getObjectItemData(currentRow+1, 1).toInt();
+    object_model->select();
+    QModelIndex new_index = getObjectIndex(new_id);
+    wdgObjects->tblObjects->scrollTo(new_index);
+    wdgObjects->tblObjects->selectionModel()->select(new_index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+
 }
 
 void MainWindow::handleCensorFilter(int index) {

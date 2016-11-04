@@ -22,6 +22,7 @@
 #include <QScrollArea>
 #include <QSignalMapper>
 #include <QWebView>
+#include <QModelIndex>
 #include <qgsproviderregistry.h>
 #include <qgsmaplayerregistry.h>
 #include "ImgCanvas.h"
@@ -84,6 +85,7 @@ private:
     void initSessionWidget();
     QVariant getObjectItemData(int row, int column);
     QStringList getColumnDataList(int column);
+    QModelIndex getObjectIndex(int object_id);
     int old_object_id;
 public slots:
 private slots:

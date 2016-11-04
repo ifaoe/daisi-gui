@@ -32,5 +32,14 @@
         <file>icons/24x24/ic_grid_off_white_48dp_1x.png</file>
         <file>icons/24x24/ic_grid_on_white_48dp_1x.png</file>
         <file>icons/24x24/ic_menu_white_48dp_1x.png</file>
+        <file>icons/24x24/ic_format_list_bulleted_white_48dp_1x.png</file>
+        <file>icons/24x24/ic_format_list_numbered_white_48dp_1x.png</file>
+        <file>icons/24x24/ic_swap_horiz_white_48dp.png</file>
+        <file>icons/24x24/ic_swap_vert_white_48dp.png</file>
+        <file>icons/24x24/ic_delete_white_48dp.png</file>
+        <file>icons/24x24/ic_save_white_48dp.png</file>
+        <file>icons/24x24/ic_content_copy_white_48dp.png</file>
+        <file>icons/24x24/ic_people_white_48dp.png</file>
+        <file>icons/24x24/ic_person_white_48dp.png</file>
     </qresource>
 </RCC>

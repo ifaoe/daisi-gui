@@ -176,64 +176,79 @@ QSqlQuery * DatabaseHandler::getObjectResult(QString session, QString user, QStr
     return query;
 }
 
-census * DatabaseHandler::getRawObjectData(QString objId, QString usr) {
-    qDebug() << "Getting raw object data for object ID: " << objId;
-    QString qstr = "SELECT rcns_id, session, epsg, cam, img, tp, px, py, ux, uy, lx, ly, tp FROM raw_census WHERE rcns_id=" + objId;
-    qDebug() << qstr;
-    QSqlQuery * query = new QSqlQuery(qstr);
+census * DatabaseHandler::getRawObjectData(int object_id, QString usr) {
+//    qDebug() << "Getting raw object data for object ID: " << objId;
+    QSqlQuery query;
+    query.prepare("SELECT rcns_id, session, epsg, cam, img, tp, px, py, ux, uy, lx, ly, tp FROM raw_census WHERE rcns_id=:object_id");
+    query.bindValue("object_id", object_id);
+
+    if (!query.exec()) {
+        QMessageBox::critical(0, "Datenbankfehler", query.lastError().text());
+        exit(1);
+    }
+
     census *obj = new census;
-    if(!query->next()) {
-        qDebug() << "No data found for object ID: " << objId;
+    if(!query.next()) {
+        qDebug() << "No data found for object ID: " << object_id;
         return obj;
     }
-    obj->id = query->value(0).toInt();
-    obj->session = query->value(1).toString();
-    obj->epsg = query->value(2).toString();
-    obj->camera = query->value(3).toString();
-    obj->image = query->value(4).toString();
-    obj->px = query->value(6).toInt();
-    obj->py = query->value(7).toInt();
-    obj->ux = query->value(8).toDouble();
-    obj->uy = query->value(9).toDouble();
-    obj->lx = query->value(10).toDouble();
-    obj->ly = query->value(11).toDouble();
+
+    obj->id = query.value(0).toInt();
+    obj->session = query.value(1).toString();
+    obj->epsg = query.value(2).toString();
+    obj->camera = query.value(3).toString();
+    obj->image = query.value(4).toString();
+    obj->px = query.value(6).toInt();
+    obj->py = query.value(7).toInt();
+    obj->ux = query.value(8).toDouble();
+    obj->uy = query.value(9).toDouble();
+    obj->lx = query.value(10).toDouble();
+    obj->ly = query.value(11).toDouble();
     obj->usr = usr;
-    obj->type = query->value(12).toString();
-    delete query;
-    qDebug() << "Getting object specific data for ID: " << objId;
-    qstr =    "SELECT tp, name, confidence, beh, age, gen, dir, rem, censor, imgqual, length, width"
+    obj->type = query.value(12).toString();
+
+    query.clear();
+
+    qDebug() << "Getting object specific data for ID: " << object_id;
+
+    query.prepare("SELECT tp, name, confidence, beh, age, gen, dir, rem, censor, imgqual, length, width"
             ", stuk4_beh, stuk4_ass, group_objects, family_group,id_code,age_year,plumage, censor"
-            " FROM census WHERE rcns_id=" + objId + " AND usr='" + usr + "'";
-    qDebug() << qstr;
+            " FROM census WHERE rcns_id=:object_id AND usr=:user");
+    query.bindValue(":object_id", object_id);
+    query.bindValue(":user", usr);
     // if there is already an entry in census db-table,
     // initialize census structure with these values
-    query = new QSqlQuery(qstr);
-    if (query->next()) {
-        obj->type = query->value(0).toString();
-        obj->name = query->value(1).toString();
-        obj->confidence = query->value(2).toInt();
-        obj->behavior = query->value(3).toString();
-        obj->age = query->value(4).toString();
-        obj->gender = query->value(5).toString();
-        if (!query->value(6).isNull())
-        	obj->direction = query->value(6).toInt();
-        obj->remarks = query->value(7).toString();
-        obj->censor = query->value(8).toInt();
-        obj->imageQuality = query->value(9).toInt();
-        obj->length = query->value(10).toDouble();
-        obj->span = query->value(11).toDouble();
-        obj->stuk4_beh = query->value(12).toString().remove(QRegExp("[{}]")).split(",");
-        obj->stuk4_ass = query->value(13).toString().remove(QRegExp("[{}]")).split(",");
-        obj->group = query->value(14).toString().remove(QRegExp("[{}]")).split(",");
-        obj->family = query->value(15).toString().remove(QRegExp("[{}]")).split(",");
-        obj->code = query->value(16).toString();
-        if (!query->value(17).isNull())
-        	obj->age_year = query->value(17).toInt();
-        if (!query->value(18).toString().isEmpty())
-        	obj->plumage = query->value(18).toString();
-        obj->censor = query->value(19).toInt();
+
+    if (!query.exec()) {
+        QMessageBox::critical(0, "Datenbankfehler", query.lastError().text());
+        exit(1);
     }
-    delete query;
+
+    if (query.next()) {
+        obj->type = query.value(0).toString();
+        obj->name = query.value(1).toString();
+        obj->confidence = query.value(2).toInt();
+        obj->behavior = query.value(3).toString();
+        obj->age = query.value(4).toString();
+        obj->gender = query.value(5).toString();
+        if (!query.value(6).isNull())
+            obj->direction = query.value(6).toInt();
+        obj->remarks = query.value(7).toString();
+        obj->censor = query.value(8).toInt();
+        obj->imageQuality = query.value(9).toInt();
+        obj->length = query.value(10).toDouble();
+        obj->span = query.value(11).toDouble();
+        obj->stuk4_beh = query.value(12).toString().remove(QRegExp("[{}]")).split(",");
+        obj->stuk4_ass = query.value(13).toString().remove(QRegExp("[{}]")).split(",");
+        obj->group = query.value(14).toString().remove(QRegExp("[{}]")).split(",");
+        obj->family = query.value(15).toString().remove(QRegExp("[{}]")).split(",");
+        obj->code = query.value(16).toString();
+        if (!query.value(17).isNull())
+            obj->age_year = query.value(17).toInt();
+        if (!query.value(18).toString().isEmpty())
+            obj->plumage = query.value(18).toString();
+        obj->censor = query.value(19).toInt();
+    }
     return obj;
 }
 

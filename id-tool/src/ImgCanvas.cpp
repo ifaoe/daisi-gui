@@ -470,8 +470,9 @@ void ImgCanvas::showPolyLayer(bool visible) {
     if (!poly_layer)
         return;
     if (visible) {
-       poly_layer->setLayerTransparency(100);
-    } else {
        poly_layer->setLayerTransparency(0);
+    } else {
+       poly_layer->setLayerTransparency(100);
     }
+
 }

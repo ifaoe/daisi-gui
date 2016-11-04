@@ -96,7 +96,7 @@ void CensusWidget::setupMetaData() {
 void CensusWidget::userSelection() {
     census * obj;
     if(ui->cmbUsers->currentText().isEmpty()) return;
-    obj = db->getRawObjectData(QString::number(current_object->id), ui->cmbUsers->currentText());
+    obj = db->getRawObjectData(current_object->id, ui->cmbUsers->currentText());
     uiPreselection(obj);
     delete obj;
 }

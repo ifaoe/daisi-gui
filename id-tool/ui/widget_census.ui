@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>481</width>
-    <height>854</height>
+    <height>939</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -102,8 +102,8 @@
             <string>OK</string>
            </property>
            <property name="icon">
-            <iconset theme="dialog-ok">
-             <normaloff>.</normaloff>.</iconset>
+            <iconset resource="icons.qrc">
+             <normaloff>:/icons/icons/24x24/ic_content_copy_white_48dp.png</normaloff>:/icons/icons/24x24/ic_content_copy_white_48dp.png</iconset>
            </property>
           </widget>
          </item>
@@ -116,8 +116,8 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset theme="security-high">
-             <normaloff>.</normaloff>.</iconset>
+            <iconset resource="icons.qrc">
+             <normaloff>:/icons/icons/24x24/ic_people_white_48dp.png</normaloff>:/icons/icons/24x24/ic_people_white_48dp.png</iconset>
            </property>
           </widget>
          </item>
@@ -130,8 +130,8 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset theme="security-low">
-             <normaloff>.</normaloff>.</iconset>
+            <iconset resource="icons.qrc">
+             <normaloff>:/icons/icons/24x24/ic_person_white_48dp.png</normaloff>:/icons/icons/24x24/ic_person_white_48dp.png</iconset>
            </property>
           </widget>
          </item>
@@ -1570,8 +1570,8 @@ Wasseroberfl&amp;äche</string>
             <string>Spannweite</string>
            </property>
            <property name="icon">
-            <iconset theme="measure">
-             <normaloff>.</normaloff>.</iconset>
+            <iconset theme="measure" resource="icons.qrc">
+             <normaloff>:/icons/icons/24x24/ic_swap_horiz_white_48dp.png</normaloff>:/icons/icons/24x24/ic_swap_horiz_white_48dp.png</iconset>
            </property>
           </widget>
          </item>
@@ -1595,8 +1595,8 @@ Wasseroberfl&amp;äche</string>
             <string>Körperlänge</string>
            </property>
            <property name="icon">
-            <iconset theme="measure">
-             <normaloff>.</normaloff>.</iconset>
+            <iconset theme="measure" resource="icons.qrc">
+             <normaloff>:/icons/icons/24x24/ic_swap_vert_white_48dp.png</normaloff>:/icons/icons/24x24/ic_swap_vert_white_48dp.png</iconset>
            </property>
           </widget>
          </item>
@@ -1647,8 +1647,8 @@ Wasseroberfl&amp;äche</string>
             <string>...</string>
            </property>
            <property name="icon">
-            <iconset theme="view-list-text">
-             <normaloff>.</normaloff>.</iconset>
+            <iconset resource="icons.qrc">
+             <normaloff>:/icons/icons/24x24/ic_format_list_bulleted_white_48dp_1x.png</normaloff>:/icons/icons/24x24/ic_format_list_bulleted_white_48dp_1x.png</iconset>
            </property>
           </widget>
          </item>
@@ -1684,8 +1684,8 @@ Wasseroberfl&amp;äche</string>
             <string>...</string>
            </property>
            <property name="icon">
-            <iconset theme="view-list-text">
-             <normaloff>.</normaloff>.</iconset>
+            <iconset resource="icons.qrc">
+             <normaloff>:/icons/icons/24x24/ic_format_list_bulleted_white_48dp_1x.png</normaloff>:/icons/icons/24x24/ic_format_list_bulleted_white_48dp_1x.png</iconset>
            </property>
           </widget>
          </item>
@@ -1748,8 +1748,8 @@ Wasseroberfl&amp;äche</string>
             <string>...</string>
            </property>
            <property name="icon">
-            <iconset theme="view-list-text">
-             <normaloff>.</normaloff>.</iconset>
+            <iconset resource="icons.qrc">
+             <normaloff>:/icons/icons/24x24/ic_format_list_numbered_white_48dp_1x.png</normaloff>:/icons/icons/24x24/ic_format_list_numbered_white_48dp_1x.png</iconset>
            </property>
           </widget>
          </item>
@@ -1877,8 +1877,8 @@ Wasseroberfl&amp;äche</string>
          <string>Speichern</string>
         </property>
         <property name="icon">
-         <iconset theme="document-save">
-          <normaloff>.</normaloff>.</iconset>
+         <iconset resource="icons.qrc">
+          <normaloff>:/icons/icons/24x24/ic_save_white_48dp.png</normaloff>:/icons/icons/24x24/ic_save_white_48dp.png</iconset>
         </property>
        </widget>
       </item>
@@ -1891,8 +1891,8 @@ Wasseroberfl&amp;äche</string>
          <string>Löschen</string>
         </property>
         <property name="icon">
-         <iconset theme="edit-delete">
-          <normaloff>.</normaloff>.</iconset>
+         <iconset resource="icons.qrc">
+          <normaloff>:/icons/icons/24x24/ic_delete_white_48dp.png</normaloff>:/icons/icons/24x24/ic_delete_white_48dp.png</iconset>
         </property>
         <property name="checkable">
          <bool>false</bool>
@@ -1907,18 +1907,20 @@ Wasseroberfl&amp;äche</string>
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttongroup_bird_sex"/>
-  <buttongroup name="buttongroup_mammal_confidence"/>
-  <buttongroup name="buttongroup_nosight_confidence"/>
-  <buttongroup name="buttongroup_anthro_confidence"/>
   <buttongroup name="buttongroup_bird_behaviour"/>
-  <buttongroup name="buttongroup_mammal_behaviour"/>
+  <buttongroup name="buttongroup_nosight_confidence"/>
+  <buttongroup name="buttongroup_bird_age"/>
+  <buttongroup name="buttongroup_anthro_confidence"/>
+  <buttongroup name="buttongroup_bird_confidence"/>
+  <buttongroup name="buttongroup_bird_sex"/>
   <buttongroup name="buttongroup_misc_confidence"/>
   <buttongroup name="buttongroup_mammal_age"/>
-  <buttongroup name="buttongroup_bird_confidence"/>
-  <buttongroup name="buttongroup_bird_age"/>
+  <buttongroup name="buttongroup_mammal_confidence"/>
+  <buttongroup name="buttongroup_mammal_behaviour"/>
  </buttongroups>
 </ui>
